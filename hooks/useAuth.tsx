@@ -6,12 +6,18 @@ interface User {
   lastName: string;
   organizationName: string;
   profilePicture?: string;
+  phone?: string;
+  crNumber?: string;
+  website?: string;
+  industry?: string;
+  companySize?: string;
 }
 
 interface AuthContextType {
   isAuthenticated: boolean;
   currentUser: User | null;
   login: (email: string, pass: string) => Promise<void>;
+  register: (userData: any) => Promise<void>;
   logout: () => void;
   updateUser: (updatedData: Partial<Pick<User, 'firstName' | 'lastName' | 'profilePicture'>>) => void;
   changePassword: (newPassword: string) => Promise<void>;
@@ -32,7 +38,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const user = registeredUsers.find(
       (u: any) => u.email.toLowerCase() === email.toLowerCase() && u.password === pass
     );
-    
+
     if (user) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...userDataToStore } = user;
@@ -41,8 +47,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setCurrentUser(userDataToStore);
       return Promise.resolve();
     }
-    
+
     return Promise.reject(new Error('Invalid credentials'));
+  };
+
+  const register = async (userData: any): Promise<void> => {
+    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+    const existingUser = registeredUsers.find((u: any) => u.email.toLowerCase() === userData.email.toLowerCase());
+
+    if (existingUser) {
+      return Promise.reject(new Error('User with this email already exists'));
+    }
+
+    registeredUsers.push(userData);
+    localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+
+    // Auto login after register? Or just return success. 
+    // Let's just return success for now as we might want to redirect to login.
+    return Promise.resolve();
   };
 
   const logout = () => {
@@ -70,24 +92,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const changePassword = async (newPassword: string): Promise<void> => {
-      if (!currentUser) {
-          return Promise.reject(new Error('No user is currently logged in.'));
-      }
+    if (!currentUser) {
+      return Promise.reject(new Error('No user is currently logged in.'));
+    }
 
-      const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-      const userIndex = registeredUsers.findIndex((u: any) => u.email.toLowerCase() === currentUser.email.toLowerCase());
+    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+    const userIndex = registeredUsers.findIndex((u: any) => u.email.toLowerCase() === currentUser.email.toLowerCase());
 
-      if (userIndex === -1) {
-          return Promise.reject(new Error('Could not find user data to update. Please log in again.'));
-      }
+    if (userIndex === -1) {
+      return Promise.reject(new Error('Could not find user data to update. Please log in again.'));
+    }
 
-      registeredUsers[userIndex].password = newPassword;
-      localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
-      
-      return Promise.resolve();
+    registeredUsers[userIndex].password = newPassword;
+    localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+
+    return Promise.resolve();
   };
 
-  const value = { isAuthenticated, currentUser, login, logout, updateUser, changePassword };
+  const value = { isAuthenticated, currentUser, login, register, logout, updateUser, changePassword };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

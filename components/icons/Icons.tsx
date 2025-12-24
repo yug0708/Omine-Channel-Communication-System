@@ -230,8 +230,9 @@ export const InfoIcon: React.FC<IconProps> = ({ className }) => (
 );
 
 export const UserIcon: React.FC<IconProps> = ({ className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="0 0 20 20" fill="currentColor">
-        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+    <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="0 0 24 24" fill="currentColor">
+        <circle cx="12" cy="6" r="4" fill="currentColor"></circle>
+        <path fill="currentColor" d="M20 17.5c0 2.485 0 4.5-8 4.5s-8-2.015-8-4.5S7.582 13 12 13s8 2.015 8 4.5"></path>
     </svg>
 );
 
