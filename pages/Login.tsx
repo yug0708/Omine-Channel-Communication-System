@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { useToast } from '../context/ToastContext';
 import { UCLogo, UKFlagIcon, PasswordEyeIcon, PasswordEyeOffIcon, EmailIcon, LockIcon, CheckIcon, InfoIcon, CloseIcon } from '../components/icons/Icons';
 import Button from '../components/ui/Button';
 
@@ -13,6 +14,7 @@ const Login: React.FC = () => {
   const [showTips, setShowTips] = useState(true);
 
   const auth = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || '/dashboard';
@@ -23,6 +25,7 @@ const Login: React.FC = () => {
     setIsLoading(true);
     try {
       await auth.login(email, password);
+      showToast('Login successful', 'success');
       navigate(from, { replace: true });
     } catch (err) {
       setError('Invalid email or password. Please try again.');
