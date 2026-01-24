@@ -1,0 +1,73 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - generic [ref=e5]:
+    - generic [ref=e7]:
+      - img [ref=e10]
+      - generic [ref=e12]: WowChat
+    - heading "Welcome to WowChat" [level=1] [ref=e13]
+    - paragraph [ref=e14]: All-in-One Omni-Channel Communication Platform
+    - generic [ref=e15]:
+      - generic [ref=e16]:
+        - img [ref=e19]
+        - paragraph [ref=e21]: Unified Inbox – Manage WhatsApp, Email, Website Chat, and Calls in one place
+      - generic [ref=e22]:
+        - img [ref=e25]
+        - paragraph [ref=e27]: Real-Time Notifications – Never miss a customer message again
+      - generic [ref=e28]:
+        - img [ref=e31]
+        - paragraph [ref=e33]: Team Collaboration – Assign, track, and resolve conversations together
+      - generic [ref=e34]:
+        - img [ref=e37]
+        - paragraph [ref=e39]: Powerful Automations – Chatbots, auto-replies, and smart routing
+      - generic [ref=e40]:
+        - img [ref=e43]
+        - paragraph [ref=e45]: Enterprise-Grade Security – Data protection you can trust
+  - generic [ref=e46]:
+    - button [ref=e48] [cursor=pointer]:
+      - img [ref=e49]
+    - generic [ref=e56]:
+      - heading "Sign in to your account" [level=2] [ref=e58]
+      - generic [ref=e59]:
+        - button [ref=e60] [cursor=pointer]:
+          - img [ref=e61]
+        - generic [ref=e63]:
+          - img [ref=e65]
+          - generic [ref=e67]:
+            - paragraph [ref=e68]: Sign-in Tips
+            - list [ref=e69]:
+              - listitem [ref=e70]: Use your registered email.
+              - listitem [ref=e71]: Check if Caps Lock is on.
+              - listitem [ref=e72]: Need help? Forgot your password?
+      - generic [ref=e73]:
+        - generic [ref=e74]:
+          - generic [ref=e75]: Email address
+          - generic [ref=e76]:
+            - generic:
+              - generic:
+                - img
+            - generic:
+              - img
+            - textbox "Email address" [ref=e77]:
+              - /placeholder: example@gmail.com
+        - generic [ref=e78]:
+          - generic [ref=e79]:
+            - generic [ref=e80]: Password
+            - link "Forgot password?" [ref=e82] [cursor=pointer]:
+              - /url: "#/forgot-password"
+          - generic [ref=e83]:
+            - generic:
+              - img
+            - textbox "Password" [ref=e84]:
+              - /placeholder: Enter password
+            - button [ref=e86] [cursor=pointer]:
+              - img [ref=e87]
+        - button "Sign in" [ref=e91] [cursor=pointer]
+      - paragraph [ref=e93]:
+        - text: Don't have an account?
+        - link "Get started" [ref=e94] [cursor=pointer]:
+          - /url: "#/register"
+          - text: Get started
+          - generic [ref=e95]: →
+```
