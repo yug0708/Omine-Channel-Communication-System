@@ -250,7 +250,8 @@ const Accounts: React.FC = () => {
         setAccounts(prevAccounts => {
           const accountMap = new Map(prevAccounts.map(acc => [acc.id, acc]));
           importedAccounts.forEach(newAcc => {
-            accountMap.set(newAcc.id, { ...accountMap.get(newAcc.id), ...newAcc });
+            const existing = accountMap.get(newAcc.id) || {};
+            accountMap.set(newAcc.id, Object.assign({}, existing, newAcc) as Account);
           });
           return Array.from(accountMap.values());
         });

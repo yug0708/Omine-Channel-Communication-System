@@ -12,6 +12,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Accounts from './pages/Accounts';
 import Contacts from './pages/Contacts';
+import ContactDetails from './pages/ContactDetails';
 import Tickets from './pages/Tickets';
 import Channels from './pages/Channels';
 import Settings from './pages/Settings';
@@ -39,6 +40,7 @@ function AppRoutes() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/accounts" element={<Accounts />} />
         <Route path="/contacts" element={<Contacts />} />
+        <Route path="/contacts/:id" element={<ContactDetails />} />
         <Route path="/tickets" element={<Tickets />} />
         <Route path="/channels" element={<Channels />} />
         <Route path="/settings" element={<Settings />} />

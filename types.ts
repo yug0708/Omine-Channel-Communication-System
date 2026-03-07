@@ -11,12 +11,26 @@ export enum TicketStatus {
   Closed = 'Closed',
 }
 
+export enum TicketPriority {
+  Low = 'Low',
+  Normal = 'Normal',
+  High = 'High',
+  Urgent = 'Urgent',
+}
+
 export interface Contact {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  phone: string;
-  channel: Channel;
+  contactNumber: string;
+  accountName: string;
+  assignedTo: string;
+  lifecycle: string;
+  labels: string;
+  createdAt: string;
+  updatedAt: string;
+  avatarUrl?: string;
 }
 
 export interface Account {
@@ -37,12 +51,18 @@ export interface Account {
 
 export interface Ticket {
   id: string;
+  ticketNo?: string;
   subject: string;
   description: string;
   contactId: string;
+  contactName?: string;
   accountId: string;
+  accountName?: string;
   status: TicketStatus;
+  priority?: TicketPriority;
+  assignedTo?: string;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface Notification {
