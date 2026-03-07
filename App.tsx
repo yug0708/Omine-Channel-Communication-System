@@ -12,11 +12,11 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Accounts from './pages/Accounts';
 import Contacts from './pages/Contacts';
-import ContactDetails from './pages/ContactDetails';
 import Tickets from './pages/Tickets';
 import Channels from './pages/Channels';
 import Settings from './pages/Settings';
 import UserProfile from './pages/UserProfile';
+import ContactDetails from './pages/ContactDetails';
 
 const ProtectedRoute: React.FC = () => {
   const { isAuthenticated } = useAuth();
