@@ -1,0 +1,5 @@
+{
+  "name": "CommuniDesk - Unified Comms Hub",
+  "description": "A modern dashboard to manage contacts, accounts, and support tickets from various communication channels like WhatsApp, Live Chat, and Google. Features AI-powered ticket summarization.",
+  "requestFramePermissions": []
+}
