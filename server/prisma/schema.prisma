@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  firstName String
+  lastName  String
+  phone     String?
+  password  String // hashed password
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  contacts  Contact[] // A user can have many contacts
+  messages  Message[] // A user can send many messages
+}
+
+model Contact {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  firstName String
+  lastName  String
+  email     String?
+  phone     String?
+  company   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  senderId  String
+  sender    User     @relation(fields: [senderId], references: [id])
+  content   String
+  channel   String   // e.g., 'email', 'sms', 'in-app'
+  status    String   // e.g., 'sent', 'delivered', 'failed'
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
