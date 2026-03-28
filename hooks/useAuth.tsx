@@ -31,54 +31,47 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return user ? JSON.parse(user) : null;
   });
 
-  const isAuthenticated = !!currentUser && localStorage.getItem('authToken') === 'dummy-token';
+  const isAuthenticated = !!currentUser && !!localStorage.getItem('authToken');
 
   const login = async (email: string, pass: string): Promise<void> => {
-    if (email.toLowerCase() === 'yugshah82@gmail.com' && pass === 'Variance@2025') {
-      const defaultUser = {
-        email: 'yugshah82@gmail.com',
-        firstName: 'Yug',
-        lastName: 'Shah',
-        organizationName: 'Variance',
-        profilePicture: '',
-      };
-      localStorage.setItem('authToken', 'dummy-token');
-      localStorage.setItem('currentUser', JSON.stringify(defaultUser));
-      setCurrentUser(defaultUser);
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password: pass }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Login failed');
+      }
+
+      const data = await response.json();
+      localStorage.setItem('authToken', data.token);
+      localStorage.setItem('currentUser', JSON.stringify(data.user));
+      setCurrentUser(data.user);
       return Promise.resolve();
+    } catch (error: any) {
+      return Promise.reject(new Error(error.message || 'Invalid credentials'));
     }
-
-    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-    const user = registeredUsers.find(
-      (u: any) => u.email.toLowerCase() === email.toLowerCase() && u.password === pass
-    );
-
-    if (user) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...userDataToStore } = user;
-      localStorage.setItem('authToken', 'dummy-token');
-      localStorage.setItem('currentUser', JSON.stringify(userDataToStore));
-      setCurrentUser(userDataToStore);
-      return Promise.resolve();
-    }
-
-    return Promise.reject(new Error('Invalid credentials'));
   };
 
   const register = async (userData: any): Promise<void> => {
-    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-    const existingUser = registeredUsers.find((u: any) => u.email.toLowerCase() === userData.email.toLowerCase());
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+      });
 
-    if (existingUser) {
-      return Promise.reject(new Error('User with this email already exists'));
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Registration failed');
+      }
+      return Promise.resolve();
+    } catch (error: any) {
+      return Promise.reject(new Error(error.message || 'Error occurred during registration'));
     }
-
-    registeredUsers.push(userData);
-    localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
-
-    // Auto login after register? Or just return success. 
-    // Let's just return success for now as we might want to redirect to login.
-    return Promise.resolve();
   };
 
   const logout = () => {
