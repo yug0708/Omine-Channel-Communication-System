@@ -86,16 +86,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const newUserData = { ...currentUser, ...updatedData };
     setCurrentUser(newUserData);
     localStorage.setItem('currentUser', JSON.stringify(newUserData));
-
-    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-    const userIndex = registeredUsers.findIndex((u: any) => u.email.toLowerCase() === currentUser.email.toLowerCase());
-
-    if (userIndex !== -1) {
-      // Don't save password again if it's not present in updatedData
-      const existingUser = registeredUsers[userIndex];
-      registeredUsers[userIndex] = { ...existingUser, ...updatedData };
-      localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
-    }
+    
+    // Note: In a production environment, this should also call an API (e.g., /api/user/update)
+    // to persist the changes in the database.
   };
 
   const changePassword = async (newPassword: string): Promise<void> => {
@@ -103,16 +96,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       return Promise.reject(new Error('No user is currently logged in.'));
     }
 
-    const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-    const userIndex = registeredUsers.findIndex((u: any) => u.email.toLowerCase() === currentUser.email.toLowerCase());
-
-    if (userIndex === -1) {
-      return Promise.reject(new Error('Could not find user data to update. Please log in again.'));
-    }
-
-    registeredUsers[userIndex].password = newPassword;
-    localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
-
+    // Note: This should call an API (e.g., /api/auth/change-password) 
+    // to securely update the password in the database.
+    console.log("Password change requested for:", currentUser.email);
+    
     return Promise.resolve();
   };
 

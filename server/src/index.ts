@@ -1,4 +1,4 @@
-import express from 'express';
+import express from 'express'; // Triggering TS re-scan after schema update
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
@@ -38,7 +38,18 @@ app.get('/api/users', async (req, res) => {
 // Authentication Routes
 app.post('/api/auth/register', async (req, res) => {
     try {
-        const { email, password, firstName, lastName } = req.body;
+        const { 
+            email, 
+            password, 
+            firstName, 
+            lastName, 
+            phone,
+            organizationName,
+            crNumber,
+            website,
+            industry,
+            companySize
+        } = req.body;
 
         // Check if user already exists
         const existingUser = await prisma.user.findUnique({ where: { email } });
@@ -50,17 +61,23 @@ app.post('/api/auth/register', async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // Save to database
-        const newUser = await prisma.user.create({
+        // Save everything to the Tenant table
+        const tenant = await (prisma as any).tenant.create({
             data: {
-                email,
-                password: hashedPassword,
+                organizationName,
+                crNumber,
+                website,
+                businessIndustry: industry,
+                companySize,
                 firstName: firstName || '',
                 lastName: lastName || '',
-            },
+                email,
+                phone: phone || null,
+                password: hashedPassword
+            }
         });
 
-        res.status(201).json({ message: 'User registered successfully' });
+        res.status(201).json({ message: 'Tenant registered successfully' });
     } catch (error) {
         console.error('Registration error:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -71,26 +88,35 @@ app.post('/api/auth/login', async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        const user = await prisma.user.findUnique({ where: { email } });
-        if (!user) {
+        // Check authentication against the Tenant table
+        const tenant = await (prisma as any).tenant.findUnique({ 
+            where: { email }
+        });
+        if (!tenant) {
             return res.status(400).json({ error: 'Invalid credentials' });
         }
 
-        const isMatch = await bcrypt.compare(password, user.password);
+        const isMatch = await bcrypt.compare(password, tenant.password);
         if (!isMatch) {
             return res.status(400).json({ error: 'Invalid credentials' });
         }
 
-        // Issue JWT token
-        const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1d' });
+        // Issue JWT token (using tenant ID)
+        const token = jwt.sign({ userId: tenant.id }, JWT_SECRET, { expiresIn: '1d' });
 
         res.json({
             token,
             user: {
-                id: user.id,
-                email: user.email,
-                firstName: user.firstName,
-                lastName: user.lastName,
+                id: tenant.id,
+                email: tenant.email,
+                firstName: tenant.firstName,
+                lastName: tenant.lastName,
+                organizationName: tenant.organizationName,
+                phone: tenant.phone,
+                crNumber: tenant.crNumber,
+                website: tenant.website,
+                industry: tenant.businessIndustry,
+                companySize: tenant.companySize,
             }
         });
     } catch (error) {
