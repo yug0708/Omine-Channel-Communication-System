@@ -35,8 +35,13 @@ try {
     console.log('Successfully initialized PrismaClient with adapter');
 } catch (error: any) {
     console.error('CRITICAL: Failed to initialize PrismaClient:', error.message);
-    // Fallback client to prevent top-level crashes if possible
-    prisma = new PrismaClient(); 
+    console.log('Available environment variables:', Object.keys(process.env).join(', '));
+    // Create a dummy proxy to prevent top-level crashes, but throw errors on actual API calls
+    prisma = new Proxy({} as PrismaClient, {
+        get(target, prop) {
+            return () => { throw new Error('Database connection failed to initialize. Check environment variables.'); }
+        }
+    }); 
 }
 
 app.use(cors());
