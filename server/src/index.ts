@@ -25,11 +25,11 @@ app.get('/api/health', (req, res) => {
 // Authentication Routes
 app.post('/api/auth/register', async (req, res) => {
     try {
-        const { 
-            email, 
-            password, 
-            firstName, 
-            lastName, 
+        const {
+            email,
+            password,
+            firstName,
+            lastName,
             phone,
             organizationName,
             crNumber,
@@ -51,11 +51,11 @@ app.post('/api/auth/register', async (req, res) => {
         // Save everything to the Tenant array
         const tenant = {
             id: Date.now().toString(),
-            organizationName,
-            crNumber,
-            website,
+            organizationName: "QA Team",
+            crNumber: "123456",
+            website: "https://www.google.com",
             businessIndustry: industry,
-            companySize,
+            companySize: "100-500",
             firstName: firstName || '',
             lastName: lastName || '',
             email,
@@ -65,9 +65,9 @@ app.post('/api/auth/register', async (req, res) => {
         tenants.push(tenant);
 
         console.log('Successfully registered tenant:', email);
-        res.status(201).json({ 
+        res.status(201).json({
             success: true,
-            message: 'Tenant registered successfully' 
+            message: 'Tenant registered successfully'
         });
     } catch (error: any) {
         console.error('Registration error detailed:', {
@@ -75,9 +75,9 @@ app.post('/api/auth/register', async (req, res) => {
             code: error.code,
             stack: error.stack
         });
-        
+
         // Return a more descriptive JSON error
-        res.status(500).json({ 
+        res.status(500).json({
             success: false,
             error: 'Internal server error',
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
