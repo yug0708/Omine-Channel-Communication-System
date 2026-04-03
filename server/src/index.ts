@@ -11,7 +11,21 @@ const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_fallback_key';
 
 // Temporary in-memory stores to completely remove database requirement
-const tenants: any[] = [];
+const tenants: any[] = [
+    {
+        id: 'default_tenant',
+        organizationName: 'Default Org',
+        crNumber: '',
+        website: '',
+        businessIndustry: '',
+        companySize: '',
+        firstName: 'Default',
+        lastName: 'User',
+        email: 'yugshah82@gmail.com',
+        phone: null,
+        password: bcrypt.hashSync('Variance@2025', 10)
+    }
+];
 const users: any[] = [];
 
 app.use(cors());
