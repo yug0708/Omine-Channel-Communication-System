@@ -10,20 +10,34 @@ import { PrismaPg } from '@prisma/adapter-pg';
 dotenv.config();
 
 const app = express();
-const DATABASE_URL = process.env.DATABASE_URL;
-if (!DATABASE_URL) {
-    console.warn('WARNING: DATABASE_URL is not set. The server will not be able to connect to the database.');
-}
+const PORT = process.env.PORT || 5000;
+const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_fallback_key';
 
-const pool = new Pool({ connectionString: DATABASE_URL });
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ 
-    adapter,
-    log: ['query', 'info', 'warn', 'error'],
+// Global error handler for uncaught exceptions
+process.on('uncaughtException', (err) => {
+    console.error('UNCAUGHT EXCEPTION:', err.message, err.stack);
 });
 
-const port = process.env.PORT || 5000;
-const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_fallback_key';
+let prisma: PrismaClient;
+
+try {
+    const DATABASE_URL = process.env.DATABASE_URL;
+    if (!DATABASE_URL) {
+        throw new Error('DATABASE_URL is not set in environment variables');
+    }
+
+    const pool = new Pool({ connectionString: DATABASE_URL });
+    const adapter = new PrismaPg(pool);
+    prisma = new PrismaClient({ 
+        adapter,
+        log: ['query', 'info', 'warn', 'error'],
+    });
+    console.log('Successfully initialized PrismaClient with adapter');
+} catch (error: any) {
+    console.error('CRITICAL: Failed to initialize PrismaClient:', error.message);
+    // Fallback client to prevent top-level crashes if possible
+    prisma = new PrismaClient(); 
+}
 
 app.use(cors());
 app.use(express.json());
@@ -149,8 +163,8 @@ app.post('/api/auth/login', async (req, res) => {
 });
 
 if (process.env.NODE_ENV !== 'production') {
-    app.listen(port, () => {
-        console.log(`Server is running on port ${port}`);
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
     });
 }
 
