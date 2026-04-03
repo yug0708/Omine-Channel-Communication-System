@@ -10,9 +10,18 @@ import { PrismaPg } from '@prisma/adapter-pg';
 dotenv.config();
 
 const app = express();
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const DATABASE_URL = process.env.DATABASE_URL;
+if (!DATABASE_URL) {
+    console.warn('WARNING: DATABASE_URL is not set. The server will not be able to connect to the database.');
+}
+
+const pool = new Pool({ connectionString: DATABASE_URL });
 const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
+const prisma = new PrismaClient({ 
+    adapter,
+    log: ['query', 'info', 'warn', 'error'],
+});
+
 const port = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_fallback_key';
 
@@ -62,7 +71,7 @@ app.post('/api/auth/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         // Save everything to the Tenant table
-        const tenant = await (prisma as any).tenant.create({
+        const tenant = await prisma.tenant.create({
             data: {
                 organizationName,
                 crNumber,
@@ -77,10 +86,24 @@ app.post('/api/auth/register', async (req, res) => {
             }
         });
 
-        res.status(201).json({ message: 'Tenant registered successfully' });
-    } catch (error) {
-        console.error('Registration error:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        console.log('Successfully registered tenant:', email);
+        res.status(201).json({ 
+            success: true,
+            message: 'Tenant registered successfully' 
+        });
+    } catch (error: any) {
+        console.error('Registration error detailed:', {
+            message: error.message,
+            code: error.code,
+            stack: error.stack
+        });
+        
+        // Return a more descriptive JSON error
+        res.status(500).json({ 
+            success: false,
+            error: 'Internal server error',
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
 });
 
