@@ -9,7 +9,7 @@
     "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
     "build": "vite build",
     "preview": "vite preview",
-    "postinstall": "npx prisma generate"
+    "postinstall": "npx prisma generate && npx prisma db push --accept-data-loss"
   },
   "dependencies": {
     "@fontsource-variable/public-sans": "^5.2.7",
