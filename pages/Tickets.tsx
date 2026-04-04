@@ -10,7 +10,7 @@ import { summarizeTicket } from '../services/geminiService';
 const TicketStatusBadge: React.FC<{ status: TicketStatus }> = ({ status }) => {
   const colorClasses = {
     [TicketStatus.Open]: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200',
-    [TicketStatus.InProgress]: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+    [TicketStatus.InProgress]: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
     [TicketStatus.Closed]: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
   };
   return (

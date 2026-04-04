@@ -30,7 +30,7 @@ const ForgotPassword = () => {
                     <div className="flex justify-center mb-8">
                         <div className="flex items-center gap-2">
                             <div className="relative">
-                                <div className="bg-[#007BFF] rounded-lg p-2">
+                                <div className="bg-[#8B5CF6] rounded-lg p-2">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z" fill="white" />
                                     </svg>
@@ -40,14 +40,14 @@ const ForgotPassword = () => {
                         </div>
                     </div>
 
-                    <h1 className="text-4xl font-bold text-center text-[#007BFF] mb-4">Welcome to WowChat</h1>
+                    <h1 className="text-4xl font-bold text-center text-[#8B5CF6] mb-4">Welcome to WowChat</h1>
                     <p className="text-center text-gray-500 mb-12 text-lg">All-in-One Omni-Channel Communication Platform</p>
 
                     <div className="space-y-6">
                         {features.map((feature, index) => (
                             <div key={index} className="flex items-start gap-4">
                                 <div className="flex-shrink-0 mt-1">
-                                    <div className="bg-[#007BFF] rounded-full p-1">
+                                    <div className="bg-[#8B5CF6] rounded-full p-1">
                                         <CheckIcon className="h-4 w-4 text-white" />
                                     </div>
                                 </div>
@@ -77,7 +77,7 @@ const ForgotPassword = () => {
                                 {/* Shackle */}
                                 <path d="M24 32V22C24 13.1634 31.1634 6 40 6C48.8366 6 56 13.1634 56 22V32" stroke="#FFC107" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
                                 {/* Body */}
-                                <rect x="12" y="32" width="56" height="48" rx="14" fill="#007BFF" />
+                                <rect x="12" y="32" width="56" height="48" rx="14" fill="#8B5CF6" />
                                 {/* Shine effect */}
                                 <path d="M12 46C12 38.268 18.268 32 26 32H54C61.732 32 68 38.268 68 46V80H12V46Z" fill="white" fillOpacity="0.05" />
                                 {/* Question Mark */}
@@ -92,7 +92,7 @@ const ForgotPassword = () => {
                                 <p className="text-center text-gray-500 mb-8 text-sm">
                                     If an account exists for <span className="font-semibold text-gray-800">{email}</span>, you will receive an email with instructions on how to reset your password.
                                 </p>
-                                <Link to="/login" className="font-semibold text-[#0069D9] hover:underline flex items-center justify-center">
+                                <Link to="/login" className="font-semibold text-[#7C3AED] hover:underline flex items-center justify-center">
                                     <ChevronLeftIcon className="h-4 w-4 mr-1" />
                                     Return to sign in
                                 </Link>
@@ -114,19 +114,19 @@ const ForgotPassword = () => {
                                             required
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
-                                            className="peer appearance-none block w-full px-4 py-3 border border-gray-300 rounded-xl text-gray-900 placeholder-transparent focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                            className="peer appearance-none block w-full px-4 py-3 border border-gray-300 rounded-xl text-gray-900 placeholder-transparent focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
                                             placeholder="example@gmail.com"
                                         />
                                         <label
                                             htmlFor="email"
-                                            className="absolute left-3 -top-2.5 bg-white px-1 text-xs text-blue-600 transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-3.5 peer-focus:-top-2.5 peer-focus:text-xs peer-focus:text-blue-600"
+                                            className="absolute left-3 -top-2.5 bg-white px-1 text-xs text-purple-600 transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-3.5 peer-focus:-top-2.5 peer-focus:text-xs peer-focus:text-purple-600"
                                         >
                                             Email address
                                         </label>
                                     </div>
 
                                     <div>
-                                        <Button type="submit" className="w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-[#0069D9] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                        <Button type="submit" className="w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-[#7C3AED] hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
                                             Send request
                                         </Button>
                                     </div>

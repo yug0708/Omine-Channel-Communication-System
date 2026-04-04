@@ -50,7 +50,7 @@ const Login: React.FC = () => {
           <div className="flex justify-center mb-8">
             <div className="flex items-center gap-2">
               <div className="relative">
-                <div className="bg-[#007BFF] dark:bg-blue-600 rounded-lg p-2 transition-colors duration-300">
+                <div className="bg-[#8B5CF6] dark:bg-purple-600 rounded-lg p-2 transition-colors duration-300">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z" fill="white" />
                   </svg>
@@ -60,14 +60,14 @@ const Login: React.FC = () => {
             </div>
           </div>
 
-          <h1 className="text-4xl font-bold text-center text-[#007BFF] dark:text-blue-400 mb-4 transition-colors duration-300">Welcome to WowChat</h1>
+          <h1 className="text-4xl font-bold text-center text-[#8B5CF6] dark:text-purple-400 mb-4 transition-colors duration-300">Welcome to WowChat</h1>
           <p className="text-center text-gray-500 dark:text-gray-400 mb-12 text-lg transition-colors duration-300">All-in-One Omni-Channel Communication Platform</p>
 
           <div className="space-y-6">
             {features.map((feature, index) => (
               <div key={index} className="flex items-start gap-4">
                 <div className="flex-shrink-0 mt-1">
-                  <div className="bg-[#007BFF] dark:bg-blue-600 rounded-full p-1 transition-colors duration-300">
+                  <div className="bg-[#8B5CF6] dark:bg-purple-600 rounded-full p-1 transition-colors duration-300">
                     <CheckIcon className="h-4 w-4 text-white" />
                   </div>
                 </div>
@@ -134,7 +134,7 @@ const Login: React.FC = () => {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="appearance-none block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-[#38414E] rounded-full text-gray-900 dark:text-white bg-white dark:bg-[#1C2434] placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 sm:text-sm transition-colors duration-300"
+                    className="appearance-none block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-[#38414E] rounded-full text-gray-900 dark:text-white bg-white dark:bg-[#1C2434] placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-purple-500 focus:border-purple-500 dark:focus:border-purple-500 sm:text-sm transition-colors duration-300"
                     placeholder="example@gmail.com"
                   />
                 </div>
@@ -144,7 +144,7 @@ const Login: React.FC = () => {
                 <div className="flex items-center justify-between mb-1">
                   <label htmlFor="password" className="block text-xs font-medium text-gray-500 dark:text-gray-400 transition-colors duration-300">Password</label>
                   <div className="text-xs">
-                    <Link to="/forgot-password" className="font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 transition-colors duration-300">Forgot password?</Link>
+                    <Link to="/forgot-password" className="font-medium text-purple-600 dark:text-purple-400 hover:text-purple-500 dark:hover:text-purple-300 transition-colors duration-300">Forgot password?</Link>
                   </div>
                 </div>
                 <div className="relative">
@@ -159,7 +159,7 @@ const Login: React.FC = () => {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="appearance-none block w-full pl-10 pr-10 py-3 border border-gray-300 dark:border-[#38414E] rounded-full text-gray-900 dark:text-white bg-white dark:bg-[#1C2434] placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors duration-300"
+                    className="appearance-none block w-full pl-10 pr-10 py-3 border border-gray-300 dark:border-[#38414E] rounded-full text-gray-900 dark:text-white bg-white dark:bg-[#1C2434] placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm transition-colors duration-300"
                     placeholder="Enter password"
                   />
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
@@ -180,7 +180,7 @@ const Login: React.FC = () => {
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-[#0069D9] dark:bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-300"
+                  className="w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-[#7C3AED] dark:bg-purple-600 hover:bg-purple-700 dark:hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors duration-300"
                 >
                   {isLoading ? 'Signing in...' : 'Sign in'}
                 </Button>
@@ -190,7 +190,7 @@ const Login: React.FC = () => {
             <div className="text-center mt-4">
               <p className="text-xs text-gray-500 dark:text-gray-400 transition-colors duration-300">
                 Don't have an account?{' '}
-                <Link to="/register" className="font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 flex items-center justify-center gap-1 inline-flex transition-colors duration-300">
+                <Link to="/register" className="font-medium text-purple-600 dark:text-purple-400 hover:text-purple-500 dark:hover:text-purple-300 flex items-center justify-center gap-1 inline-flex transition-colors duration-300">
                   Get started <span aria-hidden="true">&rarr;</span>
                 </Link>
               </p>
