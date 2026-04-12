@@ -2,6 +2,7 @@ import React from 'react';
 
 type IconProps = {
     className?: string;
+    style?: React.CSSProperties;
 };
 
 const defaultClassName = "h-6 w-6";
@@ -141,11 +142,37 @@ export const ContactStatIcon: React.FC<IconProps> = ({ className }) => <svg xmln
 export const AccountStatIcon: React.FC<IconProps> = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={0.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" /></svg>;
 export const ActiveUsersStatIcon: React.FC<IconProps> = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={0.5}><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>;
 
-// Channel Icons
-export const WhatsAppBusinessIcon: React.FC<IconProps> = ({ className }) => <div className={`flex items-center justify-center rounded-full bg-green-500 text-white ${className ?? defaultClassName}`}><svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5,13.5A1.5,1.5 0 0,0 18,12A1.5,1.5 0 0,0 16.5,10.5A1.5,1.5 0 0,0 15,12A1.5,1.5 0 0,0 16.5,13.5M12.5,13.5A1.5,1.5 0 0,0 14,12A1.5,1.5 0 0,0 12.5,10.5A1.5,1.5 0 0,0 11,12A1.5,1.5 0 0,0 12.5,13.5M8.5,13.5A1.5,1.5 0 0,0 10,12A1.5,1.5 0 0,0 8.5,10.5A1.5,1.5 0 0,0 7,12A1.5,1.5 0 0,0 8.5,13.5M19,2H5A3,3 0 0,0 2,5V22L6,18H19A3,3 0 0,0 22,15V5A3,3 0 0,0 19,2Z" /></svg></div>;
-export const EmailIcon: React.FC<IconProps> = ({ className }) => <div className={`flex items-center justify-center rounded-full bg-blue-500 text-white ${className ?? defaultClassName}`}><svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M4,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4C2.89,20 2,19.1 2,18V6C2,4.89 2.89,4 4,4M12,11L20,6H4L12,11M12,13L4,8V18H20V8L12,13Z" /></svg></div>;
-export const LiveChatIcon: React.FC<IconProps> = ({ className }) => <div className={`flex items-center justify-center rounded-full bg-cyan-500 text-white ${className ?? defaultClassName}`}><svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12,3C17.5,3 22,6.58 22,11C22,15.42 17.5,19 12,19C11.16,19 10.35,18.91 9.57,18.75L4,21L5.2,16.7C3.8,15.21 3,13.2 3,11C3,6.58 7.5,3 12,3M12,5C8.69,5 6,7.24 6,10H6C6,12.21 7.6,14 9.69,14.69L8,17.5L11.5,16.05C11.67,16.03 11.83,16 12,16C15.31,16 18,13.76 18,11C18,7.24 15.31,5 12,5M10.5,10A1.5,1.5 0 0,0 9,11.5A1.5,1.5 0 0,0 10.5,13A1.5,1.5 0 0,0 12,11.5A1.5,1.5 0 0,0 10.5,10M15.5,10A1.5,1.5 0 0,0 14,11.5A1.5,1.5 0 0,0 15.5,13A1.5,1.5 0 0,0 17,11.5A1.5,1.5 0 0,0 15.5,10Z" /></svg></div>;
-export const VoiceIcon: React.FC<IconProps> = ({ className }) => <div className={`flex items-center justify-center rounded-full bg-orange-500 text-white ${className ?? defaultClassName}`}><svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z" /></svg></div>;
+export const WhatsAppBusinessIcon: React.FC<IconProps> = ({ className, style }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} style={style} viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="11" fill="url(#wa-grad)"/>
+        <defs>
+            <linearGradient id="wa-grad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#4ade80"/>
+                <stop offset="100%" stopColor="#22c55e"/>
+            </linearGradient>
+        </defs>
+        <path d="M12 6.5c-3.1 0-5.6 2.4-5.6 5.4 0 1.2.4 2.3 1 3.2L6.5 17.5l2.5-.8c.9.5 1.9.8 3 .8 3.1 0 5.6-2.4 5.6-5.4C17.6 8.9 15.1 6.5 12 6.5z" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M10.8 9.5h1.8c1.1 0 1.6.4 1.6 1.1 0 .6-.4.9-1 .9v.05c.7.1 1.2.6 1.2 1.3 0 .9-.8 1.4-1.9 1.4h-1.7V9.5zm1.1 2.1h.6c.4 0 .8-.2.8-.6s-.4-.6-.8-.6h-.6v1.2zm0 2h.7c.5 0 .9-.2.9-.6s-.4-.7-.9-.7h-.7v1.3z" fill="white"/>
+    </svg>
+);
+export const EmailIcon: React.FC<IconProps> = ({ className, style }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} style={style} viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="11" fill="currentColor" />
+        <path transform="translate(4, 4) scale(0.666)" d="M4,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4C2.89,20 2,19.1 2,18V6C2,4.89 2.89,4 4,4M12,11L20,6H4L12,11M12,13L4,8V18H20V8L12,13Z" fill="white" />
+    </svg>
+);
+export const LiveChatIcon: React.FC<IconProps> = ({ className, style }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} style={style} viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="11" fill="currentColor" />
+        <path transform="translate(4, 4) scale(0.666)" d="M12,3C17.5,3 22,6.58 22,11C22,15.42 17.5,19 12,19C11.16,19 10.35,18.91 9.57,18.75L4,21L5.2,16.7C3.8,15.21 3,13.2 3,11C3,6.58 7.5,3 12,3M12,5C8.69,5 6,7.24 6,10H6C6,12.21 7.6,14 9.69,14.69L8,17.5L11.5,16.05C11.67,16.03 11.83,16 12,16C15.31,16 18,13.76 18,11C18,7.24 15.31,5 12,5M10.5,10A1.5,1.5 0 0,0 9,11.5A1.5,1.5 0 0,0 10.5,13A1.5,1.5 0 0,0 12,11.5A1.5,1.5 0 0,0 10.5,10M15.5,10A1.5,1.5 0 0,0 14,11.5A1.5,1.5 0 0,0 15.5,13A1.5,1.5 0 0,0 17,11.5A1.5,1.5 0 0,0 15.5,10Z" fill="white" />
+    </svg>
+);
+export const VoiceIcon: React.FC<IconProps> = ({ className, style }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} style={style} viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="11" fill="currentColor" />
+        <path transform="translate(4, 4) scale(0.666)" d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z" fill="white" />
+    </svg>
+);
 
 export const ImportIcon: React.FC<IconProps> = ({ className }) => (
     <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

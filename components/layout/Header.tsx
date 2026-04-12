@@ -54,26 +54,26 @@ const Header: React.FC = () => {
   return (
     <>
       <header className="bg-white dark:bg-dark-card shadow-sm p-4 flex justify-between items-center z-10 border-b border-slate-200 dark:border-slate-700">
-        <div className="flex items-center space-x-3">
-          <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-purple-600 text-white font-bold text-xl">
+        <div className="flex items-center gap-2 sm:gap-3 overflow-hidden pr-2">
+          <div className="flex-shrink-0 flex items-center justify-center h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-purple-600 text-white font-bold text-base sm:text-xl">
               {userInitial}
           </div>
-          <h1 className="text-lg font-semibold text-slate-900 dark:text-white">{organizationName}</h1>
+          <h1 className="text-sm sm:text-lg font-semibold text-slate-900 dark:text-white truncate">{organizationName}</h1>
         </div>
 
-        <div className="flex items-center space-x-4 text-slate-600 dark:text-slate-300">
+        <div className="flex items-center gap-1.5 sm:gap-4 text-slate-600 dark:text-slate-300 flex-shrink-0">
           <ThemeToggleSwitch />
           
           <div className="relative" ref={languageDropdownRef}>
-            <button onClick={() => setIsLanguageDropdownOpen(prev => !prev)} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white">
-              <UKFlagIcon className="h-6 w-6 rounded-full" />
+            <button onClick={() => setIsLanguageDropdownOpen(prev => !prev)} className="p-1 sm:p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white flex-shrink-0">
+              <UKFlagIcon className="h-5 w-5 sm:h-6 sm:w-6 rounded-full" />
             </button>
             <LanguageDropdown isOpen={isLanguageDropdownOpen} />
           </div>
           
-          <div className="relative" ref={notificationsRef}>
-              <button onClick={() => setNotificationsOpen(prev => !prev)} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white">
-                <BellIcon className="h-6 w-6" />
+          <div className="relative flex-shrink-0" ref={notificationsRef}>
+              <button onClick={() => setNotificationsOpen(prev => !prev)} className="p-1 sm:p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white">
+                <BellIcon className="h-5 w-5 sm:h-6 sm:w-6" />
               </button>
               {unreadCount > 0 && (
                 <span className="absolute top-1 right-1 flex h-4 w-4">
@@ -88,8 +88,8 @@ const Header: React.FC = () => {
               />
           </div>
 
-          <div className="relative" ref={profileDropdownRef}>
-              <button onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)} className="flex items-center justify-center h-10 w-10 rounded-full bg-purple-600 text-white font-bold text-xl overflow-hidden">
+          <div className="relative flex-shrink-0" ref={profileDropdownRef}>
+              <button onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)} className="flex items-center justify-center h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-purple-600 text-white font-bold text-base sm:text-xl overflow-hidden shadow-sm">
                   {profilePicture ? <img src={profilePicture} alt="Profile" className="h-full w-full object-cover" /> : userInitial}
               </button>
               {isProfileDropdownOpen && (

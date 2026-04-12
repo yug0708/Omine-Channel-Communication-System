@@ -66,7 +66,7 @@ const CallStatCard: React.FC<{
     const style = themeStyles[colorTheme];
 
     return (
-        <div className="bg-white/70 dark:bg-[#0B1120]/60 backdrop-blur-2xl rounded-[32px] p-6 shadow-sm border border-slate-200/50 dark:border-slate-700/50 flex flex-col justify-between h-[240px] hover:-translate-y-1.5 hover:shadow-xl dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)] transition-all duration-300 group relative overflow-hidden">
+        <div className="bg-white/70 dark:bg-[#0B1120]/60 backdrop-blur-2xl rounded-[32px] p-5 sm:p-6 shadow-sm border border-slate-200/50 dark:border-slate-700/50 flex flex-col justify-between h-[240px] hover:-translate-y-1.5 hover:shadow-xl dark:hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)] transition-all duration-300 group relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/20 dark:bg-white/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
             <div>
                 {/* Header Context */}
@@ -97,15 +97,15 @@ const CallStatCard: React.FC<{
     );
 };
 
-const ConversationStatCard: React.FC<{ title: string; value: number; color: string; }> = ({ title, value, color }) => {
+const ConversationStatCard: React.FC<{ title: string; value: number; color: string; icon: React.ElementType }> = ({ title, value, color, icon: Icon }) => {
     return (
-        <div className="bg-white/70 dark:bg-[#0B1120]/60 backdrop-blur-2xl rounded-[28px] p-6 shadow-sm border border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between relative overflow-hidden hover:scale-[1.02] hover:shadow-lg transition-all duration-300 group">
-            <div className="flex flex-col z-10">
-                <p className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-bold mb-1.5">{title}</p>
+        <div className="bg-white/70 dark:bg-[#0B1120]/60 backdrop-blur-2xl rounded-[28px] p-5 sm:p-6 shadow-sm border border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between relative overflow-hidden hover:scale-[1.02] hover:shadow-lg transition-all duration-300 group">
+            <div className="flex flex-col z-10 w-2/3">
+                <p className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-bold mb-1.5 truncate">{title}</p>
                 <p className="text-3xl font-black text-slate-900 dark:text-white drop-shadow-md">{value}</p>
             </div>
-            <div className="h-14 w-14 rounded-2xl flex items-center justify-center z-10 transform group-hover:rotate-12 transition-transform duration-500 shadow-sm" style={{ backgroundColor: `${color}15`, border: `1px solid ${color}30` }}>
-                <div className="h-5 w-5 rounded-full" style={{ backgroundColor: color, boxShadow: `0 0 15px ${color}` }}></div>
+            <div className="h-12 w-12 rounded-full flex items-center justify-center z-10 transform group-hover:scale-110 transition-transform duration-500 shadow-lg text-white" style={{ backgroundColor: color, boxShadow: `0 8px 20px -8px ${color}` }}>
+                <Icon className="h-6 w-6" />
             </div>
             <div className="absolute top-0 right-0 w-32 h-32 rounded-full -mr-12 -mt-12 opacity-[0.08] blur-[24px] pointer-events-none group-hover:opacity-20 transition-opacity" style={{ backgroundColor: color }}></div>
             <div className="absolute bottom-0 left-0 w-full h-[3px]" style={{ background: `linear-gradient(90deg, ${color}00 0%, ${color} 40%, ${color} 60%, ${color}00 100%)` }}></div>
@@ -114,9 +114,9 @@ const ConversationStatCard: React.FC<{ title: string; value: number; color: stri
 };
 
 const RightStatCard: React.FC<{ title: string; value: number | string; icon: React.ElementType }> = ({ title, value, icon: Icon }) => (
-    <div className="bg-white/70 dark:bg-[#0B1120]/60 backdrop-blur-2xl rounded-[28px] p-6 shadow-sm border border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between hover:bg-slate-50/80 dark:hover:bg-[#131A2A]/80 transition-all duration-300 group cursor-pointer hover:shadow-md hover:-translate-y-1">
-        <div className="flex flex-col">
-            <p className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-bold mb-1.5">{title}</p>
+    <div className="bg-white/70 dark:bg-[#0B1120]/60 backdrop-blur-2xl rounded-[28px] p-4 sm:p-6 shadow-sm border border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between hover:bg-slate-50/80 dark:hover:bg-[#131A2A]/80 transition-all duration-300 group cursor-pointer hover:shadow-md hover:-translate-y-1 gap-2">
+        <div className="flex flex-col min-w-0">
+            <p className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-bold mb-1.5 truncate">{title}</p>
             <p className="text-3xl font-black text-[#8B5CF6] dark:text-[#A78BFA] group-hover:drop-shadow-[0_0_12px_rgba(139,92,246,0.5)] transition-all">{value}</p>
         </div>
         <div className="h-12 w-12 rounded-2xl bg-[#8B5CF6]/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 border border-[#8B5CF6]/20 shadow-[0_0_15px_rgba(139,92,246,0.15)]">
@@ -126,14 +126,14 @@ const RightStatCard: React.FC<{ title: string; value: number | string; icon: Rea
 );
 
 const ChannelCard: React.FC<{ title: string; value: number; icon: React.ElementType; color: string }> = ({ title, value, icon: Icon, color }) => (
-    <div className="bg-white/70 dark:bg-[#0B1120]/60 backdrop-blur-2xl rounded-[28px] p-6 shadow-sm border border-slate-200/50 dark:border-slate-700/50 flex flex-col justify-between relative overflow-hidden h-[140px] hover:-translate-y-1.5 hover:shadow-xl transition-all duration-300 group">
+    <div className="bg-white/70 dark:bg-[#0B1120]/60 backdrop-blur-2xl rounded-[28px] p-4 sm:p-6 shadow-sm border border-slate-200/50 dark:border-slate-700/50 flex flex-col justify-between relative overflow-hidden h-[140px] hover:-translate-y-1.5 hover:shadow-xl transition-all duration-300 group">
         <div className="flex justify-between items-start z-10">
-            <p className="text-[40px] font-black text-slate-900 dark:text-white leading-none tracking-tight">{value}</p>
-            <div className="h-11 w-11 rounded-2xl flex items-center justify-center transform group-hover:rotate-[15deg] transition-transform duration-300" style={{ backgroundColor: `${color}15`, border: `1px solid ${color}30` }}>
-                <Icon className="h-[22px] w-[22px]" style={{ color }} />
+            <p className="text-[32px] sm:text-[40px] font-black text-slate-900 dark:text-white leading-none tracking-tight">{value}</p>
+            <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl flex items-center justify-center transform group-hover:rotate-[15deg] transition-transform duration-300 flex-shrink-0" style={{ backgroundColor: `${color}15`, border: `1px solid ${color}30` }}>
+                <Icon className="h-[24px] w-[24px] sm:h-[28px] sm:w-[28px] drop-shadow-sm" style={{ color }} />
             </div>
         </div>
-        <p className="text-[13px] text-slate-500 dark:text-slate-400 z-10 font-bold tracking-wide mt-auto">{title}</p>
+        <p className="text-[11px] sm:text-[13px] text-slate-500 dark:text-slate-400 z-10 font-bold tracking-wide mt-auto truncate pr-2">{title}</p>
         <div className="absolute -bottom-8 -right-8 w-28 h-28 rounded-full opacity-10 blur-[30px] group-hover:opacity-25 transition-opacity" style={{ backgroundColor: color }}></div>
     </div>
 );
@@ -241,7 +241,6 @@ const Dashboard: React.FC = () => {
         "Check the 'Conversations' section to see open and unassigned chats needing attention.",
         "Invite team members to collaborate on customer support tickets."
     ];
-
 
     const filterOptions = ['Today', 'Yesterday', 'Last 2 Days', 'Last 7 Days', 'Last 30 days'];
 
@@ -370,49 +369,45 @@ const Dashboard: React.FC = () => {
             <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-[#10B981] opacity-[0.05] dark:opacity-[0.03] blur-[120px] pointer-events-none"></div>
 
             {showWelcome && (
-                <div className="bg-gradient-to-r from-[#F3E8FF] to-[#E0E7FF] dark:from-[#2E1065] dark:to-[#1E1B4B] rounded-2xl p-5 mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 border border-purple-200 dark:border-purple-900/50 shadow-lg relative overflow-hidden animate-slide-in-right">
-                    <div className="absolute inset-0 translate-x-[-100%] animate-[shimmer_3s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
-
-                    <div className="flex gap-4 relative z-10">
+                <div className="bg-[#2E1065] rounded-xl p-5 mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 shadow-sm border border-[#3B0764] dark:border-[#4C1D95]/30">
+                    <div className="flex gap-4 items-center relative z-10">
                         <div className="flex-shrink-0 mt-1">
-                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9] flex items-center justify-center shadow-md">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                                </svg>
+                            <div className="h-10 w-10 rounded-full bg-[#8B5CF6] text-white flex items-center justify-center shadow-lg">
+                                <span className="font-bold text-lg font-serif italic text-white drop-shadow-sm">i</span>
                             </div>
                         </div>
                         <div>
-                            <h3 className="text-[#4C1D95] dark:text-white font-black text-lg flex items-center gap-2 drop-shadow-sm">
+                            <h3 className="text-white font-extrabold text-lg flex items-center gap-2 drop-shadow-sm">
                                 Welcome to Your Dashboard! <span className="inline-block animate-bounce origin-bottom">👋</span>
                             </h3>
-                            <p className="text-[#5B21B6] dark:text-purple-200 text-[13px] mt-1 leading-relaxed font-medium">
+                            <p className="text-[#E9D5FF] text-[13px] font-medium mt-0.5 leading-relaxed">
                                 This dashboard gives you a complete, real-time overview of your communication performance. Track calls, messages, tickets, and channel health with stunning clarity.
                             </p>
                         </div>
                     </div>
                     <button
                         onClick={() => setShowWelcome(false)}
-                        className="flex-shrink-0 relative z-10 bg-[#7E22CE] hover:bg-[#6B21A8] dark:bg-[#8B5CF6] dark:hover:bg-[#7C3AED] text-white text-xs font-bold px-6 py-2.5 rounded-full shadow-[0_4px_14px_0_rgba(139,92,246,0.5)] hover:shadow-[0_6px_20px_rgba(139,92,246,0.4)] hover:-translate-y-0.5 transition-all duration-200"
+                        className="flex-shrink-0 relative z-10 bg-[#A855F7] hover:bg-[#9333EA] text-white text-xs font-black tracking-wide px-6 py-2.5 rounded-full shadow-[0_4px_14px_0_rgba(168,85,247,0.39)] transition-all duration-200"
                     >
-                        Explore Now
+                        Got it
                     </button>
                 </div>
             )}
 
-            <div className="bg-white/50 dark:bg-[#0F172A]/50 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-2xl p-3.5 mb-8 flex items-center justify-between shadow-sm">
-                <div className="flex items-center gap-3 overflow-hidden ml-1">
-                    <span className="bg-gradient-to-r from-[#7C3AED] to-[#8B5CF6] text-white text-[10px] uppercase font-black px-3 py-1 rounded-full flex-shrink-0 shadow-sm tracking-wider">
+            <div className="bg-slate-50 dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-xl p-3 mb-8 flex items-center justify-between shadow-sm">
+                <div className="flex items-center gap-4 overflow-hidden">
+                    <span className="bg-[#8B5CF6] text-white text-[10px] uppercase font-bold px-3 py-1 rounded-full flex-shrink-0 tracking-wider">
                         Quick Tip
                     </span>
-                    <p className="text-slate-700 dark:text-slate-300 text-[13px] font-semibold truncate transition-all duration-500 ease-in-out">
+                    <p className="text-slate-700 dark:text-slate-300 text-xs font-semibold truncate transition-all duration-500 ease-in-out">
                         {tips[currentTipIndex]}
                     </p>
                 </div>
-                <div className="flex gap-2 flex-shrink-0 mr-2">
+                <div className="flex gap-1.5 flex-shrink-0 mr-2 ml-4">
                     {tips.map((_, index) => (
                         <div
                             key={index}
-                            className={`h-1.5 rounded-full transition-all duration-300 ${index === currentTipIndex ? 'bg-[#8B5CF6] w-4 shadow-[0_0_8px_rgba(139,92,246,0.8)]' : 'bg-slate-300 dark:bg-slate-700 w-1.5'
+                            className={`h-1.5 rounded-full transition-all duration-300 ${index === currentTipIndex ? 'bg-[#8B5CF6] w-4 shadow-[0_0_8px_rgba(139,92,246,0.6)]' : 'bg-slate-300 dark:bg-slate-700 w-1.5'
                                 }`}
                         />
                     ))}
@@ -499,8 +494,8 @@ const Dashboard: React.FC = () => {
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     <div className="lg:col-span-8 flex flex-col">
-                        <div className="bg-white/70 dark:bg-[#0B1120]/60 backdrop-blur-2xl border border-slate-200/50 dark:border-slate-700/50 rounded-[32px] p-8 shadow-sm flex-1 flex flex-col hover:shadow-lg transition-shadow duration-500">
-                            <div className="flex items-center justify-between mb-8">
+                        <div className="bg-white/70 dark:bg-[#0B1120]/60 backdrop-blur-2xl border border-slate-200/50 dark:border-slate-700/50 rounded-[32px] p-5 sm:p-8 shadow-sm flex-1 flex flex-col hover:shadow-lg transition-shadow duration-500">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
                                 <div className="flex items-center gap-3">
                                     <div className="h-10 w-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700">
                                         <svg className="w-5 h-5 text-[#8B5CF6]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -550,7 +545,7 @@ const Dashboard: React.FC = () => {
                     </div>
 
                     <div className="lg:col-span-4 flex flex-col">
-                        <div className="bg-white/70 dark:bg-[#0B1120]/60 backdrop-blur-2xl border border-slate-200/50 dark:border-slate-700/50 rounded-[32px] p-8 shadow-sm flex-1 flex flex-col hover:shadow-lg transition-shadow duration-500">
+                        <div className="bg-white/70 dark:bg-[#0B1120]/60 backdrop-blur-2xl border border-slate-200/50 dark:border-slate-700/50 rounded-[32px] p-5 sm:p-8 shadow-sm flex-1 flex flex-col hover:shadow-lg transition-shadow duration-500">
                             <div className="flex items-center gap-3 mb-6">
                                 <div className="h-10 w-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700">
                                     <svg className="w-5 h-5 text-[#A855F7]" viewBox="0 0 24 24" fill="currentColor">
@@ -571,7 +566,7 @@ const Dashboard: React.FC = () => {
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     <div className="lg:col-span-8 flex flex-col">
-                        <div className="bg-white/70 dark:bg-[#0B1120]/60 backdrop-blur-2xl border border-slate-200/50 dark:border-slate-700/50 rounded-[32px] p-8 shadow-sm flex-1 flex flex-col hover:shadow-lg transition-shadow duration-500">
+                        <div className="bg-white/70 dark:bg-[#0B1120]/60 backdrop-blur-2xl border border-slate-200/50 dark:border-slate-700/50 rounded-[32px] p-5 sm:p-8 shadow-sm flex-1 flex flex-col hover:shadow-lg transition-shadow duration-500">
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8">
                                 <div className="flex items-center gap-3">
                                     <div className="h-10 w-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700">
@@ -589,24 +584,24 @@ const Dashboard: React.FC = () => {
                                         <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Message Engagement</p>
                                     </div>
                                 </div>
-                                <div className="flex space-x-6 text-[10px] font-black tracking-wider uppercase bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-700/50">
-                                    <div className="flex flex-col gap-1 px-2 border-r border-slate-200 dark:border-slate-700">
+                                <div className="flex flex-wrap gap-y-3 gap-x-2 sm:gap-x-6 text-[10px] sm:text-[11px] font-black tracking-wider uppercase bg-slate-50 dark:bg-slate-800/50 p-2 sm:p-2.5 rounded-xl border border-slate-100 dark:border-slate-700/50">
+                                    <div className="flex flex-col gap-1 px-1.5 sm:px-2 border-r border-slate-200 dark:border-slate-700">
                                         <div className="flex items-center space-x-1.5 opacity-80">
-                                            <div className="h-2 w-2 rounded-full bg-[#8B5CF6] shadow-[0_0_6px_rgba(139,92,246,0.6)]"></div>
+                                            <div className="h-2 w-2 rounded-full bg-[#0351AB] shadow-[0_0_6px_rgba(3,81,171,0.6)]"></div>
                                             <span className="text-slate-600 dark:text-slate-300">Total</span>
                                         </div>
                                         <span className="text-lg font-black text-slate-900 dark:text-white pl-3.5">2</span>
                                     </div>
                                     <div className="flex flex-col gap-1 px-2 border-r border-slate-200 dark:border-slate-700">
                                         <div className="flex items-center space-x-1.5 opacity-80">
-                                            <div className="h-2 w-2 rounded-full bg-slate-300 dark:bg-slate-500 shadow-[0_0_6px_rgba(255,255,255,0.2)]"></div>
+                                            <div className="h-2 w-2 rounded-full bg-[#FFAB00] shadow-[0_0_6px_rgba(255,171,0,0.6)]"></div>
                                             <span className="text-slate-600 dark:text-slate-300">Received</span>
                                         </div>
                                         <span className="text-lg font-black text-slate-900 dark:text-white pl-3.5">38</span>
                                     </div>
                                     <div className="flex flex-col gap-1 px-2">
                                         <div className="flex items-center space-x-1.5 opacity-80">
-                                            <div className="h-2 w-2 rounded-full bg-[#F59E0B] shadow-[0_0_6px_rgba(245,158,11,0.6)]"></div>
+                                            <div className="h-2 w-2 rounded-full bg-[#00B8D9] shadow-[0_0_6px_rgba(0,184,217,0.6)]"></div>
                                             <span className="text-slate-600 dark:text-slate-300">Sent</span>
                                         </div>
                                         <span className="text-lg font-black text-slate-900 dark:text-white pl-3.5">0</span>
@@ -620,9 +615,9 @@ const Dashboard: React.FC = () => {
                                         <XAxis dataKey="name" tick={{ fill: chartTickColor, fontSize: 11, fontWeight: 700 }} axisLine={false} tickLine={false} tickMargin={12} />
                                         <YAxis tick={{ fill: chartTickColor, fontSize: 11, fontWeight: 700 }} axisLine={false} tickLine={false} tickMargin={12} />
                                         <Tooltip cursor={{ fill: isDark ? '#1E293B' : '#F8FAFC', opacity: 0.5 }} content={<CustomTooltip />} />
-                                        <Bar dataKey="conversations" stackId="a" fill="#8B5CF6" radius={[0, 0, 4, 4]} name="Conversations" />
-                                        <Bar dataKey="received" stackId="a" fill={isDark ? '#475569' : '#CBD5E1'} radius={[0, 0, 0, 0]} name="Message Received" />
-                                        <Bar dataKey="sent" stackId="a" fill="#F59E0B" radius={[4, 4, 0, 0]} name="Message Sent" />
+                                        <Bar dataKey="conversations" stackId="a" fill="#0351AB" radius={[0, 0, 4, 4]} name="Conversations" />
+                                        <Bar dataKey="received" stackId="a" fill="#FFAB00" radius={[0, 0, 0, 0]} name="Message Received" />
+                                        <Bar dataKey="sent" stackId="a" fill="#00B8D9" radius={[4, 4, 0, 0]} name="Message Sent" />
                                     </BarChart>
                                 </ResponsiveContainer>
                             </div>
@@ -630,9 +625,22 @@ const Dashboard: React.FC = () => {
                     </div>
 
                     <div className="lg:col-span-4 flex flex-col space-y-6">
-                        <ConversationStatCard title="Open" value={conversationStats.open} color="#8B5CF6" />
-                        <ConversationStatCard title="Unassigned" value={conversationStats.unassigned} color="#EC4899" />
-                        <ConversationStatCard title="Closed" value={conversationStats.close} color="#10B981" />
+                        <ConversationStatCard title="Open" value={conversationStats.open} color="#8B5CF6" icon={(props) => (
+                            <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+                                <path d="M17 10.5V6c0-1.65-1.35-3-3-3H4C2.35 3 1 4.35 1 6v5.5c0 1.65 1.35 3 3 3h1.5v3.5L9.5 14.5h4.5c1.65 0 3-1.35 3-3z" opacity="0.6" />
+                                <path d="M23 9.5v5.5c0 1.65-1.35 3-3 3h-1.5v3.5l-4-3.5h-4.5c-1.65 0-3-1.35-3-3V11c0-1.65 1.35-3 3-3h10c1.65 0 3 1.35 3 3z" />
+                            </svg>
+                        )} />
+                        <ConversationStatCard title="Unassigned" value={conversationStats.unassigned} color="#EC4899" icon={(props) => (
+                            <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+                                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 14h-4.5c-.28 1.14-1.29 2-2.5 2s-2.22-.86-2.5-2H5V5h14v12z" />
+                            </svg>
+                        )} />
+                        <ConversationStatCard title="Closed" value={conversationStats.close} color="#10B981" icon={(props) => (
+                            <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+                                <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-9.5 9.5-2.5-2.5 1.41-1.41 1.09 1.09 3.09-3.09 1.41 1.41-4.5 4.5z" />
+                            </svg>
+                        )} />
                         <div className="flex-1 grid grid-cols-2 gap-4 items-end mt-4">
                             <RightStatCard title="Total Contacts" value={contacts.length} icon={ContactStatIcon} />
                             <RightStatCard title="Total Accounts" value={accounts.length} icon={AccountStatIcon} />
@@ -653,12 +661,35 @@ const Dashboard: React.FC = () => {
                         </div>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-6">
-                        <ChannelCard title="WhatsApp" value={channelStats.whatsapp || 1} icon={WhatsAppBusinessIcon} color="#25D366" />
+                        <ChannelCard title="WhatsApp Business" value={channelStats.whatsapp || 1} icon={WhatsAppBusinessIcon} color="#25D366" />
                         <ChannelCard title="Email" value={channelStats.email || 2} icon={EmailIcon} color="#3B82F6" />
                         <ChannelCard title="Live Chat" value={channelStats.livechat || 0} icon={LiveChatIcon} color="#0EA5E9" />
                         <ChannelCard title="Voice" value={channelStats.voice || 0} icon={VoiceIcon} color="#EF4444" />
-                        <ChannelCard title="Messenger" value={1} icon={() => <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full"><path d="M12 2C6.477 2 2 6.14 2 11.246c0 2.898 1.496 5.487 3.824 7.156v3.295l3.486-1.928c.866.242 1.77.37 2.69.37 5.523 0 10-4.14 10-9.246S17.523 2 12 2zm1.096 12.388-2.822-3.007-5.503 3.007 6.04-6.423 2.868 3.008 5.457-3.008-6.04 6.423z" /></svg>} color="#006AFF" />
-                        <ChannelCard title="Instagram" value={2} icon={() => <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" /></svg>} color="#E1306C" />
+                        <ChannelCard title="Messenger" value={1} icon={(props) => (
+                            <svg {...props} viewBox="0 0 24 24" fill="url(#ms-grad)">
+                                <defs>
+                                    <linearGradient id="ms-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+                                        <stop offset="0%" stopColor="#00B2FF"/>
+                                        <stop offset="100%" stopColor="#006AFF"/>
+                                    </linearGradient>
+                                </defs>
+                                <path d="M12 2C6.477 2 2 6.14 2 11.246c0 2.898 1.496 5.487 3.824 7.156v3.295l3.486-1.928c.866.242 1.77.37 2.69.37 5.523 0 10-4.14 10-9.246S17.523 2 12 2zm1.096 12.388-2.822-3.007-5.503 3.007 6.04-6.423 2.868 3.008 5.457-3.008-6.04 6.423z" />
+                            </svg>
+                        )} color="#006AFF" />
+                        <ChannelCard title="Instagram" value={2} icon={(props) => (
+                            <svg {...props} viewBox="0 0 24 24" fill="url(#ig-grad)">
+                                <defs>
+                                    <linearGradient id="ig-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+                                        <stop offset="0%" stopColor="#f09433"/>
+                                        <stop offset="25%" stopColor="#e6683c"/>
+                                        <stop offset="50%" stopColor="#dc2743"/>
+                                        <stop offset="75%" stopColor="#cc2366"/>
+                                        <stop offset="100%" stopColor="#bc1888"/>
+                                    </linearGradient>
+                                </defs>
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                            </svg>
+                        )} color="#E1306C" />
                     </div>
                 </div>
             </div>

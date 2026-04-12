@@ -31,7 +31,7 @@ const Sidebar: React.FC = () => {
                 className={({ isActive }) =>
                   `flex items-center justify-center p-3 rounded-xl transition-colors duration-200 w-14 h-14 ${
                     isActive
-                      ? 'bg-green-500 text-white'
+                      ? 'bg-[#8B5CF6] text-white shadow-md shadow-[#8B5CF6]/30'
                       : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white'
                   }`
                 }
