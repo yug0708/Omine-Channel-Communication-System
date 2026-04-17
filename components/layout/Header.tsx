@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useData } from '../../hooks/useData';
 import ThemeToggleSwitch from '../ui/ThemeToggleSwitch';
-import { UKFlagIcon, BellIcon, RefreshIcon } from '../icons/Icons';
+import { UKFlagIcon, BellIcon, RefreshIcon, UCLogo } from '../icons/Icons';
 import Button from '../ui/Button';
 import ChangePasswordModal from '../auth/ChangePasswordModal';
 import NotificationsDropdown from './NotificationsDropdown';
@@ -55,8 +55,8 @@ const Header: React.FC = () => {
     <>
       <header className="bg-white dark:bg-dark-card shadow-sm p-4 flex justify-between items-center z-10 border-b border-slate-200 dark:border-slate-700">
         <div className="flex items-center gap-2 sm:gap-3 overflow-hidden pr-2">
-          <div className="flex-shrink-0 flex items-center justify-center h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-purple-600 text-white font-bold text-base sm:text-xl">
-              {userInitial}
+          <div className="flex-shrink-0">
+              <UCLogo className="h-8 w-8 sm:h-10 sm:w-10" />
           </div>
           <h1 className="text-sm sm:text-lg font-semibold text-slate-900 dark:text-white truncate">{organizationName}</h1>
         </div>

@@ -50,11 +50,7 @@ const Login: React.FC = () => {
           <div className="flex justify-center mb-8">
             <div className="flex items-center gap-2">
               <div className="relative">
-                <div className="bg-[#8B5CF6] dark:bg-purple-600 rounded-lg p-2 transition-colors duration-300">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z" fill="white" />
-                  </svg>
-                </div>
+                <UCLogo className="h-12 w-12" />
               </div>
               <span className="text-3xl font-bold text-[#1a1a1a] dark:text-white transition-colors duration-300">WowChat</span>
             </div>

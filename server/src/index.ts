@@ -36,6 +36,17 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', message: 'Backend server is running!' });
 });
 
+// Root route to prevent "Cannot GET /" confusion
+app.get('/', (req, res) => {
+    res.send(`
+        <div style="font-family: sans-serif; text-align: center; padding: 50px;">
+            <h1>🚀 Backend is Running</h1>
+            <p>The backend server is active on port ${PORT}.</p>
+            <p>To view the <b>frontend</b>, please go to: <a href="http://localhost:5173">http://localhost:5173</a></p>
+        </div>
+    `);
+});
+
 // Authentication Routes
 app.post('/api/auth/register', async (req, res) => {
     try {
@@ -138,10 +149,20 @@ app.post('/api/auth/login', async (req, res) => {
     }
 });
 
-if (process.env.NODE_ENV !== 'production') {
-    app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
-    });
-}
+// Start server
+const server = app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+    console.log(`Frontend proxy should be pointing to http://localhost:${PORT}`);
+});
+
+// Capture unhandled rejections
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+// Capture exceptions
+process.on('uncaughtException', (error) => {
+    console.error('Uncaught Exception:', error);
+});
 
 export default app;
