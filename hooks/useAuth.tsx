@@ -25,6 +25,9 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// ✅ IMPORTANT: Backend URL from ENV
+const API_URL = import.meta.env.VITE_API_URL;
+
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
     const user = localStorage.getItem('currentUser');
@@ -35,7 +38,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const login = async (email: string, pass: string): Promise<void> => {
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password: pass }),
@@ -58,7 +61,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const register = async (userData: any): Promise<void> => {
     try {
-      const response = await fetch('/api/auth/register', {
+      const response = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData),
@@ -68,6 +71,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const errorData = await response.json();
         throw new Error(errorData.error || 'Registration failed');
       }
+
       return Promise.resolve();
     } catch (error: any) {
       return Promise.reject(new Error(error.message || 'Error occurred during registration'));
@@ -86,9 +90,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const newUserData = { ...currentUser, ...updatedData };
     setCurrentUser(newUserData);
     localStorage.setItem('currentUser', JSON.stringify(newUserData));
-    
-    // Note: In a production environment, this should also call an API (e.g., /api/user/update)
-    // to persist the changes in the database.
   };
 
   const changePassword = async (newPassword: string): Promise<void> => {
@@ -96,10 +97,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       return Promise.reject(new Error('No user is currently logged in.'));
     }
 
-    // Note: This should call an API (e.g., /api/auth/change-password) 
-    // to securely update the password in the database.
     console.log("Password change requested for:", currentUser.email);
-    
     return Promise.resolve();
   };
 
