@@ -1,0 +1,101 @@
+
+import { Account, Contact, Ticket, Channel, TicketStatus, Notification, TicketPriority } from './types';
+
+export const INITIAL_ACCOUNTS: Account[] = [
+  {
+    id: 'acc1',
+    name: 'Tet',
+    website: 'tet.com',
+    email: 'contact@tet.com',
+    phone: '+1 123 456 7890',
+    address: '123 Innovation Drive, Techville, USA',
+    crNumber: 'CR-12345',
+    assignedTo: 'Elon Musk',
+    createdAt: new Date('2025-10-14T18:34:00Z').toISOString(),
+    updatedAt: new Date('2025-10-14T18:34:00Z').toISOString(),
+    country: 'USA',
+    city: 'Techville',
+    pincode: '94016',
+  },
+  {
+    id: 'acc2',
+    name: 'Test',
+    website: 'test.com',
+    email: 'info@test.com',
+    phone: '+1 987 654 3210',
+    address: '456 Test Avenue, Sampleton, Canada',
+    crNumber: 'CR-67890',
+    assignedTo: 'Elon Musk',
+    createdAt: new Date('2025-10-13T14:40:00Z').toISOString(),
+    updatedAt: new Date('2025-10-13T14:40:00Z').toISOString(),
+    country: 'Canada',
+    city: 'Sampleton',
+    pincode: 'M5V 2T6',
+  },
+  { id: 'acc3', name: 'Innovate Corp', website: 'innovate.com', email: "contact@innovate.com", phone: "+1 234 567 8901", address: "789 Future St, Vision City, USA", crNumber: "CR-11223", assignedTo: "Jeff Bezos", createdAt: new Date('2025-10-12T10:00:00Z').toISOString(), updatedAt: new Date('2025-10-12T11:00:00Z').toISOString(), country: "USA", city: 'Vision City', pincode: '94025' },
+  { id: 'acc4', name: 'HealthWell Inc.', website: 'healthwell.com', email: "support@healthwell.com", phone: "+44 20 7946 0958", address: "10 Health Rd, London, UK", crNumber: "CR-44556", assignedTo: "Susan Wojcicki", createdAt: new Date('2025-10-11T09:20:00Z').toISOString(), updatedAt: new Date('2025-10-11T15:30:00Z').toISOString(), country: "UK", city: 'London', pincode: 'SW1A 0AA' },
+];
+
+export const INITIAL_CONTACTS: Contact[] = [
+  { id: 'con1', firstName: 'Siddhant', lastName: 'Patel', email: '', contactNumber: '', accountName: '', assignedTo: 'Unassigned', lifecycle: 'NA', labels: '', createdAt: '2026-02-24T16:55:00Z', updatedAt: '2026-02-24T16:55:00Z' },
+  { id: 'con2', firstName: '', lastName: '', email: '', contactNumber: '91 8490888043', accountName: '', assignedTo: 'Unassigned', lifecycle: 'NA', labels: '', createdAt: '2026-02-24T16:19:00Z', updatedAt: '2026-02-24T16:19:00Z' },
+  { id: 'con3', firstName: 'PATEL', lastName: 'HARSH', email: '', contactNumber: '', accountName: '', assignedTo: 'Unassigned', lifecycle: 'NA', labels: '', createdAt: '2026-02-24T12:18:00Z', updatedAt: '2026-02-24T12:18:00Z' },
+  { id: 'con4', firstName: 'Yug', lastName: 'Shah', email: '', contactNumber: '', accountName: '', assignedTo: 'Unassigned', lifecycle: 'NA', labels: '', createdAt: '2026-02-24T11:38:00Z', updatedAt: '2026-02-24T11:38:00Z' },
+  { id: 'con5', firstName: 'Demo Service', lastName: 'Service', email: '', contactNumber: '', accountName: '', assignedTo: 'Unassigned', lifecycle: 'NA', labels: '', createdAt: '2026-02-24T10:52:00Z', updatedAt: '2026-02-24T13:53:00Z' },
+];
+
+export const INITIAL_TICKETS: Ticket[] = [
+  {
+    id: 'tkt1',
+    ticketNo: '4',
+    subject: 'Service Ticket',
+    description: 'General service request.',
+    contactId: 'con1',
+    contactName: 'Yug Shah',
+    accountId: 'acc1',
+    accountName: '',
+    status: TicketStatus.Open,
+    priority: TicketPriority.Normal,
+    assignedTo: 'Y',
+    createdAt: '2026-02-24T13:51:00Z',
+    updatedAt: '2026-02-24T13:51:00Z',
+  },
+  {
+    id: 'tkt2',
+    ticketNo: '3',
+    subject: 'Sales Ticket',
+    description: 'Sales inquiry.',
+    contactId: 'con2',
+    contactName: 'Yug Shah',
+    accountId: 'acc2',
+    accountName: '',
+    status: TicketStatus.InProgress,
+    priority: TicketPriority.High,
+    assignedTo: 'Y',
+    createdAt: '2026-02-24T12:14:00Z',
+    updatedAt: '2026-02-24T12:14:00Z',
+  },
+  {
+    id: 'tkt3',
+    ticketNo: '1',
+    subject: 'Demo',
+    description: 'Request for a software demo.',
+    contactId: 'con3',
+    contactName: 'PATEL HARSH',
+    accountId: 'acc3',
+    accountName: '',
+    status: TicketStatus.Open,
+    priority: TicketPriority.Normal,
+    assignedTo: 'Y',
+    createdAt: '2026-02-24T10:55:00Z',
+    updatedAt: '2026-02-24T10:55:00Z',
+  },
+];
+
+export const INITIAL_NOTIFICATIONS: Notification[] = [
+  { id: 'notif1', userName: 'Amin Abdallah', userInitial: 'A', avatarColor: 'bg-green-500', action: 'A new conversation has been assigned to You.', timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), read: false },
+  { id: 'notif2', userName: 'Yug Shah', userInitial: 'Y', avatarColor: 'bg-red-500', action: 'A new conversation has been assigned to You.', timestamp: new Date(Date.now() - 25 * 60 * 60 * 1000).toISOString(), read: false },
+  { id: 'notif3', userName: 'Yug Shah', userInitial: 'Y', avatarColor: 'bg-red-500', action: 'A new conversation has been assigned to You.', timestamp: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(), read: true },
+  { id: 'notif4', userName: 'Yug Shah', userInitial: 'Y', avatarColor: 'bg-red-500', action: 'A new conversation has been assigned to You.', timestamp: new Date(Date.now() - 31 * 24 * 60 * 60 * 1000).toISOString(), read: true },
+  { id: 'notif5', userName: 'Applitools', userInitial: 'A', avatarColor: 'bg-green-500', action: 'A new conversation has been assigned to You.', timestamp: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString(), read: true },
+];
