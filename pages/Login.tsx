@@ -6,7 +6,7 @@ import { UCLogo, UKFlagIcon, PasswordEyeIcon, PasswordEyeOffIcon, CheckIcon, Inf
 import Button from '../components/ui/Button';
 
 const inputClass =
-  'block w-full rounded-xl border border-slate-200 bg-white py-3.5 pl-11 pr-4 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 focus:outline-none transition-all dark:border-white/[0.12] dark:bg-slate-950/80 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-violet-400 dark:focus:ring-violet-500/20';
+  'block w-full rounded-xl border border-slate-200 bg-white py-3.5 pl-11 pr-4 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 focus:outline-none transition-all dark:border-white/[0.12] dark:bg-slate-950/80 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-emerald-400 dark:focus:ring-emerald-500/20';
 
 const STATIC_EMAIL = 'yugshah82@gmail.com';
 const STATIC_PASSWORD = 'Variance@2025';
@@ -51,11 +51,11 @@ const Login: React.FC = () => {
   return (
     <div className="relative flex min-h-screen w-full overflow-hidden bg-slate-100 dark:bg-slate-950">
       {/* One background for the whole page — avoids a visible line between left & right */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-slate-100 via-violet-50/35 to-indigo-100/25 dark:from-slate-950 dark:via-slate-950 dark:to-slate-950" aria-hidden />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-slate-100 via-emerald-50/35 to-teal-100/25 dark:from-slate-950 dark:via-slate-950 dark:to-slate-950" aria-hidden />
       <div className="pointer-events-none absolute inset-0 dashboard-mesh dashboard-grid-bg opacity-70 dark:opacity-80" aria-hidden />
-      <div className="pointer-events-none absolute left-1/2 top-0 h-[min(520px,65vh)] w-[min(960px,130vw)] -translate-x-1/2 rounded-full bg-violet-600/20 blur-3xl dark:bg-violet-600/16" aria-hidden />
-      <div className="pointer-events-none absolute bottom-0 left-[10%] h-80 w-80 rounded-full bg-indigo-600/16 blur-3xl" aria-hidden />
-      <div className="pointer-events-none absolute bottom-1/4 right-[5%] h-72 w-72 rounded-full bg-violet-500/10 blur-3xl" aria-hidden />
+      <div className="pointer-events-none absolute left-1/2 top-0 h-[min(520px,65vh)] w-[min(960px,130vw)] -translate-x-1/2 rounded-full bg-emerald-500/20 blur-3xl dark:bg-emerald-500/16" aria-hidden />
+      <div className="pointer-events-none absolute bottom-0 left-[10%] h-80 w-80 rounded-full bg-teal-500/16 blur-3xl" aria-hidden />
+      <div className="pointer-events-none absolute bottom-1/4 right-[5%] h-72 w-72 rounded-full bg-emerald-500/10 blur-3xl" aria-hidden />
 
       {/* Brand panel */}
       <div className="relative z-10 hidden lg:flex lg:w-[52%] flex-col justify-between p-12 xl:p-16">
@@ -65,19 +65,19 @@ const Login: React.FC = () => {
         </div>
 
         <div className="max-w-lg">
-          <p className="text-sm font-semibold uppercase tracking-widest text-violet-400 mb-3">Omni-channel platform</p>
+          <p className="text-sm font-semibold uppercase tracking-widest text-emerald-500 mb-3">Omni-channel platform</p>
           <h1 className="text-4xl xl:text-5xl font-bold tracking-tight text-white leading-tight">
             One workspace for every customer conversation
           </h1>
           <p className="mt-4 text-lg text-slate-400 leading-relaxed">
             Manage channels, collaborate with your team, and respond faster — from a single modern dashboard.
           </p>
-
+ 
           <ul className="mt-10 space-y-4">
             {features.map((feature, index) => (
               <li key={index} className="flex items-start gap-3 text-slate-300">
-                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-violet-500/20 ring-1 ring-violet-500/30">
-                  <CheckIcon className="h-3.5 w-3.5 text-violet-300" />
+                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-emerald-500/20 ring-1 ring-emerald-500/30">
+                  <CheckIcon className="h-3.5 w-3.5 text-emerald-400" />
                 </span>
                 <span className="text-sm leading-relaxed">{feature}</span>
               </li>
@@ -110,9 +110,9 @@ const Login: React.FC = () => {
         <main className="flex flex-1 items-center justify-center px-5 pb-12 sm:px-8 lg:px-12">
           <div className="w-full max-w-[440px] animate-fade-in-up">
             <div className="relative overflow-hidden rounded-3xl border border-slate-200/90 bg-white/95 p-8 shadow-[0_24px_64px_-12px_rgba(15,23,42,0.18)] backdrop-blur-sm sm:p-10 dark:border-white/[0.12] dark:bg-slate-900/75 dark:shadow-[0_32px_80px_-16px_rgba(0,0,0,0.5)] dark:ring-1 dark:ring-white/[0.08] dark:backdrop-blur-md">
-              <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-500/50 to-transparent" aria-hidden />
+              <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" aria-hidden />
               <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 shadow-lg shadow-violet-500/30">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/30">
                   <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
@@ -126,28 +126,28 @@ const Login: React.FC = () => {
               </div>
 
               {showTips && (
-                <div className="mt-6 flex gap-3 rounded-2xl border border-violet-200/80 bg-violet-50/90 p-4 dark:border-violet-500/25 dark:bg-violet-950/40">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-600/15 dark:bg-violet-500/20">
-                    <InfoIcon className="h-4 w-4 text-violet-600 dark:text-violet-300" />
+                <div className="mt-6 flex gap-3 rounded-2xl border border-emerald-200/80 bg-emerald-50/90 p-4 dark:border-emerald-500/25 dark:bg-emerald-950/40">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-600/15 dark:bg-emerald-500/20">
+                    <InfoIcon className="h-4 w-4 text-emerald-600 dark:text-emerald-300" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-2">
-                      <p className="text-xs font-semibold text-violet-900 dark:text-violet-200">Quick tips</p>
+                      <p className="text-xs font-semibold text-emerald-900 dark:text-emerald-200">Quick tips</p>
                       <button
                         type="button"
                         onClick={() => setShowTips(false)}
-                        className="shrink-0 rounded-lg p-1 text-violet-400 hover:bg-violet-600/10 hover:text-violet-600 dark:hover:text-violet-200 transition-colors"
+                        className="shrink-0 rounded-lg p-1 text-emerald-400 hover:bg-emerald-600/10 hover:text-emerald-500 dark:hover:text-emerald-200 transition-colors"
                         aria-label="Dismiss tips"
                       >
                         <CloseIcon className="h-3.5 w-3.5" />
                       </button>
                     </div>
-                    <ul className="mt-2 space-y-1 text-xs leading-relaxed text-violet-800/90 dark:text-violet-200/80">
+                    <ul className="mt-2 space-y-1 text-xs leading-relaxed text-emerald-800/90 dark:text-emerald-200/80">
                       <li>• Use your registered work email.</li>
                       <li>• Check Caps Lock if sign-in fails.</li>
                       <li>
                         •{' '}
-                        <Link to="/forgot-password" className="font-medium text-violet-700 underline-offset-2 hover:underline dark:text-violet-300">
+                        <Link to="/forgot-password" className="font-medium text-emerald-700 underline-offset-2 hover:underline dark:text-emerald-300">
                           Reset password
                         </Link>{' '}
                         if needed.
@@ -189,7 +189,7 @@ const Login: React.FC = () => {
                     </label>
                     <Link
                       to="/forgot-password"
-                      className="text-xs font-medium text-violet-600 dark:text-violet-400 hover:text-violet-500 transition-colors"
+                      className="text-xs font-medium text-emerald-500 dark:text-emerald-400 hover:text-emerald-600 transition-colors"
                     >
                       Forgot password?
                     </Link>
@@ -231,7 +231,7 @@ const Login: React.FC = () => {
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="!w-full !rounded-xl !py-3.5 !text-sm !font-semibold !bg-gradient-to-r !from-violet-600 !to-indigo-600 hover:!from-violet-500 hover:!to-indigo-500 hover:!shadow-violet-500/40 !border-0 !shadow-lg !shadow-violet-500/30 focus:!ring-violet-500 active:!scale-[0.99] transition-all"
+                  className="!w-full !rounded-xl !py-3.5 !text-sm !font-semibold !bg-gradient-to-r !from-emerald-500 !to-teal-500 hover:!from-emerald-400 hover:!to-teal-400 hover:!shadow-emerald-500/40 !border-0 !shadow-lg !shadow-emerald-500/30 focus:!ring-emerald-500 active:!scale-[0.99] transition-all"
                 >
                   {isLoading ? (
                     <span className="flex items-center gap-2">
@@ -253,7 +253,7 @@ const Login: React.FC = () => {
                 Don&apos;t have an account?{' '}
                 <Link
                   to="/register"
-                  className="font-semibold text-violet-600 dark:text-violet-400 hover:text-violet-500 inline-flex items-center gap-1 transition-colors"
+                  className="font-semibold text-emerald-500 dark:text-emerald-400 hover:text-emerald-600 inline-flex items-center gap-1 transition-colors"
                 >
                   Create account
                   <span aria-hidden="true">→</span>

@@ -10,7 +10,7 @@ const getInitials = (firstName: string, lastName: string) => {
 };
 
 // Helper for random background colors for avatars
-const colors = ['bg-purple-500', 'bg-green-500', 'bg-purple-500', 'bg-red-500', 'bg-yellow-500', 'bg-indigo-500', 'bg-pink-500'];
+const colors = ['bg-teal-500', 'bg-green-500', 'bg-emerald-500', 'bg-red-500', 'bg-yellow-500', 'bg-sky-500', 'bg-pink-500'];
 const getAvatarColor = (name: string) => {
     if (!name) return 'bg-slate-300 dark:bg-slate-500';
     let hash = 0;
@@ -47,7 +47,7 @@ const ContactDetails: React.FC = () => {
             case TicketPriority.Urgent:
                 return 'text-red-400 border-red-400 bg-red-400/10';
             case TicketPriority.Low:
-                return 'text-purple-400 border-purple-400 bg-purple-400/10';
+                return 'text-teal-400 border-teal-400 bg-teal-400/10';
             case TicketPriority.Normal:
             default:
                 return 'text-green-400 border-green-400 bg-green-400/10';
@@ -87,13 +87,13 @@ const ContactDetails: React.FC = () => {
                                 <div className={`h-[84px] w-[84px] rounded-full flex items-center justify-center text-2xl font-bold ${isNameBlank ? 'bg-slate-300 dark:bg-slate-500 text-slate-900 pt-2' : `text-white ${avatarColor}`} overflow-hidden border border-slate-700/50`}>
                                     {isNameBlank ? <UserIcon className="h-12 w-12 relative top-1" /> : (contact.avatarUrl ? <img src={contact.avatarUrl} alt="Contact" className="h-full w-full object-cover" /> : getInitials(contact.firstName, contact.lastName))}
                                 </div>
-                                <button className="absolute bottom-0 -right-1 h-6 w-6 bg-purple-500 rounded-full flex items-center justify-center text-white hover:bg-purple-600 transition-colors border-2 border-[#1C232E]">
+                                <button className="absolute bottom-0 -right-1 h-6 w-6 bg-emerald-500 rounded-full flex items-center justify-center text-white hover:bg-emerald-600 transition-colors border-2 border-[#1C232E]">
                                     <EditIcon className="h-3 w-3" />
                                 </button>
                             </div>
                             <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2 text-center">{fullName}</h2>
                             <div className="flex items-center gap-2">
-                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-500 text-white">Contact</span>
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500 text-white">Contact</span>
                                 <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400">Created 2/24/2026</span>
                             </div>
                         </div>
@@ -295,7 +295,7 @@ const ContactDetails: React.FC = () => {
                                                     </td>
                                                     <td className="px-4 py-3 text-center">
                                                         <div className="flex items-center justify-center gap-3">
-                                                            <button className="text-slate-400 hover:text-purple-500 transition-colors" title="Edit">
+                                                            <button className="text-slate-400 hover:text-emerald-500 transition-colors" title="Edit">
                                                                 <EditIcon className="h-3.5 w-3.5" />
                                                             </button>
                                                             <button className="text-red-900 hover:text-red-500 transition-colors" title="Delete">

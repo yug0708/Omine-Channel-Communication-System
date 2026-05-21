@@ -10,7 +10,7 @@ import { summarizeTicket } from '../services/geminiService';
 const TicketStatusBadge: React.FC<{ status: TicketStatus }> = ({ status }) => {
   const colorClasses = {
     [TicketStatus.Open]: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200',
-    [TicketStatus.InProgress]: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+    [TicketStatus.InProgress]: 'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200',
     [TicketStatus.Closed]: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
   };
   return (
@@ -62,7 +62,7 @@ const TicketForm: React.FC<{
         <div>
           <label htmlFor="contactId" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Contact</label>
           <select name="contactId" id="contactId" value={formData.contactId} onChange={handleChange} required className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-slate-700 dark:border-slate-600">
-            {contacts.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+            {contacts.map(c => <option key={c.id} value={c.id}>{`${c.firstName} ${c.lastName}`.trim()}</option>)}
           </select>
         </div>
         <div>
@@ -72,10 +72,10 @@ const TicketForm: React.FC<{
           </select>
         </div>
       </div>
-       <div>
+      <div>
         <label htmlFor="status" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Status</label>
         <select name="status" id="status" value={formData.status} onChange={handleChange} required className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-slate-700 dark:border-slate-600">
-            {Object.values(TicketStatus).map(s => <option key={s} value={s}>{s}</option>)}
+          {Object.values(TicketStatus).map(s => <option key={s} value={s}>{s}</option>)}
         </select>
       </div>
       <div className="flex justify-end space-x-2 pt-4">
@@ -87,62 +87,62 @@ const TicketForm: React.FC<{
 };
 
 const TicketRow: React.FC<{ ticket: Ticket; onEdit: () => void; onDelete: () => void }> = ({ ticket, onEdit, onDelete }) => {
-    const { contacts } = useData();
-    const [isExpanded, setIsExpanded] = useState(false);
-    const [summary, setSummary] = useState('');
-    const [isLoadingSummary, setIsLoadingSummary] = useState(false);
-    const contact = contacts.find(c => c.id === ticket.contactId);
+  const { contacts } = useData();
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [summary, setSummary] = useState('');
+  const [isLoadingSummary, setIsLoadingSummary] = useState(false);
+  const contact = contacts.find(c => c.id === ticket.contactId);
 
-    const handleSummarize = async () => {
-        setIsLoadingSummary(true);
-        const result = await summarizeTicket(ticket.description);
-        setSummary(result);
-        setIsLoadingSummary(false);
-    }
+  const handleSummarize = async () => {
+    setIsLoadingSummary(true);
+    const result = await summarizeTicket(ticket.description);
+    setSummary(result);
+    setIsLoadingSummary(false);
+  }
 
-    return (
-        <>
-        <tr className="hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
-            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-white">{ticket.subject}</td>
-            <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{contact?.name || 'N/A'}</td>
-            <td className="px-6 py-4 whitespace-nowrap"><TicketStatusBadge status={ticket.status} /></td>
-            <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{new Date(ticket.createdAt).toLocaleDateString()}</td>
-            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium" onClick={e => e.stopPropagation()}>
-                <button onClick={onEdit} className="text-primary-600 hover:text-primary-900 p-1"><EditIcon className="h-5 w-5"/></button>
-                <button onClick={onDelete} className="text-red-600 hover:text-red-900 p-1"><DeleteIcon className="h-5 w-5"/></button>
-            </td>
+  return (
+    <>
+      <tr className="hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
+        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-white">{ticket.subject}</td>
+        <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{contact ? `${contact.firstName} ${contact.lastName}`.trim() : 'N/A'}</td>
+        <td className="px-6 py-4 whitespace-nowrap"><TicketStatusBadge status={ticket.status} /></td>
+        <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{new Date(ticket.createdAt).toLocaleDateString()}</td>
+        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium" onClick={e => e.stopPropagation()}>
+          <button onClick={onEdit} className="text-primary-600 hover:text-primary-900 p-1"><EditIcon className="h-5 w-5" /></button>
+          <button onClick={onDelete} className="text-red-600 hover:text-red-900 p-1"><DeleteIcon className="h-5 w-5" /></button>
+        </td>
+      </tr>
+      {isExpanded && (
+        <tr>
+          <td colSpan={5} className="p-0">
+            <div className="p-6 bg-slate-100 dark:bg-slate-900/50">
+              <h4 className="font-semibold text-slate-800 dark:text-slate-200">Full Description</h4>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap">{ticket.description}</p>
+              <div className="mt-4">
+                <Button onClick={handleSummarize} disabled={isLoadingSummary}>
+                  <SparklesIcon className="h-5 w-5 mr-2" />
+                  {isLoadingSummary ? 'Summarizing...' : 'Summarize with Gemini'}
+                </Button>
+              </div>
+              {summary && (
+                <div className="mt-4 p-4 rounded-md bg-primary-50 dark:bg-slate-700">
+                  <h5 className="font-semibold flex items-center"><SparklesIcon className="h-5 w-5 mr-2 text-primary-500" /> AI Summary</h5>
+                  <p className="mt-2 text-sm text-primary-800 dark:text-primary-200 whitespace-pre-wrap">{summary}</p>
+                </div>
+              )}
+            </div>
+          </td>
         </tr>
-        {isExpanded && (
-            <tr>
-                <td colSpan={5} className="p-0">
-                    <div className="p-6 bg-slate-100 dark:bg-slate-900/50">
-                        <h4 className="font-semibold text-slate-800 dark:text-slate-200">Full Description</h4>
-                        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap">{ticket.description}</p>
-                        <div className="mt-4">
-                            <Button onClick={handleSummarize} disabled={isLoadingSummary}>
-                                <SparklesIcon className="h-5 w-5 mr-2" />
-                                {isLoadingSummary ? 'Summarizing...' : 'Summarize with Gemini'}
-                            </Button>
-                        </div>
-                        {summary && (
-                             <div className="mt-4 p-4 rounded-md bg-primary-50 dark:bg-slate-700">
-                                <h5 className="font-semibold flex items-center"><SparklesIcon className="h-5 w-5 mr-2 text-primary-500"/> AI Summary</h5>
-                                <p className="mt-2 text-sm text-primary-800 dark:text-primary-200 whitespace-pre-wrap">{summary}</p>
-                            </div>
-                        )}
-                    </div>
-                </td>
-            </tr>
-        )}
-        </>
-    );
+      )}
+    </>
+  );
 }
 
 const Tickets: React.FC = () => {
   const { tickets, setTickets } = useData();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTicket, setEditingTicket] = useState<Ticket | null>(null);
-  
+
   const handleOpenModal = (ticket: Ticket | null = null) => {
     setEditingTicket(ticket);
     setIsModalOpen(true);
@@ -162,9 +162,9 @@ const Tickets: React.FC = () => {
     }
     handleCloseModal();
   };
-  
+
   const handleDeleteTicket = (id: string) => {
-    if(window.confirm('Are you sure you want to delete this ticket?')){
+    if (window.confirm('Are you sure you want to delete this ticket?')) {
       setTickets(tickets.filter(t => t.id !== id));
     }
   }
@@ -174,8 +174,8 @@ const Tickets: React.FC = () => {
       <div className="p-4 sm:p-6 flex justify-between items-center border-b border-slate-200 dark:border-slate-700">
         <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Tickets</h2>
         <Button onClick={() => handleOpenModal()}>
-            <PlusIcon className="h-5 w-5 mr-2" />
-            Add Ticket
+          <PlusIcon className="h-5 w-5 mr-2" />
+          Add Ticket
         </Button>
       </div>
       <div className="overflow-x-auto">
@@ -193,19 +193,19 @@ const Tickets: React.FC = () => {
           </thead>
           <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
             {tickets.map((ticket) => (
-                <TicketRow 
-                    key={ticket.id} 
-                    ticket={ticket} 
-                    onEdit={() => handleOpenModal(ticket)} 
-                    onDelete={() => handleDeleteTicket(ticket.id)} 
-                />
+              <TicketRow
+                key={ticket.id}
+                ticket={ticket}
+                onEdit={() => handleOpenModal(ticket)}
+                onDelete={() => handleDeleteTicket(ticket.id)}
+              />
             ))}
           </tbody>
         </table>
       </div>
-       <Modal isOpen={isModalOpen} onClose={handleCloseModal} title={editingTicket ? 'Edit Ticket' : 'Add New Ticket'}>
-          <TicketForm ticket={editingTicket} onSave={handleSaveTicket} onClose={handleCloseModal} />
-       </Modal>
+      <Modal isOpen={isModalOpen} onClose={handleCloseModal} title={editingTicket ? 'Edit Ticket' : 'Add New Ticket'}>
+        <TicketForm ticket={editingTicket} onSave={handleSaveTicket} onClose={handleCloseModal} />
+      </Modal>
     </div>
   );
 };

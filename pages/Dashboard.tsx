@@ -37,14 +37,14 @@ const CallStatCard: React.FC<{
         cyan:   { accent: '#06B6D4', bar: 'from-cyan-500 to-cyan-400',     glow: 'rgba(6,182,212,0.35)'   },
         green:  { accent: '#10B981', bar: 'from-emerald-500 to-emerald-400', glow: 'rgba(16,185,129,0.35)' },
         red:    { accent: '#EF4444', bar: 'from-red-500 to-red-400',        glow: 'rgba(239,68,68,0.35)'   },
-        purple: { accent: '#8B5CF6', bar: 'from-violet-600 to-indigo-500',  glow: 'rgba(139,92,246,0.35)'  },
+        purple: { accent: '#10B981', bar: 'from-emerald-500 to-teal-400',  glow: 'rgba(16,185,129,0.35)'  },
     };
     const s = themeStyles[colorTheme];
 
     return (
         <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white/80 p-5 sm:p-6 shadow-sm backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl dark:border-white/[0.08] dark:bg-slate-900/60 dark:hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-col justify-between h-[230px] group">
             {/* top shine */}
-            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-500/40 to-transparent" />
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
             {/* glow orb */}
             <div className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full blur-2xl opacity-20 group-hover:opacity-40 transition-opacity" style={{ backgroundColor: s.accent }} />
 
@@ -78,7 +78,7 @@ const CallStatCard: React.FC<{
 /* ─── Conversation Stat Card ─── */
 const ConversationStatCard: React.FC<{ title: string; value: number; color: string; icon: React.ElementType }> = ({ title, value, color, icon: Icon }) => (
     <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white/80 p-5 sm:p-6 shadow-sm backdrop-blur-2xl transition-all duration-300 hover:scale-[1.02] hover:shadow-lg dark:border-white/[0.08] dark:bg-slate-900/60 flex items-center justify-between group">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-500/30 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent" />
         <div className="flex flex-col z-10 w-2/3">
             <p className="text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400 font-bold mb-1.5 truncate">{title}</p>
             <p className="text-3xl font-black text-slate-900 dark:text-white">{value}</p>
@@ -97,14 +97,14 @@ const RightStatCard: React.FC<{ title: string; value: number | string; icon: Rea
         onClick={onClick}
         className={`relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white/80 p-4 sm:p-5 shadow-sm backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:border-white/[0.08] dark:bg-slate-900/60 flex items-center justify-between group ${onClick ? 'cursor-pointer' : ''}`}
     >
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-500/30 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent" />
         {/* Animated bottom line on hover */}
-        <div className="pointer-events-none absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-violet-500/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="pointer-events-none absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-emerald-500/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         <div className="flex flex-col min-w-0">
             <p className="text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400 font-bold mb-1.5 truncate">{title}</p>
-            <p className="text-3xl font-black text-violet-600 dark:text-violet-400 group-hover:drop-shadow-[0_0_12px_rgba(139,92,246,0.5)] transition-all">{value}</p>
+            <p className="text-3xl font-black text-emerald-600 dark:text-emerald-400 group-hover:drop-shadow-[0_0_12px_rgba(16,185,129,0.5)] transition-all">{value}</p>
             {onClick && (
-                <span className="mt-1 flex items-center gap-1 text-[10px] font-semibold text-violet-400 dark:text-violet-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                <span className="mt-1 flex items-center gap-1 text-[10px] font-semibold text-emerald-400 dark:text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity">
                     View all
                     <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
@@ -112,8 +112,8 @@ const RightStatCard: React.FC<{ title: string; value: number | string; icon: Rea
                 </span>
             )}
         </div>
-        <div className="h-11 w-11 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center group-hover:scale-110 group-hover:bg-violet-500/20 transition-all duration-300 shadow-[0_0_15px_rgba(139,92,246,0.15)]">
-            <Icon className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+        <div className="h-11 w-11 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center group-hover:scale-110 group-hover:bg-emerald-500/20 transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
+            <Icon className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
         </div>
     </div>
 );
@@ -121,7 +121,7 @@ const RightStatCard: React.FC<{ title: string; value: number | string; icon: Rea
 /* ─── Channel Card ─── */
 const ChannelCard: React.FC<{ title: string; value: number; icon: React.ElementType; color: string }> = ({ title, value, icon: Icon, color }) => (
     <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white/80 p-4 sm:p-5 shadow-sm backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl dark:border-white/[0.08] dark:bg-slate-900/60 flex flex-col justify-between h-[130px] group">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-500/30 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent" />
         <div className="flex justify-between items-start z-10">
             <p className="text-[32px] sm:text-[38px] font-black text-slate-900 dark:text-white leading-none tracking-tight">{value}</p>
             <div className="h-10 w-10 rounded-2xl flex items-center justify-center transform group-hover:rotate-[12deg] transition-transform duration-300 flex-shrink-0"
@@ -140,7 +140,7 @@ const TicketDistributionChart = () => {
         { name: 'Completed', value: 0, color: '#10B981', gradientId: 'tg-green' },
         { name: 'On Hold',   value: 0, color: '#06B6D4', gradientId: 'tg-cyan'  },
         { name: 'Progress',  value: 1, color: '#F59E0B', gradientId: 'tg-amber' },
-        { name: 'Open',      value: 2, color: '#8B5CF6', gradientId: 'tg-violet'},
+        { name: 'Open',      value: 2, color: '#14B8A6', gradientId: 'tg-teal'  },
     ];
     const ordered = [...data].reverse();
     const total = data.reduce((s, d) => s + d.value, 0);
@@ -195,7 +195,7 @@ const TicketDistributionChart = () => {
 /* ─── Section Header ─── */
 const SectionHeader: React.FC<{ icon: React.ReactNode; title: string; subtitle: string; badge?: React.ReactNode }> = ({ icon, title, subtitle, badge }) => (
     <div className="flex items-center gap-3">
-        <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-violet-600/20 to-indigo-600/20 border border-violet-500/20 flex items-center justify-center shadow-[0_0_15px_rgba(139,92,246,0.15)]">
+        <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/20 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.15)]">
             {icon}
         </div>
         <div>
@@ -211,8 +211,8 @@ const SectionHeader: React.FC<{ icon: React.ReactNode; title: string; subtitle: 
 /* ─── Glassmorphism Chart Card ─── */
 const ChartCard: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
     <div className={`relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white/80 shadow-sm backdrop-blur-2xl transition-shadow duration-500 hover:shadow-lg dark:border-white/[0.08] dark:bg-slate-900/60 p-5 sm:p-8 flex flex-col ${className}`}>
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-500/40 to-transparent" />
-        <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-violet-600/10 blur-3xl" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
+        <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl" />
         {children}
     </div>
 );
@@ -301,31 +301,31 @@ const Dashboard: React.FC = () => {
         /* ── Page wrapper with same background as Login ── */
         <div className="relative min-h-screen">
             {/* Background orbs — identical approach to Login — kept at z-0 so sidebar/header stay on top */}
-            <div className="pointer-events-none fixed inset-0 z-0 bg-gradient-to-br from-slate-100 via-violet-50/30 to-indigo-100/20 dark:from-slate-950 dark:via-slate-950 dark:to-slate-950" aria-hidden />
+            <div className="pointer-events-none fixed inset-0 z-0 bg-gradient-to-br from-slate-100 via-emerald-50/30 to-teal-100/20 dark:from-slate-950 dark:via-slate-950 dark:to-slate-950" aria-hidden />
             <div className="pointer-events-none fixed inset-0 z-0 dashboard-mesh dashboard-grid-bg opacity-60 dark:opacity-70" aria-hidden />
-            <div className="pointer-events-none fixed left-1/3 top-[-5%] z-0 h-[400px] w-[700px] -translate-x-1/2 rounded-full bg-violet-600/15 blur-3xl dark:bg-violet-600/12" aria-hidden />
-            <div className="pointer-events-none fixed bottom-0 left-[5%] z-0 h-72 w-72 rounded-full bg-indigo-600/12 blur-3xl" aria-hidden />
-            <div className="pointer-events-none fixed bottom-1/4 right-[5%] z-0 h-64 w-64 rounded-full bg-violet-500/10 blur-3xl" aria-hidden />
+            <div className="pointer-events-none fixed left-1/3 top-[-5%] z-0 h-[400px] w-[700px] -translate-x-1/2 rounded-full bg-emerald-500/15 blur-3xl dark:bg-emerald-500/12" aria-hidden />
+            <div className="pointer-events-none fixed bottom-0 left-[5%] z-0 h-72 w-72 rounded-full bg-teal-500/12 blur-3xl" aria-hidden />
+            <div className="pointer-events-none fixed bottom-1/4 right-[5%] z-0 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl" aria-hidden />
 
             <div className="relative z-10">
 
                 {/* ── Welcome Banner ── */}
                 {showWelcome && (
-                    <div className="relative mb-6 overflow-hidden rounded-3xl border border-violet-500/30 bg-gradient-to-br from-violet-600/90 to-indigo-700/90 p-5 shadow-lg shadow-violet-500/20 backdrop-blur-xl dark:border-violet-500/20">
+                    <div className="relative mb-6 overflow-hidden rounded-3xl border border-emerald-400/30 bg-gradient-to-br from-emerald-400/90 to-teal-500/90 p-5 shadow-lg shadow-emerald-400/20 backdrop-blur-xl dark:border-emerald-400/20">
                         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
                         <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                             <div className="flex items-center gap-4">
-                                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white/20 ring-1 ring-white/30 shadow-lg">
+                                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-teal-950/10 ring-1 ring-teal-950/20 shadow-lg">
                                     <span className="text-xl">👋</span>
                                 </div>
                                 <div>
-                                    <h3 className="text-white font-extrabold text-lg leading-tight">Welcome to Your Dashboard!</h3>
-                                    <p className="text-violet-100/80 text-sm mt-0.5 leading-relaxed">Real-time overview of your communication performance — calls, messages, tickets & more.</p>
+                                    <h3 className="text-teal-950 font-extrabold text-lg leading-tight">Welcome to Your Dashboard!</h3>
+                                    <p className="text-teal-900/80 text-sm mt-0.5 leading-relaxed">Real-time overview of your communication performance — calls, messages, tickets & more.</p>
                                 </div>
                             </div>
                             <button onClick={() => setShowWelcome(false)}
-                                className="flex-shrink-0 rounded-2xl border border-white/25 bg-white/15 px-5 py-2 text-xs font-bold text-white backdrop-blur-sm transition-all hover:bg-white/25 hover:shadow-lg">
+                                className="flex-shrink-0 rounded-2xl border border-teal-950/25 bg-teal-950/10 px-5 py-2 text-xs font-bold text-teal-950 backdrop-blur-sm transition-all hover:bg-teal-950/25 hover:shadow-lg">
                                 Got it
                             </button>
                         </div>
@@ -335,14 +335,14 @@ const Dashboard: React.FC = () => {
                 {/* ── Quick Tip Bar ── */}
                 <div className="mb-8 flex items-center justify-between gap-4 rounded-2xl border border-slate-200/80 bg-white/70 px-4 py-3 shadow-sm backdrop-blur-xl dark:border-white/[0.08] dark:bg-slate-900/50">
                     <div className="flex items-center gap-3 overflow-hidden">
-                        <span className="shrink-0 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white shadow-sm shadow-violet-500/30">
+                        <span className="shrink-0 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white shadow-sm shadow-emerald-500/30">
                             Quick Tip
                         </span>
                         <p className="truncate text-xs font-semibold text-slate-600 dark:text-slate-300 transition-all duration-500">{tips[currentTipIndex]}</p>
                     </div>
                     <div className="flex shrink-0 gap-1.5 ml-4">
                         {tips.map((_, i) => (
-                            <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === currentTipIndex ? 'w-4 bg-violet-600 shadow-[0_0_8px_rgba(139,92,246,0.6)]' : 'w-1.5 bg-slate-300 dark:bg-slate-700'}`} />
+                            <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === currentTipIndex ? 'w-4 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]' : 'w-1.5 bg-slate-300 dark:bg-slate-700'}`} />
                         ))}
                     </div>
                 </div>
@@ -350,7 +350,7 @@ const Dashboard: React.FC = () => {
                 {/* ── Page Title + Filter ── */}
                 <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                     <div>
-                        <p className="text-sm font-semibold uppercase tracking-widest text-violet-600 dark:text-violet-400 mb-1">Analytics</p>
+                        <p className="text-sm font-semibold uppercase tracking-widest text-emerald-600 dark:text-emerald-400 mb-1">Analytics</p>
                         <h1 className="text-[32px] font-black tracking-tight text-slate-900 dark:text-white leading-tight">Overview</h1>
                         <p className="mt-1 flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400">
                             Tracking performance metrics
@@ -361,7 +361,7 @@ const Dashboard: React.FC = () => {
                     <div className="relative" ref={filterRef}>
                         <button onClick={() => setIsFilterOpen(!isFilterOpen)}
                             className="flex items-center gap-2 rounded-2xl border border-slate-200/90 bg-white/90 px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm backdrop-blur-sm transition-all hover:bg-white hover:shadow-md dark:border-white/[0.1] dark:bg-slate-900/80 dark:text-white dark:hover:bg-slate-800">
-                            <FilterIcon className="h-4 w-4 text-violet-500" />
+                            <FilterIcon className="h-4 w-4 text-emerald-500" />
                             <span>{selectedFilter}</span>
                             <svg className={`h-4 w-4 transition-transform duration-200 ${isFilterOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
@@ -369,13 +369,13 @@ const Dashboard: React.FC = () => {
                         </button>
                         {isFilterOpen && (
                             <div className="absolute top-[calc(100%+8px)] right-0 z-20 w-52 overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 shadow-2xl backdrop-blur-xl dark:border-white/[0.08] dark:bg-slate-900/95">
-                                <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-500/40 to-transparent" />
+                                <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
                                 <div className="py-2">
                                     {filterOptions.map(opt => (
                                         <button key={opt} onClick={() => { setSelectedFilter(opt); setIsFilterOpen(false); }}
-                                            className={`flex w-full items-center justify-between px-5 py-2.5 text-sm transition-colors ${selectedFilter === opt ? 'bg-violet-50 font-bold text-violet-600 dark:bg-violet-900/20 dark:text-violet-400' : 'font-medium text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800/50'}`}>
+                                            className={`flex w-full items-center justify-between px-5 py-2.5 text-sm transition-colors ${selectedFilter === opt ? 'bg-emerald-50 font-bold text-emerald-600 dark:bg-emerald-950/20 dark:text-emerald-400' : 'font-medium text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800/50'}`}>
                                             {opt}
-                                            {selectedFilter === opt && <div className="h-2 w-2 rounded-full bg-violet-600" />}
+                                            {selectedFilter === opt && <div className="h-2 w-2 rounded-full bg-emerald-500" />}
                                         </button>
                                     ))}
                                 </div>
@@ -398,17 +398,17 @@ const Dashboard: React.FC = () => {
                         <ChartCard className="h-full">
                             <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between mb-8">
                                 <SectionHeader
-                                    icon={<svg className="w-5 h-5 text-violet-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v18h18" /><path d="M7 14l4-4 4 4 6-6" /></svg>}
+                                    icon={<svg className="w-5 h-5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v18h18" /><path d="M7 14l4-4 4 4 6-6" /></svg>}
                                     title="Call Traffic Analytics"
                                     subtitle="Performance over time"
                                 />
                                 <div className="flex items-center gap-3">
                                     <div className="flex items-center gap-2 rounded-xl bg-slate-50 px-3 py-1.5 dark:bg-slate-800/50">
-                                        <div className="h-2 w-2 rounded-full bg-violet-500 shadow-[0_0_8px_rgba(139,92,246,0.8)]" />
+                                        <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
                                         <span className="text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">Incoming</span>
                                     </div>
                                     <div className="flex items-center gap-2 rounded-xl bg-slate-50 px-3 py-1.5 dark:bg-slate-800/50">
-                                        <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+                                        <div className="h-2 w-2 rounded-full bg-teal-500 shadow-[0_0_8px_rgba(20,184,166,0.8)]" />
                                         <span className="text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">Outgoing</span>
                                     </div>
                                 </div>
@@ -418,20 +418,20 @@ const Dashboard: React.FC = () => {
                                     <AreaChart data={callsChartData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
                                         <defs>
                                             <linearGradient id="colorIn" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="5%"  stopColor="#8B5CF6" stopOpacity={0.35} />
-                                                <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0} />
-                                            </linearGradient>
-                                            <linearGradient id="colorOut" x1="0" y1="0" x2="0" y2="1">
                                                 <stop offset="5%"  stopColor="#10B981" stopOpacity={0.35} />
                                                 <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
+                                            </linearGradient>
+                                            <linearGradient id="colorOut" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%"  stopColor="#14B8A6" stopOpacity={0.35} />
+                                                <stop offset="95%" stopColor="#14B8A6" stopOpacity={0} />
                                             </linearGradient>
                                         </defs>
                                         <CartesianGrid strokeDasharray="4 4" stroke={chartGridColor} horizontal vertical={false} />
                                         <XAxis dataKey="name" tick={{ fill: chartTickColor, fontSize: 11, fontWeight: 700 }} axisLine={false} tickLine={false} tickMargin={12} />
                                         <YAxis tick={{ fill: chartTickColor, fontSize: 11, fontWeight: 700 }} axisLine={false} tickLine={false} tickMargin={12} />
                                         <Tooltip content={<CustomTooltip />} cursor={{ stroke: isDark ? '#334155' : '#CBD5E1', strokeWidth: 1, strokeDasharray: '4 4' }} />
-                                        <Area type="monotone" dataKey="incoming" stroke="#8B5CF6" strokeWidth={3} fillOpacity={1} fill="url(#colorIn)" activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2, fill: '#8B5CF6' }} />
-                                        <Area type="monotone" dataKey="outgoing" stroke="#10B981" strokeWidth={3} fillOpacity={1} fill="url(#colorOut)" activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2, fill: '#10B981' }} />
+                                        <Area type="monotone" dataKey="incoming" stroke="#10B981" strokeWidth={3} fillOpacity={1} fill="url(#colorIn)" activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2, fill: '#10B981' }} />
+                                        <Area type="monotone" dataKey="outgoing" stroke="#14B8A6" strokeWidth={3} fillOpacity={1} fill="url(#colorOut)" activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2, fill: '#14B8A6' }} />
                                     </AreaChart>
                                 </ResponsiveContainer>
                             </div>
@@ -440,7 +440,7 @@ const Dashboard: React.FC = () => {
                     <div className="lg:col-span-4">
                         <ChartCard className="h-full">
                             <SectionHeader
-                                icon={<svg className="w-5 h-5 text-violet-500" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6c0-1.1.9-2 2-2h12a2 2 0 012 2v3.5a1.5 1.5 0 000 3v3.5a2 2 0 01-2 2H6a2 2 0 01-2-2v-3.5a1.5 1.5 0 000-3V6z" fillOpacity="0.9" /></svg>}
+                                icon={<svg className="w-5 h-5 text-emerald-500" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6c0-1.1.9-2 2-2h12a2 2 0 012 2v3.5a1.5 1.5 0 000 3v3.5a2 2 0 01-2 2H6a2 2 0 01-2-2v-3.5a1.5 1.5 0 000-3V6z" fillOpacity="0.9" /></svg>}
                                 title="Tickets"
                                 subtitle="Distribution Status"
                             />
@@ -495,7 +495,7 @@ const Dashboard: React.FC = () => {
                     </div>
 
                     <div className="lg:col-span-4 flex flex-col gap-5">
-                        <ConversationStatCard title="Open" value={conversationStats.open} color="#8B5CF6" icon={(p: any) => (
+                        <ConversationStatCard title="Open" value={conversationStats.open} color="#14B8A6" icon={(p: any) => (
                             <svg viewBox="0 0 24 24" fill="currentColor" {...p}><path d="M17 10.5V6c0-1.65-1.35-3-3-3H4C2.35 3 1 4.35 1 6v5.5c0 1.65 1.35 3 3 3h1.5v3.5L9.5 14.5h4.5c1.65 0 3-1.35 3-3z" opacity="0.6" /><path d="M23 9.5v5.5c0 1.65-1.35 3-3 3h-1.5v3.5l-4-3.5h-4.5c-1.65 0-3-1.35-3-3V11c0-1.65 1.35-3 3-3h10c1.65 0 3 1.35 3 3z" /></svg>
                         )} />
                         <ConversationStatCard title="Unassigned" value={conversationStats.unassigned} color="#EC4899" icon={(p: any) => (

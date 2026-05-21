@@ -343,10 +343,13 @@ const Accounts: React.FC = () => {
       </div>
 
       <div className="flex justify-between items-center mb-6">
-        <Button variant="outline" onClick={() => handleOpenModal()}>
-          <PlusIcon className="h-5 w-5 mr-2" />
+        <button
+          onClick={() => handleOpenModal()}
+          className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-full text-sm font-medium shadow-sm flex items-center transition-colors shadow-emerald-500/10 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 whitespace-nowrap"
+        >
+          <PlusIcon className="h-4 w-4 mr-2 flex-shrink-0" />
           New Account
-        </Button>
+        </button>
         <div className="flex items-center space-x-2">
           <div className="relative">
             <span className="absolute inset-y-0 left-0 flex items-center pl-3">
@@ -396,15 +399,14 @@ const Accounts: React.FC = () => {
                   <input type="checkbox" className={checkboxClasses} onChange={handleSelectAll} checked={selectedAccounts.length === paginatedAccounts.length && paginatedAccounts.length > 0} />
                 </th>
                 <TableHeader hasFilter>Account Name</TableHeader>
-                <TableHeader>Website</TableHeader>
-                <TableHeader>Email</TableHeader>
+                <TableHeader hasFilter>Website</TableHeader>
+                <TableHeader hasFilter>Email</TableHeader>
                 <TableHeader hasFilter>Phone Number</TableHeader>
                 <TableHeader>Address</TableHeader>
-                <TableHeader>CR Number</TableHeader>
                 <TableHeader>Assigned to</TableHeader>
-                <TableHeader hasFilter>Created Date</TableHeader>
-                <TableHeader>Updated Date</TableHeader>
                 <TableHeader hasFilter>Country</TableHeader>
+                <TableHeader hasFilter>Created Date</TableHeader>
+                <TableHeader hasFilter>Updated Date</TableHeader>
                 <TableHeader>Actions</TableHeader>
               </tr>
             </thead>
@@ -427,8 +429,8 @@ const Accounts: React.FC = () => {
                     <td className="px-4 py-2 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{account.email}</td>
                     <td className="px-4 py-2 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{account.phone}</td>
                     <td className="px-4 py-2 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{account.address}</td>
-                    <td className="px-4 py-2 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{account.crNumber}</td>
                     <td className="px-4 py-2 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{account.assignedTo}</td>
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{account.country}</td>
                     <td className="px-4 py-2 whitespace-nowrap text-sm text-slate-900 dark:text-white">
                       <div>{createdDate}</div>
                       <div className="text-xs text-slate-400">{createdTime}</div>
@@ -437,9 +439,8 @@ const Accounts: React.FC = () => {
                       <div>{updatedDate}</div>
                       <div className="text-xs text-slate-400">{updatedTime}</div>
                     </td>
-                    <td className="px-4 py-2 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{account.country}</td>
                     <td className="px-4 py-2 whitespace-nowrap text-center text-sm font-medium space-x-2">
-                      <button onClick={() => handleOpenModal(account)} className="text-slate-400 hover:text-primary-500 p-1" aria-label={`Edit ${account.name}`}><EditIcon className="h-5 w-5" /></button>
+                      <button onClick={() => handleOpenModal(account)} className="text-slate-400 hover:text-emerald-500 p-1" aria-label={`Edit ${account.name}`}><EditIcon className="h-5 w-5" /></button>
                       <button onClick={() => handleDeleteAccount(account.id)} className="text-slate-400 hover:text-red-500 p-1" aria-label={`Delete ${account.name}`}><DeleteIcon className="h-5 w-5" /></button>
                     </td>
                   </tr>

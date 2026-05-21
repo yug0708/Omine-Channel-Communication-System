@@ -66,8 +66,8 @@ const Sidebar: React.FC = () => {
                 className={({ isActive }) =>
                   `flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-xl w-full transition-all duration-200 group ${
                     isActive
-                      ? 'bg-violet-600 text-white shadow-lg shadow-violet-500/30'
-                      : 'text-slate-500 dark:text-slate-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 hover:text-violet-600 dark:hover:text-violet-400'
+                      ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
+                      : 'text-slate-500 dark:text-slate-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:text-emerald-500 dark:hover:text-emerald-400'
                   }`
                 }
               >
@@ -77,7 +77,7 @@ const Sidebar: React.FC = () => {
                     <span className={`text-[9px] font-bold tracking-wide leading-none text-center truncate w-full px-0.5 ${
                       isActive
                         ? 'text-white'
-                        : 'text-slate-500 dark:text-slate-400 group-hover:text-violet-600 dark:group-hover:text-violet-400'
+                        : 'text-slate-500 dark:text-slate-400 group-hover:text-emerald-500 dark:group-hover:text-emerald-400'
                     }`}>
                       {label}
                     </span>
