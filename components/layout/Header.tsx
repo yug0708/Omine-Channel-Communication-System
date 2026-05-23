@@ -53,7 +53,11 @@ const Header: React.FC = () => {
 
   return (
     <>
+<<<<<<< HEAD
       <header className="bg-white dark:bg-dark-card shadow-sm p-4 flex justify-between items-center z-10 border-b border-slate-200 dark:border-slate-700">
+=======
+      <header className="relative z-20 bg-white dark:bg-slate-900 shadow-sm p-4 flex justify-between items-center border-b border-slate-200 dark:border-white/[0.08]">
+>>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
         <div className="flex items-center gap-2 sm:gap-3 overflow-hidden pr-2">
           <div className="flex-shrink-0">
               <UCLogo className="h-8 w-8 sm:h-10 sm:w-10" />
@@ -89,14 +93,22 @@ const Header: React.FC = () => {
           </div>
 
           <div className="relative flex-shrink-0" ref={profileDropdownRef}>
+<<<<<<< HEAD
               <button onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)} className="flex items-center justify-center h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-purple-600 text-white font-bold text-base sm:text-xl overflow-hidden shadow-sm">
+=======
+              <button onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)} className="flex items-center justify-center h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-emerald-500 text-white font-bold text-base sm:text-xl overflow-hidden shadow-sm">
+>>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
                   {profilePicture ? <img src={profilePicture} alt="Profile" className="h-full w-full object-cover" /> : userInitial}
               </button>
               {isProfileDropdownOpen && (
                   <div className="absolute top-full right-0 mt-2 w-72 bg-white dark:bg-dark-card border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl z-20">
                       <div className="p-4 border-b border-slate-200 dark:border-slate-700">
                           <div className="flex items-center space-x-4">
+<<<<<<< HEAD
                               <div className="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-purple-600 text-white font-bold text-xl overflow-hidden">
+=======
+                              <div className="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-emerald-500 text-white font-bold text-xl overflow-hidden">
+>>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
                                   {profilePicture ? <img src={profilePicture} alt="Profile" className="h-full w-full object-cover" /> : userInitial}
                               </div>
                               <div>

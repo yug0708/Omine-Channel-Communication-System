@@ -1,7 +1,11 @@
 {
   "name": "communidesk---unified-comms-hub",
   "private": true,
+<<<<<<< HEAD
   "version": "0.0.0",
+=======
+  "version": "1.1.1",
+>>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
   "type": "module",
   "scripts": {
     "dev:frontend": "vite",
@@ -40,4 +44,8 @@
   "prisma": {
     "schema": "server/prisma/schema.prisma"
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a

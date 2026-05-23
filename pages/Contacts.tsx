@@ -12,7 +12,11 @@ const getInitials = (firstName: string, lastName: string) => {
 };
 
 // Helper for random background colors for avatars
+<<<<<<< HEAD
 const colors = ['bg-purple-500', 'bg-green-500', 'bg-purple-500', 'bg-red-500', 'bg-yellow-500', 'bg-indigo-500', 'bg-pink-500'];
+=======
+const colors = ['bg-teal-500', 'bg-green-500', 'bg-emerald-500', 'bg-red-500', 'bg-yellow-500', 'bg-sky-500', 'bg-pink-500'];
+>>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
 const getAvatarColor = (name: string) => {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -211,7 +215,11 @@ const Contacts: React.FC = () => {
                     </td>
                     <td className="px-4 py-3 text-center" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center justify-center gap-2">
+<<<<<<< HEAD
                         <button onClick={() => handleOpenModal(contact)} className="text-slate-400 hover:text-purple-500 transition-colors p-1" title="Edit">
+=======
+                        <button onClick={() => handleOpenModal(contact)} className="text-slate-400 hover:text-emerald-500 transition-colors p-1" title="Edit">
+>>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
                           <EditIcon className="h-4 w-4" />
                         </button>
                         <button onClick={() => handleDeleteContact(contact.id)} className="text-slate-400 hover:text-red-500 transition-colors p-1" title="Delete">
@@ -238,8 +246,13 @@ const Contacts: React.FC = () => {
           </div>
           <div className="text-white font-bold text-xs">1-10 of 17</div>
           <div className="flex items-center gap-2 cursor-pointer font-bold text-slate-700 dark:text-white">
+<<<<<<< HEAD
             <button className="p-1 hover:text-purple-500 transition-colors">&lt;</button>
             <button className="p-1 hover:text-purple-500 transition-colors">&gt;</button>
+=======
+            <button className="p-1 hover:text-emerald-500 transition-colors">&lt;</button>
+            <button className="p-1 hover:text-emerald-500 transition-colors">&gt;</button>
+>>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
           </div>
         </div>
       </div>
