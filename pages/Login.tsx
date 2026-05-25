@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../context/ToastContext';
-<<<<<<< HEAD
+
 import { UCLogo, UKFlagIcon, PasswordEyeIcon, PasswordEyeOffIcon, EmailIcon, LockIcon, CheckIcon, InfoIcon, CloseIcon } from '../components/icons/Icons';
 import Button from '../components/ui/Button';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('yugshah82@gmail.com');
   const [password, setPassword] = useState('Variance@2025');
-=======
+
 import { UCLogo, UKFlagIcon, PasswordEyeIcon, PasswordEyeOffIcon, CheckIcon, InfoIcon, CloseIcon } from '../components/icons/Icons';
 import Button from '../components/ui/Button';
 
@@ -22,7 +22,7 @@ const STATIC_PASSWORD = 'Variance@2025';
 const Login: React.FC = () => {
   const [email, setEmail] = useState(STATIC_EMAIL);
   const [password, setPassword] = useState(STATIC_PASSWORD);
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -39,17 +39,17 @@ const Login: React.FC = () => {
     setError('');
     setIsLoading(true);
     try {
-<<<<<<< HEAD
+
       await auth.login(email, password);
       showToast('Login successful', 'success');
       navigate(from, { replace: true });
     } catch (err) {
-=======
+
       await auth.login(STATIC_EMAIL, STATIC_PASSWORD);
       showToast('Login successful', 'success');
       navigate(from, { replace: true });
     } catch {
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
       setError('Invalid email or password. Please try again.');
     } finally {
       setIsLoading(false);
@@ -57,7 +57,7 @@ const Login: React.FC = () => {
   };
 
   const features = [
-<<<<<<< HEAD
+
     "Unified Inbox – Manage WhatsApp, Email, Website Chat, and Calls in one place",
     "Real-Time Notifications – Never miss a customer message again",
     "Team Collaboration – Assign, track, and resolve conversations together",
@@ -216,7 +216,7 @@ const Login: React.FC = () => {
             </div>
           </div>
         </div>
-=======
+
     'Unified inbox across WhatsApp, email, chat, and voice',
     'Real-time alerts so you never miss a message',
     'Team workflows with assignments and tracking',
@@ -445,14 +445,13 @@ const Login: React.FC = () => {
             </div>
           </div>
         </main>
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
       </div>
     </div>
   );
 };
 
-<<<<<<< HEAD
+
 export default Login;
-=======
+
 export default Login;
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
