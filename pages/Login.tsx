@@ -9,7 +9,7 @@ import Button from '../components/ui/Button';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('yugshah82@gmail.com');
-  const [password, setPassword] = useState('Variance@2025');
+//  const [password, setPassword] = useState('Variance@2025');
 
 import Button from '../components/ui/Button';
 
