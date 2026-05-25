@@ -1,23 +1,17 @@
 {
   "name": "server",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "description": "",
   "main": "index.js",
   "scripts": {
-<<<<<<< HEAD
     "dev": "nodemon --watch src --ext ts --exec ts-node src/index.ts",
-=======
     "dev": "nodemon --watch src --ext ts --exec \"npx ts-node\" src/index.ts",
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
     "build": "tsc"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-<<<<<<< HEAD
   "type": "module",
-=======
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
   "dependencies": {
     "@prisma/adapter-pg": "^7.6.0",
     "@prisma/client": "^7.5.0",
