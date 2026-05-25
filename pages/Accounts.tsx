@@ -1,5 +1,3 @@
-{/* Replace your ENTIRE table header + tbody section with this */}
-
 <thead className="border-b border-slate-200 dark:border-slate-800">
   <tr>
     <th scope="col" className="px-4 py-3">
