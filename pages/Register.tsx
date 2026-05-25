@@ -177,7 +177,6 @@ export default function Register() {
                                 </div>
                                 <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed transition-colors duration-300">{feature}</p>
                             </div>
-                        ))}
                     </div>
                 </div>
             </div>
