@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-<<<<<<< HEAD
+
 import Card from '../components/ui/Card';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { IncomingCallIcon, OutgoingCallIcon, NoAnswerIcon, TotalCallsIcon, ContactStatIcon, AccountStatIcon, ActiveUsersStatIcon, WhatsAppBusinessIcon, EmailIcon, LiveChatIcon, VoiceIcon, FilterIcon } from '../components/icons/Icons';
-=======
+
 import { useNavigate } from 'react-router-dom';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { IncomingCallIcon, OutgoingCallIcon, NoAnswerIcon, TotalCallsIcon, ContactStatIcon, AccountStatIcon, WhatsAppBusinessIcon, EmailIcon, LiveChatIcon, VoiceIcon, FilterIcon } from '../components/icons/Icons';
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
 import { useTheme } from '../hooks/useTheme';
 import { useData } from '../hooks/useData';
 import { Channel } from '../types';
@@ -15,19 +15,19 @@ import { Channel } from '../types';
 const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
         return (
-<<<<<<< HEAD
+
             <div className="bg-white/95 dark:bg-[#0F172A]/95 backdrop-blur-xl p-4 rounded-2xl border border-slate-200/50 dark:border-slate-800/50 shadow-2xl">
                 <p className="label text-[10px] uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400 mb-2">{`${label}`}</p>
                 {payload.map((pld: any) => (
                     <div key={pld.dataKey} style={{ color: pld.color }} className="text-sm font-bold flex items-center gap-2 mb-1.5 last:mb-0">
                         <div className="w-2 h-2 rounded-full shadow-[0_0_8px_currentColor]" style={{ backgroundColor: pld.color }}></div>
-=======
+
             <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl p-4 rounded-2xl border border-slate-200/50 dark:border-white/[0.08] shadow-2xl">
                 <p className="text-[10px] uppercase tracking-widest font-bold text-slate-500 dark:text-slate-400 mb-2">{`${label}`}</p>
                 {payload.map((pld: any) => (
                     <div key={pld.dataKey} style={{ color: pld.color }} className="text-sm font-bold flex items-center gap-2 mb-1.5 last:mb-0">
                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: pld.color }} />
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
                         {`${pld.dataKey.charAt(0).toUpperCase() + pld.dataKey.slice(1)}: `}
                         <span className="text-slate-900 dark:text-white ml-auto pl-6 font-extrabold">{pld.value}</span>
                     </div>
@@ -38,10 +38,10 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     return null;
 };
 
-<<<<<<< HEAD
-=======
+
+
 /* ─── Stat Card (Calls) ─── */
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
 const CallStatCard: React.FC<{
     title: string;
     value: number;
@@ -51,7 +51,7 @@ const CallStatCard: React.FC<{
     colorTheme: 'cyan' | 'green' | 'red' | 'purple';
 }> = ({ title, value, description, duration, icon: Icon, colorTheme }) => {
     const themeStyles = {
-<<<<<<< HEAD
+
         cyan: {
             iconWrap: 'bg-[#00BCD4]/10 text-[#00BCD4] shadow-[0_0_20px_rgba(0,188,212,0.15)] ring-1 ring-[#00BCD4]/20',
             value: 'text-slate-900 dark:text-white',
@@ -110,7 +110,7 @@ const CallStatCard: React.FC<{
                 <div className="flex items-center text-xs justify-between mt-1">
                     <span className="text-slate-500 dark:text-slate-400 font-medium">Avg Duration</span>
                     <span className="font-bold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">{duration}</span>
-=======
+
         cyan:   { accent: '#06B6D4', bar: 'from-cyan-500 to-cyan-400',     glow: 'rgba(6,182,212,0.35)'   },
         green:  { accent: '#10B981', bar: 'from-emerald-500 to-emerald-400', glow: 'rgba(16,185,129,0.35)' },
         red:    { accent: '#EF4444', bar: 'from-red-500 to-red-400',        glow: 'rgba(239,68,68,0.35)'   },
@@ -146,14 +146,14 @@ const CallStatCard: React.FC<{
                 <div className="flex items-center justify-between text-xs">
                     <span className="text-slate-500 dark:text-slate-400 font-medium">Avg Duration</span>
                     <span className="font-bold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-lg">{duration}</span>
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
                 </div>
             </div>
         </div>
     );
 };
 
-<<<<<<< HEAD
+
 const ConversationStatCard: React.FC<{ title: string; value: number; color: string; icon: React.ElementType }> = ({ title, value, color, icon: Icon }) => {
     return (
         <div className="bg-white/70 dark:bg-[#0B1120]/60 backdrop-blur-2xl rounded-[28px] p-5 sm:p-6 shadow-sm border border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between relative overflow-hidden hover:scale-[1.02] hover:shadow-lg transition-all duration-300 group">
@@ -178,7 +178,7 @@ const RightStatCard: React.FC<{ title: string; value: number | string; icon: Rea
         </div>
         <div className="h-12 w-12 rounded-2xl bg-[#8B5CF6]/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 border border-[#8B5CF6]/20 shadow-[0_0_15px_rgba(139,92,246,0.15)]">
             <Icon className="h-5 w-5 text-[#8B5CF6] dark:text-[#A78BFA]" />
-=======
+
 /* ─── Conversation Stat Card ─── */
 const ConversationStatCard: React.FC<{ title: string; value: number; color: string; icon: React.ElementType }> = ({ title, value, color, icon: Icon }) => (
     <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white/80 p-5 sm:p-6 shadow-sm backdrop-blur-2xl transition-all duration-300 hover:scale-[1.02] hover:shadow-lg dark:border-white/[0.08] dark:bg-slate-900/60 flex items-center justify-between group">
@@ -218,12 +218,12 @@ const RightStatCard: React.FC<{ title: string; value: number | string; icon: Rea
         </div>
         <div className="h-11 w-11 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center group-hover:scale-110 group-hover:bg-emerald-500/20 transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
             <Icon className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
         </div>
     </div>
 );
 
-<<<<<<< HEAD
+
 const ChannelCard: React.FC<{ title: string; value: number; icon: React.ElementType; color: string }> = ({ title, value, icon: Icon, color }) => (
     <div className="bg-white/70 dark:bg-[#0B1120]/60 backdrop-blur-2xl rounded-[28px] p-4 sm:p-6 shadow-sm border border-slate-200/50 dark:border-slate-700/50 flex flex-col justify-between relative overflow-hidden h-[140px] hover:-translate-y-1.5 hover:shadow-xl transition-all duration-300 group">
         <div className="flex justify-between items-start z-10">
@@ -251,7 +251,7 @@ const TicketDistributionChart = () => {
     const center = size / 2;
     const strokeWidth = 10;
     const gap = 5;
-=======
+
 /* ─── Channel Card ─── */
 const ChannelCard: React.FC<{ title: string; value: number; icon: React.ElementType; color: string }> = ({ title, value, icon: Icon, color }) => (
     <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white/80 p-4 sm:p-5 shadow-sm backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl dark:border-white/[0.08] dark:bg-slate-900/60 flex flex-col justify-between h-[130px] group">
@@ -279,14 +279,14 @@ const TicketDistributionChart = () => {
     const ordered = [...data].reverse();
     const total = data.reduce((s, d) => s + d.value, 0);
     const size = 190; const center = size / 2; const sw = 9; const gap = 5;
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
 
     return (
         <div className="flex flex-col items-center justify-between h-full pt-2">
             <div className="relative flex items-center justify-center">
                 <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="transform -rotate-90">
                     <defs>
-<<<<<<< HEAD
+
                         {data.map(item => (
                             <linearGradient key={item.gradientId} id={item.gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
                                 <stop offset="0%" stopColor={item.color} stopOpacity="0.8" />
@@ -320,7 +320,7 @@ const TicketDistributionChart = () => {
                                         className="transition-all duration-1000 ease-out"
                                         style={{ WebkitFilter: 'drop-shadow(0 0 4px rgba(0,0,0,0.2))' }}
                                     />
-=======
+
                         {data.map(d => (
                             <linearGradient key={d.gradientId} id={d.gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
                                 <stop offset="0%" stopColor={d.color} stopOpacity="0.7" />
@@ -340,13 +340,13 @@ const TicketDistributionChart = () => {
                                         stroke={`url(#${item.gradientId})`} strokeWidth={sw}
                                         strokeDasharray={`${circ * pct} ${circ}`} strokeLinecap="round"
                                         className="transition-all duration-1000 ease-out" />
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
                                 )}
                             </g>
                         );
                     })}
                 </svg>
-<<<<<<< HEAD
+
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center mt-2 group">
                     <span className="text-slate-500 dark:text-slate-400 text-[10px] font-bold tracking-widest uppercase mb-1 drop-shadow-sm">Total</span>
                     <span className="text-slate-900 dark:text-white text-5xl font-black drop-shadow-lg transition-transform hover:scale-110 cursor-default">{total}</span>
@@ -357,7 +357,7 @@ const TicketDistributionChart = () => {
                     <div key={item.name} className="flex items-center gap-2 cursor-pointer group">
                         <div className="w-3 h-3 rounded-full shadow-sm group-hover:scale-125 transition-transform" style={{ backgroundColor: item.color, boxShadow: `0 0 8px ${item.color}80` }} />
                         <span className="text-[11px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide group-hover:text-slate-900 dark:group-hover:text-white transition-colors">{item.name}</span>
-=======
+
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
                     <span className="text-[10px] font-bold tracking-widest uppercase text-slate-500 dark:text-slate-400 mb-1">Total</span>
                     <span className="text-5xl font-black text-slate-900 dark:text-white">{total}</span>
@@ -368,7 +368,7 @@ const TicketDistributionChart = () => {
                     <div key={item.name} className="flex items-center gap-1.5 cursor-pointer group">
                         <div className="w-2.5 h-2.5 rounded-full group-hover:scale-125 transition-transform" style={{ backgroundColor: item.color, boxShadow: `0 0 8px ${item.color}90` }} />
                         <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wide group-hover:text-slate-900 dark:group-hover:text-white transition-colors">{item.name}</span>
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
                     </div>
                 ))}
             </div>
@@ -376,11 +376,11 @@ const TicketDistributionChart = () => {
     );
 };
 
-<<<<<<< HEAD
+
 const Dashboard: React.FC = () => {
     const { theme } = useTheme();
     const { contacts, accounts } = useData();
-=======
+
 /* ─── Section Header ─── */
 const SectionHeader: React.FC<{ icon: React.ReactNode; title: string; subtitle: string; badge?: React.ReactNode }> = ({ icon, title, subtitle, badge }) => (
     <div className="flex items-center gap-3">
@@ -411,13 +411,13 @@ const Dashboard: React.FC = () => {
     const { theme } = useTheme();
     const { contacts, accounts } = useData();
     const navigate = useNavigate();
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
     const isDark = theme === 'dark';
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState('Last 7 Days');
     const filterRef = useRef<HTMLDivElement>(null);
 
-<<<<<<< HEAD
+
     const [callStats, setCallStats] = useState({
         incoming: { value: 0, duration: "0s" },
         outgoing: { value: 0, duration: "0s" },
@@ -428,17 +428,17 @@ const Dashboard: React.FC = () => {
     const [conversationStats, setConversationStats] = useState({
         open: 0, unassigned: 0, close: 0, total: 0,
     });
-=======
+
     const [callStats, setCallStats] = useState({ incoming: { value: 0, duration: '0s' }, outgoing: { value: 0, duration: '0s' }, noAnswer: { value: 0, duration: '0s' }, total: { value: 0, duration: '0s' } });
     const [callsChartData, setCallsChartData] = useState<{ name: string; incoming: number; outgoing: number }[]>([]);
     const [conversationStats, setConversationStats] = useState({ open: 0, unassigned: 0, close: 0, total: 0 });
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
     const [conversationChartData, setConversationChartData] = useState<{ name: string; conversations: number; received: number; sent: number }[]>([]);
     const [showWelcome, setShowWelcome] = useState(true);
     const [currentTipIndex, setCurrentTipIndex] = useState(0);
 
     const tips = [
-<<<<<<< HEAD
+
         "Connect your WhatsApp Business account to start receiving messages directly in the dashboard.",
         "Use the 'Filter' button to view call statistics for specific time ranges.",
         "Check the 'Conversations' section to see open and unassigned chats needing attention.",
@@ -457,7 +457,7 @@ const Dashboard: React.FC = () => {
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-=======
+
         'Connect your WhatsApp Business account to start receiving messages in the dashboard.',
         "Use the 'Filter' button to view call statistics for specific time ranges.",
         "Check the 'Conversations' section to see open and unassigned chats needing attention.",
@@ -469,12 +469,12 @@ const Dashboard: React.FC = () => {
         const handleClickOutside = (e: MouseEvent) => { if (filterRef.current && !filterRef.current.contains(e.target as Node)) setIsFilterOpen(false); };
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
     }, []);
 
     useEffect(() => {
         const generateData = () => {
-<<<<<<< HEAD
+
             let daysToShow = 7;
             let endDate = new Date();
 
@@ -554,7 +554,7 @@ const Dashboard: React.FC = () => {
             const total = open + unassigned + close;
 
             setConversationStats({ open, unassigned, close, total });
-=======
+
             let days = 7; let end = new Date();
             switch (selectedFilter) {
                 case 'Today':       days = 1; break;
@@ -583,13 +583,13 @@ const Dashboard: React.FC = () => {
             const unassigned = Math.floor(open * (Math.random() * 0.2 + 0.1));
             const close = Math.floor(convoData.reduce((s, d) => s + d.received + d.sent, 0) * 0.8);
             setConversationStats({ open, unassigned, close, total: open + unassigned + close });
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
         };
         generateData();
     }, [selectedFilter]);
 
     useEffect(() => {
-<<<<<<< HEAD
+
         const interval = setInterval(() => {
             setCurrentTipIndex((prevIndex) => (prevIndex + 1) % tips.length);
         }, 5000);
@@ -601,12 +601,12 @@ const Dashboard: React.FC = () => {
         setIsFilterOpen(false);
     };
 
-=======
+
         const iv = setInterval(() => setCurrentTipIndex(p => (p + 1) % tips.length), 5000);
         return () => clearInterval(iv);
     }, []);
 
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
     const chartGridColor = isDark ? '#1E293B' : '#F1F5F9';
     const chartTickColor = isDark ? '#64748B' : '#94A3B8';
 
@@ -618,7 +618,7 @@ const Dashboard: React.FC = () => {
     };
 
     return (
-<<<<<<< HEAD
+
         <div className="relative min-h-screen">
             <div className="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-[#8B5CF6] opacity-[0.05] dark:opacity-[0.03] blur-[120px] pointer-events-none"></div>
             <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-[#10B981] opacity-[0.05] dark:opacity-[0.03] blur-[120px] pointer-events-none"></div>
@@ -861,7 +861,7 @@ const Dashboard: React.FC = () => {
                                         </div>
                                         <span className="text-lg font-black text-slate-900 dark:text-white pl-3.5">0</span>
                                     </div>
-=======
+
         /* ── Page wrapper with same background as Login ── */
         <div className="relative min-h-screen">
             {/* Background orbs — identical approach to Login — kept at z-0 so sidebar/header stay on top */}
@@ -1040,12 +1040,12 @@ const Dashboard: React.FC = () => {
                                             <span className="text-lg font-black text-slate-900 dark:text-white pl-3.5">{item.value}</span>
                                         </div>
                                     ))}
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
                                 </div>
                             </div>
                             <div style={{ width: '100%', height: 260 }}>
                                 <ResponsiveContainer>
-<<<<<<< HEAD
+
                                     <BarChart data={conversationChartData} margin={{ top: 20, right: 10, left: -25, bottom: 5 }} barSize={16}>
                                         <CartesianGrid strokeDasharray="4 4" stroke={chartGridColor} horizontal={true} vertical={false} />
                                         <XAxis dataKey="name" tick={{ fill: chartTickColor, fontSize: 11, fontWeight: 700 }} axisLine={false} tickLine={false} tickMargin={12} />
@@ -1080,7 +1080,7 @@ const Dashboard: React.FC = () => {
                         <div className="flex-1 grid grid-cols-2 gap-4 items-end mt-4">
                             <RightStatCard title="Total Contacts" value={contacts.length} icon={ContactStatIcon} />
                             <RightStatCard title="Total Accounts" value={accounts.length} icon={AccountStatIcon} />
-=======
+
                                     <BarChart data={conversationChartData} margin={{ top: 20, right: 10, left: -25, bottom: 5 }} barSize={14}>
                                         <CartesianGrid strokeDasharray="4 4" stroke={chartGridColor} horizontal vertical={false} />
                                         <XAxis dataKey="name" tick={{ fill: chartTickColor, fontSize: 11, fontWeight: 700 }} axisLine={false} tickLine={false} tickMargin={12} />
@@ -1108,12 +1108,12 @@ const Dashboard: React.FC = () => {
                         <div className="grid grid-cols-2 gap-4 flex-1">
                             <RightStatCard title="Total Contacts" value={contacts.length} icon={ContactStatIcon} onClick={() => navigate('/contacts')} />
                             <RightStatCard title="Total Accounts" value={accounts.length} icon={AccountStatIcon} onClick={() => navigate('/accounts')} />
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
                         </div>
                     </div>
                 </div>
 
-<<<<<<< HEAD
+
                 <div className="flex flex-col mt-4">
                     <div className="flex items-center gap-3 mb-6 ml-2">
                         <div className="h-10 w-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700">
@@ -1127,7 +1127,7 @@ const Dashboard: React.FC = () => {
                         </div>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-6">
-=======
+
                 {/* ── Channel Performance ── */}
                 <div className="mb-4">
                     <div className="flex items-center gap-3 mb-6 ml-1">
@@ -1138,12 +1138,12 @@ const Dashboard: React.FC = () => {
                         />
                     </div>
                     <div className="grid grid-cols-2 gap-5 md:grid-cols-3 xl:grid-cols-6">
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
                         <ChannelCard title="WhatsApp Business" value={channelStats.whatsapp || 1} icon={WhatsAppBusinessIcon} color="#25D366" />
                         <ChannelCard title="Email" value={channelStats.email || 2} icon={EmailIcon} color="#3B82F6" />
                         <ChannelCard title="Live Chat" value={channelStats.livechat || 0} icon={LiveChatIcon} color="#0EA5E9" />
                         <ChannelCard title="Voice" value={channelStats.voice || 0} icon={VoiceIcon} color="#EF4444" />
-<<<<<<< HEAD
+
                         <ChannelCard title="Messenger" value={1} icon={(props) => (
                             <svg {...props} viewBox="0 0 24 24" fill="url(#ms-grad)">
                                 <defs>
@@ -1166,7 +1166,7 @@ const Dashboard: React.FC = () => {
                                         <stop offset="100%" stopColor="#bc1888"/>
                                     </linearGradient>
                                 </defs>
-=======
+
                         <ChannelCard title="Messenger" value={1} icon={(p: any) => (
                             <svg {...p} viewBox="0 0 24 24" fill="url(#ms-g)">
                                 <defs><linearGradient id="ms-g" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stopColor="#00B2FF" /><stop offset="100%" stopColor="#006AFF" /></linearGradient></defs>
@@ -1176,16 +1176,14 @@ const Dashboard: React.FC = () => {
                         <ChannelCard title="Instagram" value={2} icon={(p: any) => (
                             <svg {...p} viewBox="0 0 24 24" fill="url(#ig-g)">
                                 <defs><linearGradient id="ig-g" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stopColor="#f09433" /><stop offset="25%" stopColor="#e6683c" /><stop offset="50%" stopColor="#dc2743" /><stop offset="75%" stopColor="#cc2366" /><stop offset="100%" stopColor="#bc1888" /></linearGradient></defs>
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
                                 <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
                             </svg>
                         )} color="#E1306C" />
                     </div>
                 </div>
-<<<<<<< HEAD
-=======
 
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
             </div>
         </div>
     );
