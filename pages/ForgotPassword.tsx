@@ -57,7 +57,6 @@ const ForgotPassword = () => {
                                 </div>
                                 <p className="text-gray-700 text-sm leading-relaxed">{feature}</p>
                             </div>
-                        ))}
                     </div>
                 </div>
             </div>
