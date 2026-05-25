@@ -135,3 +135,5 @@
     })}
   </tbody>
 </table>
+
+export default Accounts;
