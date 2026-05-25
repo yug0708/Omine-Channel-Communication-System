@@ -4,13 +4,13 @@ import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../context/ToastContext';
 
 import { UCLogo, UKFlagIcon, PasswordEyeIcon, PasswordEyeOffIcon, EmailIcon, LockIcon, CheckIcon, InfoIcon, CloseIcon } from '../components/icons/Icons';
+import { UCLogo, UKFlagIcon, PasswordEyeIcon, PasswordEyeOffIcon, CheckIcon, InfoIcon, CloseIcon } from '../components/icons/Icons';
 import Button from '../components/ui/Button';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('yugshah82@gmail.com');
   const [password, setPassword] = useState('Variance@2025');
 
-import { UCLogo, UKFlagIcon, PasswordEyeIcon, PasswordEyeOffIcon, CheckIcon, InfoIcon, CloseIcon } from '../components/icons/Icons';
 import Button from '../components/ui/Button';
 
 const inputClass =
