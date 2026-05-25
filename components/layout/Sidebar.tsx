@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-<<<<<<< HEAD
+
 import { DashboardIcon, AccountsIcon, ContactsIcon, InboxIcon, CampaignIcon, ChannelIcon, ReportIcon, SettingIcon, UCLogo } from '../icons/Icons';
 
 const navLinks = [
@@ -26,7 +26,7 @@ const Sidebar: React.FC = () => {
         <ul className="flex flex-col items-center space-y-3">
           {navLinks.map(({ to, icon: Icon, label }) => (
             <li key={to} className="w-full flex justify-center">
-=======
+
 import {
   DashboardIcon,
   AccountsIcon,
@@ -86,12 +86,12 @@ const Sidebar: React.FC = () => {
         <ul className="flex flex-col items-center gap-1 px-1">
           {navLinks.map(({ to, icon: Icon, label }) => (
             <li key={to} className="w-full">
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
               <NavLink
                 to={to}
                 title={label}
                 className={({ isActive }) =>
-<<<<<<< HEAD
+
                   `flex items-center justify-center p-3 rounded-xl transition-colors duration-200 w-14 h-14 ${
                     isActive
                       ? 'bg-[#8B5CF6] text-white shadow-md shadow-[#8B5CF6]/30'
@@ -100,7 +100,7 @@ const Sidebar: React.FC = () => {
                 }
               >
                 <Icon className="h-6 w-6" />
-=======
+
                   `flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-xl w-full transition-all duration-200 group ${
                     isActive
                       ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
@@ -120,7 +120,7 @@ const Sidebar: React.FC = () => {
                     </span>
                   </>
                 )}
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
               </NavLink>
             </li>
           ))}
