@@ -10,11 +10,11 @@ import { summarizeTicket } from '../services/geminiService';
 const TicketStatusBadge: React.FC<{ status: TicketStatus }> = ({ status }) => {
   const colorClasses = {
     [TicketStatus.Open]: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200',
-<<<<<<< HEAD
+
     [TicketStatus.InProgress]: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-=======
+
     [TicketStatus.InProgress]: 'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200',
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
     [TicketStatus.Closed]: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
   };
   return (
@@ -66,11 +66,11 @@ const TicketForm: React.FC<{
         <div>
           <label htmlFor="contactId" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Contact</label>
           <select name="contactId" id="contactId" value={formData.contactId} onChange={handleChange} required className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-slate-700 dark:border-slate-600">
-<<<<<<< HEAD
+
             {contacts.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-=======
+
             {contacts.map(c => <option key={c.id} value={c.id}>{`${c.firstName} ${c.lastName}`.trim()}</option>)}
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
           </select>
         </div>
         <div>
@@ -80,17 +80,17 @@ const TicketForm: React.FC<{
           </select>
         </div>
       </div>
-<<<<<<< HEAD
+
        <div>
         <label htmlFor="status" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Status</label>
         <select name="status" id="status" value={formData.status} onChange={handleChange} required className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-slate-700 dark:border-slate-600">
             {Object.values(TicketStatus).map(s => <option key={s} value={s}>{s}</option>)}
-=======
+
       <div>
         <label htmlFor="status" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Status</label>
         <select name="status" id="status" value={formData.status} onChange={handleChange} required className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-slate-700 dark:border-slate-600">
           {Object.values(TicketStatus).map(s => <option key={s} value={s}>{s}</option>)}
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
         </select>
       </div>
       <div className="flex justify-end space-x-2 pt-4">
@@ -102,7 +102,7 @@ const TicketForm: React.FC<{
 };
 
 const TicketRow: React.FC<{ ticket: Ticket; onEdit: () => void; onDelete: () => void }> = ({ ticket, onEdit, onDelete }) => {
-<<<<<<< HEAD
+
     const { contacts } = useData();
     const [isExpanded, setIsExpanded] = useState(false);
     const [summary, setSummary] = useState('');
@@ -152,7 +152,7 @@ const TicketRow: React.FC<{ ticket: Ticket; onEdit: () => void; onDelete: () => 
         )}
         </>
     );
-=======
+
   const { contacts } = useData();
   const [isExpanded, setIsExpanded] = useState(false);
   const [summary, setSummary] = useState('');
@@ -202,18 +202,14 @@ const TicketRow: React.FC<{ ticket: Ticket; onEdit: () => void; onDelete: () => 
       )}
     </>
   );
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
 }
 
 const Tickets: React.FC = () => {
   const { tickets, setTickets } = useData();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTicket, setEditingTicket] = useState<Ticket | null>(null);
-<<<<<<< HEAD
-  
-=======
 
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
   const handleOpenModal = (ticket: Ticket | null = null) => {
     setEditingTicket(ticket);
     setIsModalOpen(true);
@@ -233,15 +229,15 @@ const Tickets: React.FC = () => {
     }
     handleCloseModal();
   };
-<<<<<<< HEAD
+
   
   const handleDeleteTicket = (id: string) => {
     if(window.confirm('Are you sure you want to delete this ticket?')){
-=======
+
 
   const handleDeleteTicket = (id: string) => {
     if (window.confirm('Are you sure you want to delete this ticket?')) {
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
       setTickets(tickets.filter(t => t.id !== id));
     }
   }
@@ -251,13 +247,13 @@ const Tickets: React.FC = () => {
       <div className="p-4 sm:p-6 flex justify-between items-center border-b border-slate-200 dark:border-slate-700">
         <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Tickets</h2>
         <Button onClick={() => handleOpenModal()}>
-<<<<<<< HEAD
+
             <PlusIcon className="h-5 w-5 mr-2" />
             Add Ticket
-=======
+
           <PlusIcon className="h-5 w-5 mr-2" />
           Add Ticket
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
         </Button>
       </div>
       <div className="overflow-x-auto">
@@ -275,34 +271,34 @@ const Tickets: React.FC = () => {
           </thead>
           <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
             {tickets.map((ticket) => (
-<<<<<<< HEAD
+
                 <TicketRow 
                     key={ticket.id} 
                     ticket={ticket} 
                     onEdit={() => handleOpenModal(ticket)} 
                     onDelete={() => handleDeleteTicket(ticket.id)} 
                 />
-=======
+
               <TicketRow
                 key={ticket.id}
                 ticket={ticket}
                 onEdit={() => handleOpenModal(ticket)}
                 onDelete={() => handleDeleteTicket(ticket.id)}
               />
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
             ))}
           </tbody>
         </table>
       </div>
-<<<<<<< HEAD
+
        <Modal isOpen={isModalOpen} onClose={handleCloseModal} title={editingTicket ? 'Edit Ticket' : 'Add New Ticket'}>
           <TicketForm ticket={editingTicket} onSave={handleSaveTicket} onClose={handleCloseModal} />
        </Modal>
-=======
+
       <Modal isOpen={isModalOpen} onClose={handleCloseModal} title={editingTicket ? 'Edit Ticket' : 'Add New Ticket'}>
         <TicketForm ticket={editingTicket} onSave={handleSaveTicket} onClose={handleCloseModal} />
       </Modal>
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
     </div>
   );
 };
