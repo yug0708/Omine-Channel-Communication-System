@@ -2,20 +2,18 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../context/ToastContext';
-import { UKFlagIcon, CheckIcon, UserIcon, PhoneIcon, ChevronDownIcon, SearchIcon, ExclamationCircleIcon, LockIcon, PasswordEyeIcon, PasswordEyeOffIcon, ChevronLeftIcon, EmailIcon } from '../components/icons/Icons';
+import { UKFlagIcon, CheckIcon, ChevronDownIcon, SearchIcon, ExclamationCircleIcon, PasswordEyeIcon, PasswordEyeOffIcon, ChevronLeftIcon } from '../components/icons/Icons';
 import Button from '../components/ui/Button';
 import { COUNTRIES, Country } from '../data/countries';
 
 export default function Register() {
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({
-        // Step 1
         firstName: '',
         lastName: '',
         email: '',
         phone: '',
         password: '',
-        // Step 2
         organizationName: '',
         crNumber: '',
         website: '',
@@ -26,7 +24,6 @@ export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    // Country Dropdown State
     const [selectedCountry, setSelectedCountry] = useState<Country>(COUNTRIES.find(c => c.code === 'IN') || COUNTRIES[0]);
     const [showCountryDropdown, setShowCountryDropdown] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -36,24 +33,19 @@ export default function Register() {
     const { register } = useAuth();
     const { showToast } = useToast();
 
-    // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
                 setShowCountryDropdown(false);
             }
         };
-
         document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
+        return () => { document.removeEventListener('mousedown', handleClickOutside); };
     }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
-        // Clear error when user types
         if (errors[name]) {
             setErrors(prev => {
                 const newErrors = { ...prev };
@@ -71,7 +63,6 @@ export default function Register() {
         else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Email is invalid!";
         if (!formData.password) newErrors.password = "Password is required!";
         else if (formData.password.length < 6) newErrors.password = "Password must be at least 6 characters long";
-
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -84,18 +75,16 @@ export default function Register() {
         else if (!/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/.test(formData.website)) newErrors.website = "Invalid Website URL";
         if (!formData.industry) newErrors.industry = "Business Industry is required";
         if (!formData.companySize) newErrors.companySize = "Company Size is required";
-
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
-
 
     const handleNext = async (e: React.FormEvent) => {
         e.preventDefault();
         if (step === 1) {
             if (validateStep1()) {
                 setStep(2);
-                setErrors({}); 
+                setErrors({});
                 window.scrollTo(0, 0);
             }
         } else if (step === 2) {
@@ -104,14 +93,12 @@ export default function Register() {
                     setIsLoading(true);
                     const completeData = {
                         ...formData,
-                        phone: `${selectedCountry.dial_code} ${formData.phone} `
+                        phone: `${selectedCountry.dial_code} ${formData.phone}`
                     };
                     await register(completeData);
-                    console.log('Registration successful', completeData);
                     showToast('Tenant Created Successfully', 'success');
                     navigate('/login');
                 } catch (err: any) {
-                    console.error("Registration failed", err);
                     setErrors({ submit: err.message || "Registration failed. Please try again." });
                 } finally {
                     setIsLoading(false);
@@ -122,34 +109,18 @@ export default function Register() {
 
     const handlePrevious = () => {
         setStep(prev => prev - 1);
-        setErrors({}); 
+        setErrors({});
         window.scrollTo(0, 0);
-    }
-
-    const filteredCountries = COUNTRIES.filter(country =>
-        country.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        country.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        country.dial_code.includes(searchQuery)
-    );
-
-    const features = [
-        "Unified Inbox – Manage WhatsApp, Email, Website Chat, and Calls in one place",
-        "Real-Time Notifications – Never miss a customer message again",
-        "Team Collaboration – Assign, track, and resolve conversations together",
-        "Powerful Automations – Chatbots, auto-replies, and smart routing",
-        "Enterprise-Grade Security – Data protection you can trust"
-    ];
+    };
 
     return (
         <div className="flex min-h-screen w-full bg-white dark:bg-[#1C2434] transition-colors duration-300">
             {/* Left Side - Feature Showcase */}
-            <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-[#E6F4FF] to-[#F0F9FF] dark:from-[#24303F] dark:to-[#1C2434] flex-col items-center justify-center p-12 relative overflow-hidden transition-colors duration-300">
             <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-[#E6FDF9] to-[#F0FDFB] dark:from-[#24303F] dark:to-[#1C2434] flex-col items-center justify-center p-12 relative overflow-hidden transition-colors duration-300">
                 <div className="z-10 max-w-lg w-full">
                     <div className="flex justify-center mb-8">
                         <div className="flex items-center gap-2">
                             <div className="relative">
-                                <div className="bg-[#8B5CF6] dark:bg-purple-600 rounded-lg p-2 transition-colors duration-300">
                                 <div className="bg-emerald-500 dark:bg-emerald-600 rounded-lg p-2 transition-colors duration-300">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z" fill="white" />
@@ -160,16 +131,18 @@ export default function Register() {
                         </div>
                     </div>
 
-                    <h1 className="text-4xl font-bold text-center text-[#8B5CF6] dark:text-purple-400 mb-4 transition-colors duration-300">Welcome to WowChat</h1>
                     <h1 className="text-4xl font-bold text-center text-emerald-500 dark:text-emerald-400 mb-4 transition-colors duration-300">Welcome to WowChat</h1>
                     <p className="text-center text-gray-500 dark:text-gray-400 mb-12 text-lg transition-colors duration-300">All-in-One Omni-Channel Communication Platform</p>
 
                     <div className="space-y-6">
-                        {features.map((feature, index) => (
+                        {[
+                            "Unified Inbox – Manage WhatsApp, Email, Website Chat, and Calls in one place",
+                            "Real-Time Notifications – Never miss a customer message again",
+                            "Team Collaboration – Assign, track, and resolve conversations together",
+                            "Powerful Automations – Chatbots, auto-replies, and smart routing",
+                            "Enterprise-Grade Security – Data protection you can trust"
+                        ].map((feature, index) => (
                             <div key={index} className="flex items-start gap-4">
-                                <div className="flex-shrink-0 mt-1">
-                                    <div className="bg-[#8B5CF6] dark:bg-purple-600 rounded-full p-1 transition-colors duration-300">
-                             <div key={index} className="flex items-start gap-4">
                                 <div className="flex-shrink-0 mt-1">
                                     <div className="bg-emerald-500 dark:bg-emerald-600 rounded-full p-1 transition-colors duration-300">
                                         <CheckIcon className="h-4 w-4 text-white" />
@@ -177,6 +150,7 @@ export default function Register() {
                                 </div>
                                 <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed transition-colors duration-300">{feature}</p>
                             </div>
+                        ))}
                     </div>
                 </div>
             </div>
@@ -195,8 +169,8 @@ export default function Register() {
                         <div className="mb-8 text-center">
                             <h5 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2 transition-colors duration-300">Get started</h5>
                             <p className="text-gray-500 dark:text-gray-400 text-sm mb-6 transition-colors duration-300">
-                                Already have an account? <Link to="/login" className="text-purple-600 dark:text-purple-400 hover:underline font-medium transition-colors duration-300">Sign in</Link>
-                                Already have an account? <Link to="/login" className="text-emerald-500 dark:text-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-300 hover:underline font-medium transition-colors duration-300">Sign in</Link>
+                                Already have an account?{' '}
+                                <Link to="/login" className="text-emerald-500 dark:text-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-300 hover:underline font-medium transition-colors duration-300">Sign in</Link>
                             </p>
                             <h5 className="text-2xl font-semibold text-gray-900 dark:text-white transition-colors duration-300">
                                 {step === 1 ? 'Personal Information' : 'Company Information'}
@@ -222,6 +196,7 @@ export default function Register() {
                             {step === 1 && (
                                 <div className="space-y-6">
                                     <div className="flex gap-4">
+                                        {/* First Name */}
                                         <div className="relative w-1/2">
                                             <input
                                                 type="text"
@@ -229,10 +204,6 @@ export default function Register() {
                                                 name="firstName"
                                                 value={formData.firstName}
                                                 onChange={handleChange}
-                                                className={`peer block w-full pl-10 pr-4 py-3 border ${errors.firstName ? 'border-red-500 dark:border-red-400' : 'border-gray-200 dark:border-[#38414E]'} rounded-full text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 sm:text-sm bg-gray-50 dark:bg-transparent transition-colors duration-300`}
-                                                placeholder="First Name"
-                                            />
-                                            <label htmlFor="firstName" className="absolute left-5 -top-2.5 bg-white dark:bg-[#1C2434] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 transition-all peer-focus:-top-2.5 peer-focus:left-5 peer-focus:text-xs peer-focus:text-purple-600 dark:peer-focus:text-purple-400 duration-300">
                                                 className={`peer block w-full pl-10 pr-4 py-3 border ${errors.firstName ? 'border-red-500 dark:border-red-400' : 'border-gray-200 dark:border-[#38414E]'} rounded-full text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-gray-50 dark:bg-transparent transition-colors duration-300`}
                                                 placeholder="First Name"
                                             />
@@ -248,6 +219,7 @@ export default function Register() {
                                             {errors.firstName && <p className="text-xs text-red-500 dark:text-red-400 mt-1 pl-4 transition-colors duration-300">{errors.firstName}</p>}
                                         </div>
 
+                                        {/* Last Name */}
                                         <div className="relative w-1/2">
                                             <input
                                                 type="text"
@@ -255,10 +227,6 @@ export default function Register() {
                                                 name="lastName"
                                                 value={formData.lastName}
                                                 onChange={handleChange}
-                                                className={`peer block w-full pl-10 pr-4 py-3 border ${errors.lastName ? 'border-red-500 dark:border-red-400' : 'border-gray-200 dark:border-[#38414E]'} rounded-full text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 sm:text-sm bg-gray-50 dark:bg-transparent transition-colors duration-300`}
-                                                placeholder="Last Name"
-                                            />
-                                            <label htmlFor="lastName" className="absolute left-5 -top-2.5 bg-white dark:bg-[#1C2434] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 transition-all peer-focus:-top-2.5 peer-focus:left-5 peer-focus:text-xs peer-focus:text-purple-600 dark:peer-focus:text-purple-400 duration-300">
                                                 className={`peer block w-full pl-10 pr-4 py-3 border ${errors.lastName ? 'border-red-500 dark:border-red-400' : 'border-gray-200 dark:border-[#38414E]'} rounded-full text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-gray-50 dark:bg-transparent transition-colors duration-300`}
                                                 placeholder="Last Name"
                                             />
@@ -275,6 +243,7 @@ export default function Register() {
                                         </div>
                                     </div>
 
+                                    {/* Email */}
                                     <div className="relative">
                                         <input
                                             type="email"
@@ -283,10 +252,6 @@ export default function Register() {
                                             required
                                             value={formData.email}
                                             onChange={handleChange}
-                                            className={`peer block w-full pl-10 pr-4 py-3 border ${errors.email ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-[#38414E]'} rounded-full text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 sm:text-sm bg-gray-50/50 dark:bg-transparent transition-colors duration-300`}
-                                            placeholder="Email address"
-                                        />
-                                        <label htmlFor="email" className="absolute left-6 -top-2.5 bg-white dark:bg-[#1C2434] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 transition-all peer-focus:-top-2.5 peer-focus:left-6 peer-focus:text-xs peer-focus:text-purple-600 dark:peer-focus:text-purple-400 duration-300">
                                             className={`peer block w-full pl-10 pr-4 py-3 border ${errors.email ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-[#38414E]'} rounded-full text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-gray-50/50 dark:bg-transparent transition-colors duration-300`}
                                             placeholder="Email address"
                                         />
@@ -301,8 +266,8 @@ export default function Register() {
                                         {errors.email && <p className="text-xs text-red-500 dark:text-red-400 mt-1 pl-4 transition-colors duration-300">{errors.email}</p>}
                                     </div>
 
+                                    {/* Phone */}
                                     <div className="relative">
-                                        <div className={`flex rounded-full shadow-sm ring-1 ring-inset ${errors.phone ? 'ring-red-500 dark:ring-red-400' : 'ring-gray-300 dark:ring-[#38414E]'} focus-within:ring-2 focus-within:ring-inset focus-within:ring-purple-500 bg-gray-50/50 dark:bg-transparent transition-colors duration-300`}>
                                         <div className={`flex rounded-full shadow-sm ring-1 ring-inset ${errors.phone ? 'ring-red-500 dark:ring-red-400' : 'ring-gray-300 dark:ring-[#38414E]'} focus-within:ring-2 focus-within:ring-inset focus-within:ring-emerald-500 bg-gray-50/50 dark:bg-transparent transition-colors duration-300`}>
                                             <div className="relative" ref={dropdownRef}>
                                                 <button
@@ -337,7 +302,6 @@ export default function Register() {
                                                             <button
                                                                 key={country.code}
                                                                 type="button"
-                                                                className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-[#24303F] flex items-center gap-3 transition-colors ${selectedCountry.code === country.code ? 'bg-purple-50/50 dark:bg-[#24303F]' : ''}`}
                                                                 className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-[#24303F] flex items-center gap-3 transition-colors ${selectedCountry.code === country.code ? 'bg-emerald-50/50 dark:bg-[#24303F]' : ''}`}
                                                                 onClick={() => {
                                                                     setSelectedCountry(country);
@@ -372,6 +336,7 @@ export default function Register() {
                                         {errors.phone && <p className="text-xs text-red-500 dark:text-red-400 mt-1 pl-4 transition-colors duration-300">{errors.phone}</p>}
                                     </div>
 
+                                    {/* Password */}
                                     <div className="relative">
                                         <input
                                             type={showPassword ? "text" : "password"}
@@ -380,10 +345,6 @@ export default function Register() {
                                             required
                                             value={formData.password}
                                             onChange={handleChange}
-                                            className={`peer block w-full pl-10 pr-10 py-3 border ${errors.password ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-[#38414E]'} rounded-full text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 sm:text-sm bg-gray-50/50 dark:bg-transparent transition-colors duration-300`}
-                                            placeholder="6+ characters"
-                                        />
-                                        <label htmlFor="password" className="absolute left-6 -top-2.5 bg-white dark:bg-[#1C2434] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 transition-all peer-focus:-top-2.5 peer-focus:left-6 peer-focus:text-xs peer-focus:text-purple-600 dark:peer-focus:text-purple-400 duration-300">
                                             className={`peer block w-full pl-10 pr-10 py-3 border ${errors.password ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-[#38414E]'} rounded-full text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-gray-50/50 dark:bg-transparent transition-colors duration-300`}
                                             placeholder="6+ characters"
                                         />
@@ -400,7 +361,6 @@ export default function Register() {
                                             className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 focus:outline-none transition-colors duration-300"
                                             onClick={() => setShowPassword(!showPassword)}
                                             aria-label={showPassword ? "Hide Password" : "Show Password"}
-                                            title={showPassword ? "Hide Password" : "Show Password"}
                                         >
                                             {showPassword ? (
                                                 <PasswordEyeOffIcon className="h-5 w-5 text-gray-400 dark:text-gray-500 transition-colors duration-300" />
@@ -413,9 +373,10 @@ export default function Register() {
                                 </div>
                             )}
 
-                            {/* STEP 2: Company Info */}
+                            {/* Step 2: Company Information */}
                             {step === 2 && (
                                 <div className="space-y-4">
+                                    {/* Organization Name */}
                                     <div className="relative">
                                         <input
                                             type="text"
@@ -424,10 +385,6 @@ export default function Register() {
                                             required
                                             value={formData.organizationName}
                                             onChange={handleChange}
-                                            className={`peer block w-full pl-10 pr-4 py-3 border ${errors.organizationName ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-[#38414E]'} rounded-full text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 sm:text-sm bg-gray-50/50 dark:bg-transparent transition-colors duration-300`}
-                                            placeholder="Organization Name"
-                                        />
-                                        <label htmlFor="organizationName" className="absolute left-6 -top-2.5 bg-white dark:bg-[#1C2434] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 transition-all peer-focus:-top-2.5 peer-focus:left-6 peer-focus:text-xs peer-focus:text-purple-600 dark:peer-focus:text-purple-400 duration-300">
                                             className={`peer block w-full pl-10 pr-4 py-3 border ${errors.organizationName ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-[#38414E]'} rounded-full text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-gray-50/50 dark:bg-transparent transition-colors duration-300`}
                                             placeholder="Organization Name"
                                         />
@@ -444,6 +401,7 @@ export default function Register() {
                                         {errors.organizationName && <p className="text-xs text-red-500 dark:text-red-400 mt-1 pl-4 transition-colors duration-300">{errors.organizationName}</p>}
                                     </div>
 
+                                    {/* CR Number */}
                                     <div className="relative">
                                         <input
                                             type="text"
@@ -452,10 +410,6 @@ export default function Register() {
                                             required
                                             value={formData.crNumber}
                                             onChange={handleChange}
-                                            className={`peer block w-full pl-10 pr-4 py-3 border ${errors.crNumber ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-[#38414E]'} rounded-full text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 sm:text-sm bg-gray-50/50 dark:bg-transparent transition-colors duration-300`}
-                                            placeholder="CR Number"
-                                        />
-                                        <label htmlFor="crNumber" className="absolute left-6 -top-2.5 bg-white dark:bg-[#1C2434] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 transition-all peer-focus:-top-2.5 peer-focus:left-6 peer-focus:text-xs peer-focus:text-purple-600 dark:peer-focus:text-purple-400 duration-300">
                                             className={`peer block w-full pl-10 pr-4 py-3 border ${errors.crNumber ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-[#38414E]'} rounded-full text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-gray-50/50 dark:bg-transparent transition-colors duration-300`}
                                             placeholder="CR Number"
                                         />
@@ -472,6 +426,7 @@ export default function Register() {
                                         {errors.crNumber && <p className="text-xs text-red-500 dark:text-red-400 mt-1 pl-4 transition-colors duration-300">{errors.crNumber}</p>}
                                     </div>
 
+                                    {/* Website */}
                                     <div className="relative">
                                         <input
                                             type="url"
@@ -479,11 +434,6 @@ export default function Register() {
                                             name="website"
                                             value={formData.website}
                                             onChange={handleChange}
-
-                                            className={`peer block w-full pl-10 pr-4 py-3 border ${errors.website ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-[#38414E]'} rounded-full text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 sm:text-sm bg-gray-50/50 dark:bg-transparent transition-colors duration-300`}
-                                            placeholder="Website"
-                                        />
-                                        <label htmlFor="website" className="absolute left-6 -top-2.5 bg-white dark:bg-[#1C2434] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 transition-all peer-focus:-top-2.5 peer-focus:left-6 peer-focus:text-xs peer-focus:text-purple-600 dark:peer-focus:text-purple-400 duration-300">
                                             className={`peer block w-full pl-10 pr-4 py-3 border ${errors.website ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-[#38414E]'} rounded-full text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-gray-50/50 dark:bg-transparent transition-colors duration-300`}
                                             placeholder="Website"
                                         />
@@ -500,6 +450,7 @@ export default function Register() {
                                         {errors.website && <p className="text-xs text-red-500 dark:text-red-400 mt-1 pl-4 transition-colors duration-300">{errors.website}</p>}
                                     </div>
 
+                                    {/* Industry */}
                                     <div className="relative">
                                         <select
                                             id="industry"
@@ -507,7 +458,6 @@ export default function Register() {
                                             required
                                             value={formData.industry}
                                             onChange={handleChange}
-                                            className={`peer block w-full pl-10 pr-10 py-3 border ${errors.industry ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-[#38414E]'} rounded-full text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 sm:text-sm bg-gray-50/50 dark:bg-transparent appearance-none transition-colors duration-300`}
                                             className={`peer block w-full pl-10 pr-10 py-3 border ${errors.industry ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-[#38414E]'} rounded-full text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-gray-50/50 dark:bg-transparent appearance-none transition-colors duration-300`}
                                         >
                                             <option className="dark:bg-[#1C2434]" value="" disabled hidden></option>
@@ -519,7 +469,6 @@ export default function Register() {
                                             <option className="dark:bg-[#1C2434]" value="Real Estate">Real Estate</option>
                                             <option className="dark:bg-[#1C2434]" value="Other">Other</option>
                                         </select>
-                                        <label htmlFor="industry" className={`absolute left-6 transition-all bg-white dark:bg-[#1C2434] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 ${formData.industry ? '-top-2.5 text-xs text-purple-600 dark:text-purple-400' : '-top-2.5'} duration-300`}>
                                         <label htmlFor="industry" className={`absolute left-6 transition-all bg-white dark:bg-[#1C2434] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 ${formData.industry ? '-top-2.5 text-xs text-emerald-600 dark:text-emerald-400' : '-top-2.5'} duration-300`}>
                                             Business Industry
                                         </label>
@@ -536,6 +485,7 @@ export default function Register() {
                                         {errors.industry && <p className="text-xs text-red-500 dark:text-red-400 mt-1 pl-4 transition-colors duration-300">{errors.industry}</p>}
                                     </div>
 
+                                    {/* Company Size */}
                                     <div className="relative">
                                         <select
                                             id="companySize"
@@ -543,7 +493,6 @@ export default function Register() {
                                             required
                                             value={formData.companySize}
                                             onChange={handleChange}
-                                            className={`peer block w-full pl-10 pr-10 py-3 border ${errors.companySize ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-[#38414E]'} rounded-full text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 sm:text-sm bg-gray-50/50 dark:bg-transparent appearance-none transition-colors duration-300`}
                                             className={`peer block w-full pl-10 pr-10 py-3 border ${errors.companySize ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-[#38414E]'} rounded-full text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-gray-50/50 dark:bg-transparent appearance-none transition-colors duration-300`}
                                         >
                                             <option className="dark:bg-[#1C2434]" value="" disabled hidden></option>
@@ -553,7 +502,6 @@ export default function Register() {
                                             <option className="dark:bg-[#1C2434]" value="201-500">201-500 Employees</option>
                                             <option className="dark:bg-[#1C2434]" value="500+">500+ Employees</option>
                                         </select>
-                                        <label htmlFor="companySize" className={`absolute left-6 transition-all bg-white dark:bg-[#1C2434] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 ${formData.companySize ? '-top-2.5 text-xs text-purple-600 dark:text-purple-400' : '-top-2.5'} duration-300`}>
                                         <label htmlFor="companySize" className={`absolute left-6 transition-all bg-white dark:bg-[#1C2434] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 ${formData.companySize ? '-top-2.5 text-xs text-emerald-600 dark:text-emerald-400' : '-top-2.5'} duration-300`}>
                                             Company Size
                                         </label>
@@ -572,12 +520,12 @@ export default function Register() {
                                 </div>
                             )}
 
-                            <div className={`pt-4 flex ${step > 1 ? 'justify-between gap-4' : 'justify-end'} `}>
+                            {/* Navigation Buttons */}
+                            <div className={`pt-4 flex ${step > 1 ? 'justify-between gap-4' : 'justify-end'}`}>
                                 {step > 1 && (
                                     <button
                                         type="button"
                                         onClick={handlePrevious}
-                                        className="flex-1 flex justify-center items-center gap-2 py-3 px-4 border border-[#7C3AED] dark:border-purple-500 rounded-full shadow-sm text-sm font-medium text-[#7C3AED] dark:text-purple-400 bg-white dark:bg-[#1C2434] hover:bg-purple-50 dark:hover:bg-[#24303F] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors duration-300"
                                         className="flex-1 flex justify-center items-center gap-2 py-3 px-4 border border-emerald-500 dark:border-emerald-500 rounded-full shadow-sm text-sm font-medium text-emerald-500 dark:text-emerald-400 bg-white dark:bg-[#1C2434] hover:bg-emerald-50 dark:hover:bg-[#24303F] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors duration-300"
                                     >
                                         <ChevronLeftIcon className="h-4 w-4" />
@@ -588,7 +536,6 @@ export default function Register() {
                                 <Button
                                     type="submit"
                                     disabled={isLoading}
-                                    className={`${step > 1 ? 'flex-1' : 'px-8'} flex justify-center items-center gap-2 py-3 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-[#7C3AED] dark:bg-purple-600 hover:bg-purple-700 dark:hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors duration-300`}
                                     className={`${step > 1 ? 'flex-1' : 'px-8'} flex justify-center items-center gap-2 py-3 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-emerald-500 dark:bg-emerald-600 hover:bg-emerald-600 dark:hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors duration-300`}
                                 >
                                     {step === 2 ? 'Save' : 'Next'}
@@ -604,13 +551,11 @@ export default function Register() {
                             </div>
                         </form>
 
+                        {/* Progress Bar */}
                         <div className="mt-8">
                             <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-2 transition-colors duration-300">
                                 <span>Step {step} of 2</span>
                             </div>
-                            <div className="w-full bg-purple-100 dark:bg-gray-700 rounded-full h-1.5 transition-colors duration-300">
-                                <div
-                                    className="bg-purple-600 dark:bg-purple-500 h-1.5 rounded-full transition-all duration-300"
                             <div className="w-full bg-emerald-100 dark:bg-gray-700 rounded-full h-1.5 transition-colors duration-300">
                                 <div
                                     className="bg-emerald-500 dark:bg-emerald-400 h-1.5 rounded-full transition-all duration-300"
