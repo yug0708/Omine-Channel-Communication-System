@@ -157,31 +157,31 @@ export const WhatsAppBusinessIcon: React.FC<IconProps> = ({ className, style }) 
 );
 export const EmailIcon: React.FC<IconProps> = ({ className, style }) => (
     <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} style={style} viewBox="0 0 24 24" fill="none">
-<<<<<<< HEAD
+
         <circle cx="12" cy="12" r="11" fill="currentColor" />
-=======
+
         <circle cx="12" cy="12" r="11" fill="#3B82F6" />
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
         <path transform="translate(4, 4) scale(0.666)" d="M4,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4C2.89,20 2,19.1 2,18V6C2,4.89 2.89,4 4,4M12,11L20,6H4L12,11M12,13L4,8V18H20V8L12,13Z" fill="white" />
     </svg>
 );
 export const LiveChatIcon: React.FC<IconProps> = ({ className, style }) => (
     <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} style={style} viewBox="0 0 24 24" fill="none">
-<<<<<<< HEAD
+
         <circle cx="12" cy="12" r="11" fill="currentColor" />
-=======
+
         <circle cx="12" cy="12" r="11" fill="#0EA5E9" />
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
         <path transform="translate(4, 4) scale(0.666)" d="M12,3C17.5,3 22,6.58 22,11C22,15.42 17.5,19 12,19C11.16,19 10.35,18.91 9.57,18.75L4,21L5.2,16.7C3.8,15.21 3,13.2 3,11C3,6.58 7.5,3 12,3M12,5C8.69,5 6,7.24 6,10H6C6,12.21 7.6,14 9.69,14.69L8,17.5L11.5,16.05C11.67,16.03 11.83,16 12,16C15.31,16 18,13.76 18,11C18,7.24 15.31,5 12,5M10.5,10A1.5,1.5 0 0,0 9,11.5A1.5,1.5 0 0,0 10.5,13A1.5,1.5 0 0,0 12,11.5A1.5,1.5 0 0,0 10.5,10M15.5,10A1.5,1.5 0 0,0 14,11.5A1.5,1.5 0 0,0 15.5,13A1.5,1.5 0 0,0 17,11.5A1.5,1.5 0 0,0 15.5,10Z" fill="white" />
     </svg>
 );
 export const VoiceIcon: React.FC<IconProps> = ({ className, style }) => (
     <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} style={style} viewBox="0 0 24 24" fill="none">
-<<<<<<< HEAD
+
         <circle cx="12" cy="12" r="11" fill="currentColor" />
-=======
+
         <circle cx="12" cy="12" r="11" fill="#EF4444" />
->>>>>>> d25effb6cab6af83effe1b26eefb8f8659faa69a
+
         <path transform="translate(4, 4) scale(0.666)" d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z" fill="white" />
     </svg>
 );
