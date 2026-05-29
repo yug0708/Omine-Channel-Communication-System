@@ -89,8 +89,22 @@ const EMPTY_FORM: AccountFormData = {
   pincode: '',
 };
 
+interface CountryDialCode {
+  name: string;
+  code: string;
+  flag: string;
+  dialCode: string;
+}
+
+const COUNTRIES_DIAL_CODES: CountryDialCode[] = COUNTRIES.map((c) => ({
+  name: c.name,
+  code: c.code,
+  flag: c.flag,
+  dialCode: c.dial_code,
+}));
+
 const inputClass =
-  'mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition';
+  'mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition';
 
 const labelClass = 'block text-sm font-medium text-slate-700 dark:text-slate-300';
 
@@ -100,174 +114,319 @@ const AccountForm: React.FC<{
   onClose: () => void;
 }> = ({ account, onSave, onClose }) => {
   const [form, setForm] = useState<AccountFormData>({
-    name:       account?.name       ?? '',
-    website:    account?.website    ?? '',
-    email:      account?.email      ?? '',
-    phone:      account?.phone      ?? '',
-    address:    account?.address    ?? '',
-    crNumber:   account?.crNumber   ?? '',
+    name: account?.name ?? '',
+    website: account?.website ?? '',
+    email: account?.email ?? '',
+    phone: account?.phone ?? '',
+    address: account?.address ?? '',
+    crNumber: account?.crNumber ?? '',
     assignedTo: account?.assignedTo ?? '',
-    country:    account?.country    ?? '',
-    city:       account?.city       ?? '',
-    pincode:    account?.pincode    ?? '',
+    country: account?.country ?? '',
+    city: account?.city ?? '',
+    pincode: account?.pincode ?? '',
   });
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // Custom Country Dropdown States & Ref
+  const countryDropdownRef = React.useRef<HTMLDivElement>(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [dropdownSearch, setDropdownSearch] = useState('');
+  
+  // Find current selected country prefix based on form.phone, or default to SA
+  const initialCountry = React.useMemo(() => {
+    const trimmedPhone = form.phone.trim();
+    if (trimmedPhone) {
+      const match = COUNTRIES_DIAL_CODES.find(c => trimmedPhone.startsWith(c.dialCode));
+      if (match) return match;
+    }
+    return COUNTRIES_DIAL_CODES.find(c => c.code === 'SA') || COUNTRIES_DIAL_CODES[0];
+  }, [form.phone]);
+
+  const [selectedCountry, setSelectedCountry] = useState<CountryDialCode>(initialCountry);
+
+  React.useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (countryDropdownRef.current && !countryDropdownRef.current.contains(e.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
+
+  const validate = (currentForm = form) => {
+    const newErrors: Record<string, string> = {};
+    if (!currentForm.name.trim()) {
+      newErrors.name = 'Account Name must be at least 1 characters.';
+    }
+    if (!currentForm.email.trim()) {
+      newErrors.email = 'Email is required!';
+    }
+    if (!currentForm.phone.trim()) {
+      newErrors.phone = 'Contact Number is required!';
+    }
+    return newErrors;
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    const updatedForm = { ...form, [name]: value };
+    setForm(updatedForm);
+
+    if (isSubmitted) {
+      setErrors(validate(updatedForm));
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitted(true);
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
     onSave({ ...form, ...(account ? { id: account.id, createdAt: account.createdAt } : {}) });
   };
 
+  const getInputClass = (fieldName: string, extraClasses = '') => {
+    const hasError = errors[fieldName];
+    const base = 'mt-1 block w-full rounded-lg bg-white dark:bg-slate-800 px-3 py-2 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none transition';
+    
+    if (hasError) {
+      return `${base} border-2 border-rose-500 dark:border-rose-500 focus:ring-2 focus:ring-rose-500 ${extraClasses}`;
+    }
+    return `${base} border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${extraClasses}`;
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Row 1 */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className={labelClass}>Account Name *</label>
-          <input
-            required
-            type="text"
-            name="name"
-            value={form.name}
-            onChange={handleChange}
-            placeholder="Acme Corp"
-            className={inputClass}
-          />
-        </div>
-        <div>
-          <label className={labelClass}>Website</label>
-          <input
-            type="url"
-            name="website"
-            value={form.website}
-            onChange={handleChange}
-            placeholder="https://example.com"
-            className={inputClass}
-          />
-        </div>
+    <form onSubmit={handleSubmit} noValidate className="space-y-5">
+      {/* 1. Account Name */}
+      <div>
+        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Account Name *</label>
+        <input
+          type="text"
+          name="name"
+          value={form.name}
+          onChange={handleChange}
+          placeholder="Enter account name"
+          className={getInputClass('name')}
+        />
+        {errors.name && (
+          <p className="text-xs text-rose-500 dark:text-rose-400 font-semibold mt-1.5 pl-0.5">
+            {errors.name}
+          </p>
+        )}
       </div>
 
-      {/* Row 2 */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className={labelClass}>Email</label>
-          <input
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-            placeholder="contact@example.com"
-            className={inputClass}
-          />
-        </div>
-        <div>
-          <label className={labelClass}>Phone</label>
+      {/* 2. Email */}
+      <div>
+        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Email *</label>
+        <input
+          type="email"
+          name="email"
+          value={form.email}
+          onChange={handleChange}
+          placeholder="Enter email"
+          className={getInputClass('email')}
+        />
+        {errors.email && (
+          <p className="text-xs text-rose-500 dark:text-rose-400 font-semibold mt-1.5 pl-0.5">
+            {errors.email}
+          </p>
+        )}
+      </div>
+
+      {/* 3. Phone Number */}
+      <div>
+        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Phone Number *</label>
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center z-20" ref={countryDropdownRef}>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsDropdownOpen(!isDropdownOpen);
+              }}
+              className="flex items-center gap-1 hover:bg-slate-100 dark:hover:bg-slate-800 px-1.5 py-1 rounded-lg transition text-xs font-bold text-slate-600 dark:text-slate-300"
+            >
+              <span>{selectedCountry.code}</span>
+              <svg className="h-3 w-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div className="h-4 w-px bg-slate-300 dark:bg-slate-700 mx-1.5" />
+
+            {isDropdownOpen && (
+              <div className="absolute top-[calc(100%+4px)] left-0 w-64 bg-white dark:bg-[#151B25] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-50 flex flex-col p-2 max-h-64 overflow-hidden">
+                <div className="relative mb-2 p-1">
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    value={dropdownSearch}
+                    onChange={(e) => setDropdownSearch(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 text-slate-900 dark:text-white"
+                  />
+                </div>
+                <div className="overflow-y-auto flex-1 divide-y divide-slate-100 dark:divide-slate-800/80 pr-1">
+                  {COUNTRIES_DIAL_CODES.filter(
+                    (c) =>
+                      c.name.toLowerCase().includes(dropdownSearch.toLowerCase()) ||
+                      c.code.toLowerCase().includes(dropdownSearch.toLowerCase()) ||
+                      c.dialCode.includes(dropdownSearch)
+                  ).map((c) => (
+                    <button
+                      key={c.code}
+                      type="button"
+                      onClick={() => {
+                        setSelectedCountry(c);
+                        setIsDropdownOpen(false);
+                        setDropdownSearch('');
+                        const trimmedPhone = form.phone.trim();
+                        if (!trimmedPhone || COUNTRIES_DIAL_CODES.some(x => trimmedPhone.startsWith(x.dialCode))) {
+                          setForm(prev => ({ ...prev, phone: `${c.dialCode} ` }));
+                        }
+                      }}
+                      className="w-full text-left px-2.5 py-2 flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-xl transition text-xs"
+                    >
+                      <span className="text-base shrink-0">{c.flag}</span>
+                      <div className="flex flex-col min-w-0">
+                        <span className="font-extrabold text-slate-900 dark:text-white truncate">{c.name}</span>
+                        <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase">{c.code} ({c.dialCode})</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
           <input
             type="tel"
             name="phone"
             value={form.phone}
             onChange={handleChange}
-            placeholder="+1 234 567 8901"
-            className={inputClass}
+            onFocus={() => setIsDropdownOpen(false)}
+            placeholder="Enter phone number"
+            className={getInputClass('phone', 'pl-20')}
           />
         </div>
+        {errors.phone && (
+          <p className="text-xs text-rose-500 dark:text-rose-400 font-semibold mt-1.5 pl-0.5">
+            {errors.phone}
+          </p>
+        )}
       </div>
 
-      {/* Row 3 */}
+      {/* 4. City */}
       <div>
-        <label className={labelClass}>Address</label>
+        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">City</label>
+        <input
+          type="text"
+          name="city"
+          value={form.city}
+          onChange={handleChange}
+          placeholder="Enter city"
+          className={getInputClass('city')}
+        />
+      </div>
+
+      {/* 5. Country */}
+      <div>
+        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Country</label>
+        <input
+          type="text"
+          name="country"
+          value={form.country}
+          onChange={handleChange}
+          placeholder="Enter country"
+          className={getInputClass('country')}
+        />
+      </div>
+
+      {/* 6. CR Number */}
+      <div>
+        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">CR Number</label>
+        <input
+          type="text"
+          name="crNumber"
+          value={form.crNumber}
+          onChange={handleChange}
+          placeholder="Enter CR number"
+          className={getInputClass('crNumber')}
+        />
+      </div>
+
+      {/* 7. Pincode */}
+      <div>
+        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Pincode</label>
+        <input
+          type="text"
+          name="pincode"
+          value={form.pincode}
+          onChange={handleChange}
+          placeholder="Enter pincode"
+          className={getInputClass('pincode')}
+        />
+      </div>
+
+      {/* 8. Website */}
+      <div>
+        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Website</label>
+        <input
+          type="url"
+          name="website"
+          value={form.website}
+          onChange={handleChange}
+          placeholder="Enter website"
+          className={getInputClass('website')}
+        />
+      </div>
+
+      {/* 9. Address */}
+      <div>
+        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Address</label>
         <input
           type="text"
           name="address"
           value={form.address}
           onChange={handleChange}
-          placeholder="123 Main St, City, Country"
-          className={inputClass}
+          placeholder="Enter address"
+          className={getInputClass('address')}
         />
       </div>
 
-      {/* Row 4 */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div>
-          <label className={labelClass}>Country</label>
-          <select
-            name="country"
-            value={form.country}
-            onChange={handleChange}
-            className={inputClass}
-          >
-            <option value="">Select country</option>
-            {COUNTRIES.map((c) => (
-              <option key={c.code} value={c.name}>
-                {c.flag} {c.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className={labelClass}>City</label>
-          <input
-            type="text"
-            name="city"
-            value={form.city}
-            onChange={handleChange}
-            placeholder="City"
-            className={inputClass}
-          />
-        </div>
-        <div>
-          <label className={labelClass}>Pincode</label>
-          <input
-            type="text"
-            name="pincode"
-            value={form.pincode}
-            onChange={handleChange}
-            placeholder="12345"
-            className={inputClass}
-          />
-        </div>
-      </div>
-
-      {/* Row 5 */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className={labelClass}>CR Number</label>
-          <input
-            type="text"
-            name="crNumber"
-            value={form.crNumber}
-            onChange={handleChange}
-            placeholder="CR-12345"
-            className={inputClass}
-          />
-        </div>
-        <div>
-          <label className={labelClass}>Assigned To</label>
-          <input
-            type="text"
-            name="assignedTo"
-            value={form.assignedTo}
-            onChange={handleChange}
-            placeholder="Agent name"
-            className={inputClass}
-          />
-        </div>
+      {/* 10. Assigned to */}
+      <div>
+        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Assigned to</label>
+        <input
+          type="text"
+          name="assignedTo"
+          value={form.assignedTo}
+          onChange={handleChange}
+          placeholder="Agent name"
+          className={getInputClass('assignedTo')}
+        />
       </div>
 
       {/* Actions */}
-      <div className="flex justify-end gap-3 pt-2">
-        <Button type="button" variant="secondary" onClick={onClose}>
+      <div className="flex justify-end gap-3 pt-6 border-t border-slate-100 dark:border-slate-800/80 mt-6">
+        <button
+          type="button"
+          onClick={onClose}
+          className="px-5 py-2 rounded-xl text-sm font-bold border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+        >
           Cancel
-        </Button>
-        <Button type="submit">
+        </button>
+        <button
+          type="submit"
+          className="px-5 py-2 rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition duration-200"
+        >
           {account ? 'Update Account' : 'Add Account'}
-        </Button>
+        </button>
       </div>
     </form>
   );
@@ -276,7 +435,7 @@ const AccountForm: React.FC<{
 // ─── Checkbox style ───────────────────────────────────────────────────────────
 
 const checkboxClasses =
-  'h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-violet-600 focus:ring-violet-500 cursor-pointer accent-violet-600';
+  'h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-emerald-600 focus:ring-emerald-500 cursor-pointer accent-emerald-600';
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
@@ -286,15 +445,15 @@ const Accounts: React.FC = () => {
   const { accounts, setAccounts } = useData();
 
   // Modal state
-  const [isModalOpen, setIsModalOpen]       = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
 
   // Selection state
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
 
   // Search & pagination
-  const [search, setSearch]   = useState('');
-  const [page, setPage]       = useState(1);
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
 
   // ── Derived data ──────────────────────────────────────────────────────────
 
@@ -303,15 +462,15 @@ const Accounts: React.FC = () => {
     if (!q) return accounts;
     return accounts.filter(
       (a) =>
-          a.name.toLowerCase().includes(q) ||
-          a.email.toLowerCase().includes(q) ||
-          a.country.toLowerCase().includes(q) ||
-          a.assignedTo.toLowerCase().includes(q)
+        a.name.toLowerCase().includes(q) ||
+        a.email.toLowerCase().includes(q) ||
+        a.country.toLowerCase().includes(q) ||
+        a.assignedTo.toLowerCase().includes(q)
     );
   }, [accounts, search]);
 
-  const totalPages       = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
-  const safePage         = Math.min(page, totalPages);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
+  const safePage = Math.min(page, totalPages);
   const paginatedAccounts = filtered.slice(
     (safePage - 1) * ITEMS_PER_PAGE,
     safePage * ITEMS_PER_PAGE
@@ -342,7 +501,7 @@ const Accounts: React.FC = () => {
       // Create new
       const newAccount: Account = {
         ...data,
-        id:        `acc${Date.now()}`,
+        id: `acc${Date.now()}`,
         createdAt: now,
         updatedAt: now,
       };
@@ -393,7 +552,7 @@ const Accounts: React.FC = () => {
           <div className="flex items-center gap-2">
             <button
               onClick={() => handleOpenModal()}
-              className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-full text-sm font-medium shadow-sm flex items-center gap-1.5 transition-colors"
+              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-5 py-2 rounded-full text-sm font-bold shadow-md shadow-emerald-500/10 flex items-center gap-1.5 transition-all duration-200"
             >
               <PlusIcon className="h-4 w-4" />
               New Account
@@ -417,7 +576,7 @@ const Accounts: React.FC = () => {
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
               placeholder="Search accounts…"
-              className="pl-9 pr-4 py-1.5 bg-transparent border border-slate-300 dark:border-slate-700 rounded-full text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 w-64 transition"
+              className="pl-9 pr-4 py-1.5 bg-transparent border border-slate-300 dark:border-slate-700 rounded-full text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 w-64 transition"
             />
           </div>
         </div>
@@ -472,11 +631,10 @@ const Accounts: React.FC = () => {
                   return (
                     <tr
                       key={account.id}
-                      className={`transition-colors ${
-                        isSelected
-                          ? 'bg-violet-500/10'
+                      className={`transition-colors ${isSelected
+                          ? 'bg-emerald-500/10'
                           : 'hover:bg-slate-50 dark:hover:bg-slate-900/50'
-                      }`}
+                        }`}
                     >
                       {/* Checkbox */}
                       <td className="px-4 py-2">
@@ -505,7 +663,7 @@ const Accounts: React.FC = () => {
                             href={account.website.startsWith('http') ? account.website : `https://${account.website}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="hover:text-violet-500 transition-colors"
+                            className="hover:text-emerald-500 transition-colors"
                             onClick={(e) => e.stopPropagation()}
                           >
                             {account.website}
@@ -560,7 +718,7 @@ const Accounts: React.FC = () => {
                         <div className="flex items-center justify-center gap-1">
                           <button
                             onClick={() => handleOpenModal(account)}
-                            className="text-slate-400 hover:text-violet-500 transition-colors p-1 rounded"
+                            className="text-slate-400 hover:text-emerald-500 transition-colors p-1 rounded"
                             aria-label={`Edit ${account.name}`}
                             title="Edit"
                           >
@@ -619,6 +777,7 @@ const Accounts: React.FC = () => {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         title={editingAccount ? 'Edit Account' : 'Add New Account'}
+        variant="drawer"
       >
         <AccountForm
           account={editingAccount}
