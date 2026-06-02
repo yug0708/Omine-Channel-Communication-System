@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useData } from '../hooks/useData';
+import { useAuth } from '../hooks/useAuth';
 import { Account } from '../types';
 import { COUNTRIES } from '../data/countries';
 import Button from '../components/ui/Button';
@@ -112,7 +113,8 @@ const AccountForm: React.FC<{
   account?: Account | null;
   onSave: (data: AccountFormData & Partial<Pick<Account, 'id' | 'createdAt' | 'updatedAt'>>) => void;
   onClose: () => void;
-}> = ({ account, onSave, onClose }) => {
+  currentUserName?: string;
+}> = ({ account, onSave, onClose, currentUserName = '' }) => {
   const [form, setForm] = useState<AccountFormData>({
     name: account?.name ?? '',
     website: account?.website ?? '',
@@ -120,7 +122,8 @@ const AccountForm: React.FC<{
     phone: account?.phone ?? '',
     address: account?.address ?? '',
     crNumber: account?.crNumber ?? '',
-    assignedTo: account?.assignedTo ?? '',
+    // Pre-fill with current user when creating; keep existing value when editing
+    assignedTo: account?.assignedTo ?? currentUserName,
     country: account?.country ?? '',
     city: account?.city ?? '',
     pincode: account?.pincode ?? '',
@@ -133,7 +136,40 @@ const AccountForm: React.FC<{
   const countryDropdownRef = React.useRef<HTMLDivElement>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [dropdownSearch, setDropdownSearch] = useState('');
-  
+
+  // Assignee Dropdown
+  const assigneeDropdownRef = React.useRef<HTMLDivElement>(null);
+  const [isAssigneeOpen, setIsAssigneeOpen] = useState(false);
+
+  // Available users list (currently just the logged-in user)
+  const availableUsers = React.useMemo(() => {
+    if (!currentUserName) return [];
+    return [{ name: currentUserName, role: 'User' }];
+  }, [currentUserName]);
+
+  React.useEffect(() => {
+    const handleOutsideAssignee = (e: MouseEvent) => {
+      if (assigneeDropdownRef.current && !assigneeDropdownRef.current.contains(e.target as Node)) {
+        setIsAssigneeOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideAssignee);
+    return () => document.removeEventListener('mousedown', handleOutsideAssignee);
+  }, []);
+
+  const handleSelectAssignee = (name: string) => {
+    const updatedForm = { ...form, assignedTo: form.assignedTo === name ? '' : name };
+    setForm(updatedForm);
+    setIsAssigneeOpen(false);
+    if (isSubmitted) setErrors(validate(updatedForm));
+  };
+
+  const handleRemoveAssignee = () => {
+    const updatedForm = { ...form, assignedTo: '' };
+    setForm(updatedForm);
+    if (isSubmitted) setErrors(validate(updatedForm));
+  };
+
   // Find current selected country prefix based on form.phone, or default to SA
   const initialCountry = React.useMemo(() => {
     const trimmedPhone = form.phone.trim();
@@ -167,6 +203,9 @@ const AccountForm: React.FC<{
     if (!currentForm.phone.trim()) {
       newErrors.phone = 'Contact Number is required!';
     }
+    if (!currentForm.assignedTo.trim()) {
+      newErrors.assignedTo = 'Assigned To is required!';
+    }
     return newErrors;
   };
 
@@ -195,19 +234,42 @@ const AccountForm: React.FC<{
 
   const getInputClass = (fieldName: string, extraClasses = '') => {
     const hasError = errors[fieldName];
-    const base = 'mt-1 block w-full rounded-lg bg-white dark:bg-slate-800 px-3 py-2 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none transition';
-    
+    const base = 'block w-full rounded-full bg-white dark:bg-[#151B25] px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none transition';
     if (hasError) {
-      return `${base} border-2 border-rose-500 dark:border-rose-500 focus:ring-2 focus:ring-rose-500 ${extraClasses}`;
+      return `${base} border-2 border-rose-500 dark:border-rose-500 focus:ring-0 ${extraClasses}`;
     }
-    return `${base} border border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${extraClasses}`;
+    return `${base} border border-slate-300 dark:border-slate-700 focus:border-emerald-500 focus:ring-0 ${extraClasses}`;
   };
 
+  // Floating label field wrapper — bg must match modal bg exactly
+  const FloatField = ({
+    label, fieldName, children, error,
+  }: { label: string; fieldName: string; children: React.ReactNode; error?: string }) => (
+    <div className="relative mt-5">
+      <label
+        className={`absolute -top-2.5 left-4 px-1.5 text-[11px] font-semibold z-10 bg-white dark:bg-[#151B25] ${errors[fieldName] ? 'text-rose-500' : 'text-slate-500 dark:text-slate-400'
+          }`}
+      >
+        {label}
+      </label>
+      {children}
+      {error && (
+        <p className="text-xs text-rose-500 dark:text-rose-400 font-semibold mt-1.5 pl-4">{error}</p>
+      )}
+    </div>
+  );
+
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-5">
+    <form onSubmit={handleSubmit} noValidate className="space-y-4">
+
+      {/* ── Basic Information Section ── */}
+      <div className="flex items-center gap-3 pt-1 pb-2">
+        <div className="w-1 h-5 rounded-full bg-emerald-500" />
+        <span className="text-xs font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Basic Information</span>
+      </div>
+
       {/* 1. Account Name */}
-      <div>
-        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Account Name *</label>
+      <FloatField label="Account Name *" fieldName="name" error={errors.name}>
         <input
           type="text"
           name="name"
@@ -216,34 +278,22 @@ const AccountForm: React.FC<{
           placeholder="Enter account name"
           className={getInputClass('name')}
         />
-        {errors.name && (
-          <p className="text-xs text-rose-500 dark:text-rose-400 font-semibold mt-1.5 pl-0.5">
-            {errors.name}
-          </p>
-        )}
-      </div>
+      </FloatField>
 
       {/* 2. Email */}
-      <div>
-        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Email *</label>
+      <FloatField label="Email *" fieldName="email" error={errors.email}>
         <input
           type="email"
           name="email"
           value={form.email}
           onChange={handleChange}
-          placeholder="Enter email"
+          placeholder="Enter email address"
           className={getInputClass('email')}
         />
-        {errors.email && (
-          <p className="text-xs text-rose-500 dark:text-rose-400 font-semibold mt-1.5 pl-0.5">
-            {errors.email}
-          </p>
-        )}
-      </div>
+      </FloatField>
 
       {/* 3. Phone Number */}
-      <div>
-        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Phone Number *</label>
+      <FloatField label="Phone Number *" fieldName="phone" error={errors.phone}>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center z-20" ref={countryDropdownRef}>
             <button
@@ -252,7 +302,7 @@ const AccountForm: React.FC<{
                 e.stopPropagation();
                 setIsDropdownOpen(!isDropdownOpen);
               }}
-              className="flex items-center gap-1 hover:bg-slate-100 dark:hover:bg-slate-800 px-1.5 py-1 rounded-lg transition text-xs font-bold text-slate-600 dark:text-slate-300"
+              className="flex items-center gap-1 hover:bg-slate-100 dark:hover:bg-slate-700 px-1.5 py-1 rounded-lg transition text-xs font-bold text-slate-600 dark:text-slate-300"
             >
               <span>{selectedCountry.code}</span>
               <svg className="h-3 w-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -260,7 +310,6 @@ const AccountForm: React.FC<{
               </svg>
             </button>
             <div className="h-4 w-px bg-slate-300 dark:bg-slate-700 mx-1.5" />
-
             {isDropdownOpen && (
               <div className="absolute top-[calc(100%+4px)] left-0 w-64 bg-white dark:bg-[#151B25] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-50 flex flex-col p-2 max-h-64 overflow-hidden">
                 <div className="relative mb-2 p-1">
@@ -314,102 +363,152 @@ const AccountForm: React.FC<{
             className={getInputClass('phone', 'pl-20')}
           />
         </div>
-        {errors.phone && (
-          <p className="text-xs text-rose-500 dark:text-rose-400 font-semibold mt-1.5 pl-0.5">
-            {errors.phone}
-          </p>
-        )}
+      </FloatField>
+
+      {/* ── Address Information Section ── */}
+      <div className="flex items-center gap-3 pt-3 pb-2">
+        <div className="w-1 h-5 rounded-full bg-emerald-500" />
+        <span className="text-xs font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Address Information</span>
       </div>
 
       {/* 4. City */}
-      <div>
-        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">City</label>
-        <input
-          type="text"
-          name="city"
-          value={form.city}
-          onChange={handleChange}
-          placeholder="Enter city"
-          className={getInputClass('city')}
-        />
-      </div>
+      <FloatField label="City" fieldName="city">
+        <input type="text" name="city" value={form.city} onChange={handleChange} placeholder="Enter city" className={getInputClass('city')} />
+      </FloatField>
 
       {/* 5. Country */}
-      <div>
-        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Country</label>
-        <input
-          type="text"
-          name="country"
-          value={form.country}
-          onChange={handleChange}
-          placeholder="Enter country"
-          className={getInputClass('country')}
-        />
-      </div>
+      <FloatField label="Country" fieldName="country">
+        <input type="text" name="country" value={form.country} onChange={handleChange} placeholder="Enter country" className={getInputClass('country')} />
+      </FloatField>
 
       {/* 6. CR Number */}
-      <div>
-        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">CR Number</label>
-        <input
-          type="text"
-          name="crNumber"
-          value={form.crNumber}
-          onChange={handleChange}
-          placeholder="Enter CR number"
-          className={getInputClass('crNumber')}
-        />
-      </div>
+      <FloatField label="CR Number" fieldName="crNumber">
+        <input type="text" name="crNumber" value={form.crNumber} onChange={handleChange} placeholder="Enter CR number" className={getInputClass('crNumber')} />
+      </FloatField>
 
       {/* 7. Pincode */}
-      <div>
-        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Pincode</label>
-        <input
-          type="text"
-          name="pincode"
-          value={form.pincode}
-          onChange={handleChange}
-          placeholder="Enter pincode"
-          className={getInputClass('pincode')}
-        />
-      </div>
+      <FloatField label="Pincode" fieldName="pincode">
+        <input type="text" name="pincode" value={form.pincode} onChange={handleChange} placeholder="Enter pincode" className={getInputClass('pincode')} />
+      </FloatField>
 
       {/* 8. Website */}
-      <div>
-        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Website</label>
-        <input
-          type="url"
-          name="website"
-          value={form.website}
-          onChange={handleChange}
-          placeholder="Enter website"
-          className={getInputClass('website')}
-        />
-      </div>
+      <FloatField label="Website" fieldName="website">
+        <input type="url" name="website" value={form.website} onChange={handleChange} placeholder="Enter website URL" className={getInputClass('website')} />
+      </FloatField>
 
       {/* 9. Address */}
-      <div>
-        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Address</label>
-        <input
-          type="text"
-          name="address"
-          value={form.address}
-          onChange={handleChange}
-          placeholder="Enter address"
-          className={getInputClass('address')}
-        />
+      <FloatField label="Address" fieldName="address">
+        <input type="text" name="address" value={form.address} onChange={handleChange} placeholder="Enter address" className={getInputClass('address')} />
+      </FloatField>
+
+      {/* ── Assignment Section ── */}
+      <div className="flex items-center gap-3 pt-3 pb-2">
+        <div className="w-1 h-5 rounded-full bg-emerald-500" />
+        <span className="text-xs font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Assignment</span>
       </div>
 
-      {/* 10. Assigned to */}
-      <div>
-        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Assigned to</label>
-        <input
-          type="text"
-          name="assignedTo"
-          value={form.assignedTo}
-          onChange={handleChange}
-          placeholder="Agent name"
-          className={getInputClass('assignedTo')}
-        />
+      {/* 10. Assigned to – chip selector */}
+      <div ref={assigneeDropdownRef} className="relative">
+        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+          Assigned To *
+        </label>
+
+        {/* Chip input box */}
+        <div
+          onClick={() => setIsAssigneeOpen((o) => !o)}
+          className={`min-h-[42px] flex flex-wrap items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition ${errors.assignedTo
+            ? 'border-2 border-rose-500 dark:border-rose-500'
+            : isAssigneeOpen
+              ? 'border-2 border-emerald-500'
+              : 'border border-slate-300 dark:border-slate-600'
+            } bg-white dark:bg-slate-800`}
+        >
+          {form.assignedTo ? (
+            <>
+              {/* Selected chip */}
+              <span className="inline-flex items-center gap-1.5 pl-1 pr-2 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-white text-xs font-semibold">
+                <span className={`h-5 w-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 ${getAvatarColor(form.assignedTo)}`}>
+                  {getInitials(form.assignedTo)}
+                </span>
+                {form.assignedTo}
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); handleRemoveAssignee(); }}
+                  className="ml-0.5 text-slate-400 hover:text-rose-500 transition-colors"
+                >
+                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </span>
+              <span className="text-xs text-slate-400 dark:text-slate-500">Add Recipients</span>
+            </>
+          ) : (
+            <span className="text-sm text-slate-400 dark:text-slate-500">Add Recipients</span>
+          )}
+
+          {/* Clear all button */}
+          {form.assignedTo && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); handleRemoveAssignee(); }}
+              className="ml-auto text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
+
+        {/* Dropdown */}
+        {isAssigneeOpen && (
+          <div className="absolute left-0 right-0 top-[calc(100%+4px)] bg-white dark:bg-[#1a2235] border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden">
+            {availableUsers.length === 0 ? (
+              <p className="px-4 py-3 text-xs text-slate-400">No users available</p>
+            ) : (
+              availableUsers.map((u) => {
+                const isSelected = form.assignedTo === u.name;
+                return (
+                  <button
+                    key={u.name}
+                    type="button"
+                    onClick={() => handleSelectAssignee(u.name)}
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${isSelected
+                      ? 'bg-emerald-50 dark:bg-emerald-900/20'
+                      : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'
+                      }`}
+                  >
+                    {/* Checkmark */}
+                    <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${isSelected ? 'bg-emerald-500 border-emerald-500' : 'border-slate-300 dark:border-slate-600'
+                      }`}>
+                      {isSelected && (
+                        <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </div>
+                    {/* Avatar */}
+                    <span className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0 ${getAvatarColor(u.name)}`}>
+                      {getInitials(u.name)}
+                    </span>
+                    {/* Info */}
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-sm font-semibold text-slate-900 dark:text-white truncate">{u.name}</span>
+                      <span className="text-xs text-slate-400 dark:text-slate-500">{u.role}</span>
+                    </div>
+                  </button>
+                );
+              })
+            )}
+          </div>
+        )}
+
+        {errors.assignedTo && (
+          <p className="text-xs text-rose-500 dark:text-rose-400 font-semibold mt-1.5 pl-0.5">
+            {errors.assignedTo}
+          </p>
+        )}
       </div>
 
       {/* Actions */}
@@ -425,7 +524,7 @@ const AccountForm: React.FC<{
           type="submit"
           className="px-5 py-2 rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition duration-200"
         >
-          {account ? 'Update Account' : 'Add Account'}
+          {account ? 'Update Account' : 'Save'}
         </button>
       </div>
     </form>
@@ -443,6 +542,10 @@ const ITEMS_PER_PAGE = 10;
 
 const Accounts: React.FC = () => {
   const { accounts, setAccounts } = useData();
+  const { currentUser } = useAuth();
+  const currentUserName = currentUser
+    ? `${currentUser.firstName} ${currentUser.lastName}`.trim()
+    : '';
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -615,11 +718,40 @@ const Accounts: React.FC = () => {
             <tbody className="divide-y divide-slate-200 dark:divide-slate-800/80">
               {paginatedAccounts.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan={12}
-                    className="px-4 py-12 text-center text-slate-400 dark:text-slate-500 text-sm"
-                  >
-                    {search ? 'No accounts match your search.' : 'No accounts yet. Click "New Account" to add one.'}
+                  <td colSpan={12} className="min-h-[calc(100vh-260px)]">
+                    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-260px)] gap-5">
+                      {/* Illustration */}
+                      <div className="relative">
+                        {/* Decorative dots — emerald/teal palette */}
+                        <div className="absolute -top-4 -left-5 w-2.5 h-2.5 rounded-full bg-emerald-400/60 dark:bg-emerald-500/40" />
+                        <div className="absolute -top-2 -right-6 w-2 h-2 rounded-full bg-teal-400/60 dark:bg-teal-500/40" />
+                        <div className="absolute -bottom-3 -left-7 w-2 h-2 rounded-full bg-teal-300/70 dark:bg-teal-500/30" />
+                        <div className="absolute bottom-1 -right-5 w-2.5 h-2.5 rounded-full bg-emerald-300/70 dark:bg-emerald-500/30" />
+                        <div className="absolute top-1/2 -left-8 w-1.5 h-1.5 rounded-full bg-emerald-200 dark:bg-emerald-700/50" />
+                        <div className="absolute top-1/3 -right-7 w-1.5 h-1.5 rounded-full bg-teal-200 dark:bg-teal-700/50" />
+
+                        {/* Browser/document card */}
+                        <div className="w-24 h-20 rounded-2xl border border-emerald-100 dark:border-emerald-900/40 bg-white dark:bg-slate-800/80 flex flex-col overflow-hidden shadow-lg shadow-emerald-100/60 dark:shadow-emerald-900/20">
+                          {/* Gradient top bar */}
+                          <div className="flex items-center gap-1 px-2.5 py-2 bg-gradient-to-r from-emerald-500 to-teal-500">
+                            <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                            <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                            <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                          </div>
+                          {/* Content lines */}
+                          <div className="flex-1 flex flex-col justify-center gap-1.5 px-2.5 py-2">
+                            <div className="h-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 w-full" />
+                            <div className="h-1.5 rounded-full bg-teal-100 dark:bg-teal-900/30 w-4/5" />
+                            <div className="h-1.5 rounded-full bg-emerald-50 dark:bg-slate-700 w-3/5" />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Message */}
+                      <p className="text-sm font-semibold text-slate-400 dark:text-slate-500 tracking-wide">
+                        {search ? 'No Records Found!!!' : 'No accounts yet. Click "New Account" to add one.'}
+                      </p>
+                    </div>
                   </td>
                 </tr>
               ) : (
@@ -632,8 +764,8 @@ const Accounts: React.FC = () => {
                     <tr
                       key={account.id}
                       className={`transition-colors ${isSelected
-                          ? 'bg-emerald-500/10'
-                          : 'hover:bg-slate-50 dark:hover:bg-slate-900/50'
+                        ? 'bg-emerald-500/10'
+                        : 'hover:bg-slate-50 dark:hover:bg-slate-900/50'
                         }`}
                     >
                       {/* Checkbox */}
@@ -776,13 +908,14 @@ const Accounts: React.FC = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        title={editingAccount ? 'Edit Account' : 'Add New Account'}
+        title={editingAccount ? 'Edit Account' : 'Create Account'}
         variant="drawer"
       >
         <AccountForm
           account={editingAccount}
           onSave={handleSaveAccount}
           onClose={handleCloseModal}
+          currentUserName={currentUserName}
         />
       </Modal>
     </div>
