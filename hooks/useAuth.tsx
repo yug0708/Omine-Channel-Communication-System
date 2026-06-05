@@ -26,7 +26,8 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // ✅ IMPORTANT: Backend URL from ENV
-const API_URL = import.meta.env.VITE_API_URL;
+// On Vercel, API is served at /api/* (relative), so fallback to '' when not set.
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
