@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useData } from '../hooks/useData';
 import { useAuth } from '../hooks/useAuth';
 import { Account } from '../types';
@@ -543,6 +544,7 @@ const ITEMS_PER_PAGE = 10;
 const Accounts: React.FC = () => {
   const { accounts, setAccounts } = useData();
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
   const currentUserName = currentUser
     ? `${currentUser.firstName} ${currentUser.lastName}`.trim()
     : '';
@@ -782,7 +784,10 @@ const Accounts: React.FC = () => {
                       <td className="px-4 py-2">
                         <div className="flex items-center gap-3">
                           <AccountAvatar name={account.name} />
-                          <span className="font-medium text-slate-900 dark:text-white">
+                          <span
+                            onClick={() => navigate(`/accounts/${account.id}`)}
+                            className="font-semibold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
+                          >
                             {account.name}
                           </span>
                         </div>
