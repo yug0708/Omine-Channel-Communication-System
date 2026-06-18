@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useData } from '../hooks/useData';
 import { useAuth } from '../hooks/useAuth';
@@ -566,6 +566,33 @@ const Accounts: React.FC = () => {
   // Delete confirm modal state
   const [deleteConfirm, setDeleteConfirm] = useState<{ ids: string[]; count: number } | null>(null);
 
+  // Import/Export dropdown state
+  const [importExportOpen, setImportExportOpen] = useState(false);
+  const importExportRef = React.useRef<HTMLDivElement>(null);
+
+  // Import modal state
+  const [isImportOpen, setIsImportOpen] = useState(false);
+  const [importFile, setImportFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    const handleOutside = (e: MouseEvent) => {
+      if (importExportRef.current && !importExportRef.current.contains(e.target as Node)) {
+        setImportExportOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutside);
+    return () => document.removeEventListener('mousedown', handleOutside);
+  }, []);
+
+  // Success toast state
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!successMessage) return;
+    const timer = setTimeout(() => setSuccessMessage(null), 3000);
+    return () => clearTimeout(timer);
+  }, [successMessage]);
+
   // Search & pagination
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -612,6 +639,7 @@ const Accounts: React.FC = () => {
       setAccounts(accounts.map((a) =>
         a.id === data.id ? { ...a, ...data, updatedAt: now } : a
       ));
+      setSuccessMessage('Account Updated Successfully');
     } else {
       // Create new
       const newAccount: Account = {
@@ -621,6 +649,7 @@ const Accounts: React.FC = () => {
         updatedAt: now,
       };
       setAccounts([newAccount, ...accounts]);
+      setSuccessMessage('Account Created Successfully');
     }
     handleCloseModal();
   };
@@ -650,82 +679,149 @@ const Accounts: React.FC = () => {
 
   const confirmDelete = () => {
     if (!deleteConfirm) return;
+    const count = deleteConfirm.count;
     setAccounts(accounts.filter((a) => !deleteConfirm.ids.includes(a.id)));
     setSelectedAccounts((prev) => prev.filter((s) => !deleteConfirm.ids.includes(s)));
     setDeleteConfirm(null);
+    setSuccessMessage(`Record${count > 1 ? 's' : ''} Deleted Successfully`);
   };
 
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <div className="flex flex-col h-full gap-4">
-      <h1 className="text-xl font-bold text-slate-900 dark:text-slate-300 ml-1">Accounts</h1>
+    <div className="flex flex-col h-full gap-3 sm:gap-4">
+      <h1 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-300 ml-1">Accounts</h1>
 
       <div className="bg-white dark:bg-[#151B25] shadow-sm rounded-2xl border border-slate-200 dark:border-slate-800/80 flex flex-col flex-1 overflow-hidden">
 
         {/* Toolbar */}
-        <div className="p-4 flex flex-wrap justify-between items-center gap-3 border-b border-slate-200 dark:border-slate-800/80">
+        <div className="p-3 sm:p-4 flex flex-col sm:flex-row sm:flex-wrap sm:justify-between sm:items-center gap-2 sm:gap-3 border-b border-slate-200 dark:border-slate-800/80">
           <div className="flex items-center gap-2">
             <button
               onClick={() => handleOpenModal()}
-              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-5 py-2 rounded-full text-sm font-bold shadow-md shadow-emerald-500/10 flex items-center gap-1.5 transition-all duration-200"
+              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-4 sm:px-5 py-2 rounded-full text-sm font-bold shadow-md shadow-emerald-500/10 flex items-center gap-1.5 transition-all duration-200"
             >
               <PlusIcon className="h-4 w-4" />
               New Account
             </button>
-
-            {selectedAccounts.length > 0 && (
-              <button
-                onClick={handleDeleteSelected}
-                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full text-sm font-medium shadow-sm flex items-center gap-1.5 transition-colors"
-              >
-                <DeleteIcon className="h-4 w-4" />
-                Delete ({selectedAccounts.length})
-              </button>
-            )}
           </div>
 
-          <div className="relative">
-            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              placeholder="Search accounts…"
-              className="pl-9 pr-4 py-1.5 bg-transparent border border-slate-300 dark:border-slate-700 rounded-full text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 w-64 transition"
-            />
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            {/* Search */}
+            <div className="relative flex-1 sm:flex-none">
+              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                placeholder="Search accounts…"
+                className="pl-9 pr-4 py-1.5 bg-transparent border border-slate-300 dark:border-slate-700 rounded-full text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 w-full sm:w-56 md:w-64 transition"
+              />
+            </div>
+
+            {/* Import / Export dropdown */}
+            <div className="relative flex-shrink-0" ref={importExportRef}>
+              <button
+                onClick={() => setImportExportOpen(o => !o)}
+                className="flex items-center justify-center w-8 h-8 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+                aria-label="Import / Export"
+              >
+                <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z" />
+                </svg>
+              </button>
+
+              {importExportOpen && (
+                <div className="absolute right-0 top-[calc(100%+6px)] z-50 w-40 bg-white dark:bg-[#1a2235] border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
+                  {/* Import */}
+                  <button
+                    onClick={() => { setImportExportOpen(false); setIsImportOpen(true); }}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors"
+                  >
+                    <svg className="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" />
+                    </svg>
+                    Import
+                  </button>
+                  {/* Export */}
+                  <button
+                    onClick={() => { setImportExportOpen(false); }}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors"
+                  >
+                    <svg className="h-4 w-4 text-teal-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 8l5-5 5 5M12 3v12" />
+                    </svg>
+                    Export
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
+
         {/* Table */}
         <div className="flex-1 overflow-auto">
-          <table className="min-w-full w-full whitespace-nowrap text-left text-sm">
-            <thead className="bg-transparent border-b border-slate-200 dark:border-slate-800/80 sticky top-0 bg-white dark:bg-[#151B25] z-10">
-              <tr>
-                <th className="px-4 py-3">
-                  <input
-                    type="checkbox"
-                    className={checkboxClasses}
-                    onChange={handleSelectAll}
-                    checked={
-                      paginatedAccounts.length > 0 &&
-                      selectedAccounts.length === paginatedAccounts.length
-                    }
-                    readOnly={paginatedAccounts.length === 0}
-                  />
-                </th>
+          <table className="min-w-[900px] w-full whitespace-nowrap text-left text-sm">
+            <thead className="sticky top-0 z-10">
+              {/* Selection Banner Row — replaces headers when rows are selected */}
+              {selectedAccounts.length > 0 ? (
+                <tr style={{ backgroundColor: 'rgba(16,185,129,0.12)', borderBottom: '1px solid rgba(16,185,129,0.25)' }}>
+                  <th className="px-4 py-3">
+                    <input
+                      type="checkbox"
+                      className={checkboxClasses}
+                      onChange={handleSelectAll}
+                      checked={
+                        paginatedAccounts.length > 0 &&
+                        selectedAccounts.length === paginatedAccounts.length
+                      }
+                      readOnly={paginatedAccounts.length === 0}
+                    />
+                  </th>
+                  <th colSpan={10} className="px-2 py-3">
+                    <span className="text-sm font-bold" style={{ color: '#10B981' }}>
+                      {selectedAccounts.length} Selected
+                    </span>
+                  </th>
+                  <th className="px-4 py-3 text-right">
+                    <button
+                      onClick={handleDeleteSelected}
+                      aria-label="Delete selected"
+                      className="inline-flex items-center justify-center w-8 h-8 rounded-full text-rose-500 hover:bg-rose-500/20 transition-all duration-200"
+                    >
+                      <DeleteIcon className="h-4 w-4" />
+                    </button>
+                  </th>
+                </tr>
+              ) : (
+                <tr className="bg-white dark:bg-[#151B25] border-b border-slate-200 dark:border-slate-800/80">
+                  <th className="px-4 py-3">
+                    <input
+                      type="checkbox"
+                      className={checkboxClasses}
+                      onChange={handleSelectAll}
+                      checked={
+                        paginatedAccounts.length > 0 &&
+                        selectedAccounts.length === paginatedAccounts.length
+                      }
+                      readOnly={paginatedAccounts.length === 0}
+                    />
+                  </th>
                 <TableHeader hasFilter>Account Name</TableHeader>
                 <TableHeader>Website</TableHeader>
                 <TableHeader>Email</TableHeader>
-                <TableHeader hasFilter>Phone</TableHeader>
-                <TableHeader>Address</TableHeader>
-                <TableHeader>CR Number</TableHeader>
-                <TableHeader>Assigned To</TableHeader>
-                <TableHeader hasFilter>Country</TableHeader>
-                <TableHeader hasFilter>Created Date</TableHeader>
-                <TableHeader hasFilter>Updated Date</TableHeader>
-                <TableHeader>Actions</TableHeader>
-              </tr>
+                  <TableHeader hasFilter>Phone</TableHeader>
+                  <TableHeader>Address</TableHeader>
+                  <TableHeader>CR Number</TableHeader>
+                  <TableHeader>Assigned To</TableHeader>
+                  <TableHeader hasFilter>Country</TableHeader>
+                  <TableHeader hasFilter>Created Date</TableHeader>
+                  <TableHeader hasFilter>Updated Date</TableHeader>
+                  <TableHeader>Actions</TableHeader>
+                </tr>
+              )}
             </thead>
 
             <tbody className="divide-y divide-slate-200 dark:divide-slate-800/80">
@@ -797,7 +893,9 @@ const Accounts: React.FC = () => {
                           <AccountAvatar name={account.name} />
                           <span
                             onClick={() => navigate(`/accounts/${account.id}`)}
-                            className="font-semibold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
+                            onMouseEnter={e => (e.currentTarget.style.color = '#10B981')}
+                            onMouseLeave={e => (e.currentTarget.style.color = '')}
+                            className="font-semibold text-slate-900 dark:text-white hover:underline cursor-pointer transition-colors duration-150"
                           >
                             {account.name}
                           </span>
@@ -882,7 +980,7 @@ const Accounts: React.FC = () => {
                             <button
                               onClick={() => handleDeleteAccount(account.id)}
                               aria-label={`Delete ${account.name}`}
-                              className="flex items-center justify-center w-8 h-8 rounded-full text-slate-400 transition-all duration-200 group-hover:bg-rose-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-rose-400/40 group-hover:scale-110"
+                              className="flex items-center justify-center w-8 h-8 rounded-full text-rose-500 hover:bg-rose-500/20 transition-all duration-200"
                             >
                               <DeleteIcon className="h-4 w-4" />
                             </button>
@@ -902,8 +1000,8 @@ const Accounts: React.FC = () => {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="px-4 py-3 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
-            <span>
+          <div className="px-3 sm:px-4 py-3 border-t border-slate-200 dark:border-slate-800/80 flex flex-col xs:flex-row items-center justify-between gap-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+            <span className="shrink-0">
               Showing {(safePage - 1) * ITEMS_PER_PAGE + 1}–
               {Math.min(safePage * ITEMS_PER_PAGE, filtered.length)} of {filtered.length}
             </span>
@@ -911,17 +1009,17 @@ const Accounts: React.FC = () => {
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={safePage === 1}
-                className="px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700 disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="px-2.5 sm:px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700 disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               >
                 ← Prev
               </button>
-              <span className="px-3 py-1 font-medium text-slate-700 dark:text-slate-200">
+              <span className="px-2.5 sm:px-3 py-1 font-medium text-slate-700 dark:text-slate-200">
                 {safePage} / {totalPages}
               </span>
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={safePage === totalPages}
-                className="px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700 disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="px-2.5 sm:px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700 disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               >
                 Next →
               </button>
@@ -944,6 +1042,135 @@ const Accounts: React.FC = () => {
           currentUserName={currentUserName}
         />
       </Modal>
+
+      {/* Import Accounts Modal */}
+      {isImportOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+          onClick={() => { setIsImportOpen(false); setImportFile(null); }}
+        >
+          <div
+            className="bg-white dark:bg-[#1a2235] rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden border border-slate-200 dark:border-slate-700"
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="px-6 pt-6 pb-4 border-b border-slate-100 dark:border-slate-700/60">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">Import Accounts</h2>
+            </div>
+
+            {/* Body */}
+            <div className="px-6 py-5 space-y-5">
+              <p className="text-sm text-slate-600 dark:text-slate-300">
+                Import Accounts through a CSV file.{' '}
+                <a
+                  href="#"
+                  className="hover:underline font-medium"
+                  style={{ color: '#10B981' }}
+                  onClick={e => e.preventDefault()}
+                >
+                  Download a sample csv.
+                </a>
+              </p>
+
+              {/* File picker */}
+              <div className="flex items-center gap-4">
+                <span className="text-sm font-medium text-slate-500 dark:text-slate-400 w-20 shrink-0">
+                  CSV file:
+                </span>
+                <label className="flex items-center gap-2 cursor-pointer group">
+                  {/* File icon */}
+                  <div className="flex items-center justify-center w-8 h-8 rounded-lg" style={{ backgroundColor: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)' }}>
+                    <svg className="h-4 w-4" style={{ color: '#10B981' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                  <span
+                    className="text-sm font-semibold text-slate-600 dark:text-slate-300 transition-colors"
+                    onMouseEnter={e => (e.currentTarget.style.color = '#10B981')}
+                    onMouseLeave={e => (e.currentTarget.style.color = '')}
+                  >
+                    {importFile ? importFile.name : 'Choose file'}
+                  </span>
+                  <input
+                    type="file"
+                    accept=".csv"
+                    className="hidden"
+                    onChange={e => setImportFile(e.target.files?.[0] ?? null)}
+                  />
+                </label>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 pb-6 pt-2 flex items-center justify-end gap-3">
+              <button
+                onClick={() => { setIsImportOpen(false); setImportFile(null); }}
+                className="px-5 py-2 rounded-full text-sm font-bold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                disabled={!importFile}
+                onClick={() => {
+                  if (!importFile) return;
+                  setIsImportOpen(false);
+                  setImportFile(null);
+                  setSuccessMessage('Accounts Imported Successfully');
+                }}
+                className="px-5 py-2 rounded-full text-sm font-bold text-white shadow-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ backgroundColor: '#10B981' }}
+                onMouseEnter={e => !importFile || (e.currentTarget.style.backgroundColor = '#059669')}
+                onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#10B981')}
+              >
+                Import
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Toast */}
+      {successMessage && (
+        <div
+          style={{
+            position: 'fixed',
+            top: '1.25rem',
+            right: '1.5rem',
+            zIndex: 9999,
+            animation: 'slideDownFade 0.35s ease',
+          }}
+        >
+          <style>{`
+            @keyframes slideDownFade {
+              from { opacity: 0; transform: translateY(-16px); }
+              to   { opacity: 1; transform: translateY(0); }
+            }
+          `}</style>
+          <div
+            className="flex items-center gap-3 px-5 py-3 rounded-2xl shadow-2xl border border-emerald-400/30 bg-emerald-600 text-white text-sm font-bold relative overflow-hidden"
+            style={{ minWidth: 260 }}
+          >
+            {/* Check icon */}
+            <div className="flex items-center justify-center w-7 h-7 rounded-full bg-white/20 shrink-0">
+              <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            {successMessage}
+            {/* Auto-close progress bar */}
+            <div
+              className="absolute bottom-0 left-0 h-1 rounded-b-2xl bg-white/30"
+              style={{ animation: 'shrink 3s linear forwards' }}
+            />
+            <style>{`
+              @keyframes shrink {
+                from { width: 100%; }
+                to   { width: 0%; }
+              }
+            `}</style>
+          </div>
+        </div>
+      )}
 
       {/* Delete Confirm Modal */}
       {deleteConfirm && (

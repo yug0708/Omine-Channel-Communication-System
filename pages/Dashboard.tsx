@@ -55,7 +55,7 @@ const CallStatCard: React.FC<{
   const s = themeStyles[colorTheme];
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white/80 p-5 sm:p-6 shadow-sm backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl dark:border-white/[0.08] dark:bg-slate-900/60 dark:hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-col justify-between h-[230px] group">
+    <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white/80 p-4 sm:p-6 shadow-sm backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl dark:border-white/[0.08] dark:bg-slate-900/60 dark:hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-col justify-between min-h-[190px] sm:min-h-[220px] group">
       {/* top shine */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
       {/* glow orb */}
@@ -70,7 +70,7 @@ const CallStatCard: React.FC<{
         </div>
         <div className="flex flex-col gap-1">
           <p className="text-[11px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">{title}</p>
-          <p className="text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-none">{value}</p>
+          <p className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-none">{value}</p>
           <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1 line-clamp-1">{description}</p>
         </div>
       </div>
@@ -379,7 +379,7 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen w-full">
       {/* Background orbs */}
       <div className="pointer-events-none fixed inset-0 z-0 bg-gradient-to-br from-slate-100 via-emerald-50/30 to-teal-100/20 dark:from-slate-950 dark:via-slate-950 dark:to-slate-950" aria-hidden />
       <div className="pointer-events-none fixed inset-0 z-0 dashboard-mesh dashboard-grid-bg opacity-60 dark:opacity-70" aria-hidden />
@@ -394,7 +394,7 @@ const Dashboard: React.FC = () => {
           <div className="relative mb-6 overflow-hidden rounded-3xl border border-emerald-400/30 bg-gradient-to-br from-emerald-400/90 to-teal-500/90 p-5 shadow-lg shadow-emerald-400/20 backdrop-blur-xl dark:border-emerald-400/20">
             <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
             <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between gap-3 sm:gap-4">
               <div className="flex items-center gap-4">
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-teal-950/10 ring-1 ring-teal-950/20 shadow-lg">
                   <span className="text-xl">👋</span>
@@ -413,7 +413,7 @@ const Dashboard: React.FC = () => {
         )}
 
         {/* ─── Quick Tip Bar ─── */}
-        <div className="mb-8 flex items-center justify-between gap-4 rounded-2xl border border-slate-200/80 bg-white/70 px-4 py-3 shadow-sm backdrop-blur-xl dark:border-white/[0.08] dark:bg-slate-900/50">
+        <div className="mb-6 flex items-center justify-between gap-3 rounded-2xl border border-slate-200/80 bg-white/70 px-3 sm:px-4 py-2.5 sm:py-3 shadow-sm backdrop-blur-xl dark:border-white/[0.08] dark:bg-slate-900/50">
           <div className="flex items-center gap-3 overflow-hidden">
             <span className="shrink-0 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white shadow-sm shadow-emerald-500/30">
               Quick Tip
@@ -428,19 +428,19 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* ─── Page Title + Filter ─── */}
-        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="mb-6 flex flex-col gap-3 sm:gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-widest text-emerald-600 dark:text-emerald-400 mb-1">Analytics</p>
-            <h1 className="text-[32px] font-black tracking-tight text-slate-900 dark:text-white leading-tight">Overview</h1>
-            <p className="mt-1 flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400">
+            <p className="text-xs sm:text-sm font-semibold uppercase tracking-widest text-emerald-600 dark:text-emerald-400 mb-1">Analytics</p>
+            <h1 className="text-2xl sm:text-[32px] font-black tracking-tight text-slate-900 dark:text-white leading-tight">Overview</h1>
+            <p className="mt-1 flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">
               Tracking performance metrics
               <span className="h-1 w-1 rounded-full bg-slate-300 dark:bg-slate-600" />
               <span className="font-bold text-slate-700 dark:text-slate-300">{selectedFilter}</span>
             </p>
           </div>
-          <div className="relative" ref={filterRef}>
+          <div className="relative w-full md:w-auto" ref={filterRef}>
             <button onClick={() => setIsFilterOpen(!isFilterOpen)}
-              className="flex items-center gap-2 rounded-2xl border border-slate-200/90 bg-white/90 px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm backdrop-blur-sm transition-all hover:bg-white hover:shadow-md dark:border-white/[0.1] dark:bg-slate-900/80 dark:text-white dark:hover:bg-slate-800">
+              className="w-full md:w-auto flex items-center gap-2 rounded-2xl border border-slate-200/90 bg-white/90 px-4 sm:px-5 py-2 sm:py-2.5 text-sm font-bold text-slate-700 shadow-sm backdrop-blur-sm transition-all hover:bg-white hover:shadow-md dark:border-white/[0.1] dark:bg-slate-900/80 dark:text-white dark:hover:bg-slate-800">
               <FilterIcon className="h-4 w-4 text-emerald-500" />
               <span>{selectedFilter}</span>
               <svg className={`h-4 w-4 transition-transform duration-200 ${isFilterOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -465,7 +465,7 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* ─── Call Stats Grid ─── */}
-        <div className="mb-6 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="mb-5 sm:mb-6 grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <CallStatCard title="Incoming Calls" value={callStats.incoming.value} description="Calls received from customers" duration={callStats.incoming.duration} icon={IncomingCallIcon} colorTheme="purple" />
           <CallStatCard title="Outgoing Calls" value={callStats.outgoing.value} description="Calls made to customers" duration={callStats.outgoing.duration} icon={OutgoingCallIcon} colorTheme="green" />
           <CallStatCard title="No Answer" value={callStats.noAnswer.value} description="Calls that were not answered" duration={callStats.noAnswer.duration} icon={NoAnswerIcon} colorTheme="red" />
@@ -473,7 +473,7 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* ─── Call Traffic + Ticket Donut ─── */}
-        <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-12">
+        <div className="mb-5 sm:mb-6 grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-12">
           <div className="lg:col-span-8">
             <ChartCard className="h-full">
               <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between mb-8">
@@ -493,7 +493,7 @@ const Dashboard: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div style={{ width: '100%', minHeight: 300, flex: 1 }}>
+              <div style={{ width: '100%', minHeight: 220, flex: 1 }}>
                 <ResponsiveContainer>
                   <AreaChart data={callsChartData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
                     <defs>
@@ -532,7 +532,7 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* ─── Conversations Chart + Stat Cards ─── */}
-        <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-12">
+        <div className="mb-5 sm:mb-6 grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-12">
           <div className="lg:col-span-8">
             <ChartCard className="h-full">
               <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between mb-8">
@@ -558,7 +558,7 @@ const Dashboard: React.FC = () => {
                   ))}
                 </div>
               </div>
-              <div style={{ width: '100%', height: 260 }}>
+              <div style={{ width: '100%', height: 220 }}>
                 <ResponsiveContainer>
                   <BarChart data={conversationChartData} margin={{ top: 20, right: 10, left: -25, bottom: 5 }} barSize={14}>
                     <CartesianGrid strokeDasharray="4 4" stroke={chartGridColor} horizontal vertical={false} />
@@ -574,7 +574,7 @@ const Dashboard: React.FC = () => {
             </ChartCard>
           </div>
 
-          <div className="lg:col-span-4 flex flex-col gap-5">
+          <div className="lg:col-span-4 flex flex-col gap-3 sm:gap-4 sm:grid sm:grid-cols-3 lg:flex lg:flex-col">
             <ConversationStatCard title="Open" value={conversationStats.open} color="#14B8A6" icon={(p: any) => (
               <svg viewBox="0 0 24 24" fill="currentColor" {...p}><path d="M17 10.5V6c0-1.65-1.35-3-3-3H4C2.35 3 1 4.35 1 6v5.5c0 1.65 1.35 3 3 3h1.5v3.5L9.5 14.5h4.5c1.65 0 3-1.35 3-3z" opacity="0.6" /><path d="M23 9.5v5.5c0 1.65-1.35 3-3 3h-1.5v3.5l-4-3.5h-4.5c-1.65 0-3-1.35-3-3V11c0-1.65 1.35-3 3-3h10c1.65 0 3 1.35 3 3z" /></svg>
             )} />
@@ -584,7 +584,7 @@ const Dashboard: React.FC = () => {
             <ConversationStatCard title="Closed" value={conversationStats.close} color="#10B981" icon={(p: any) => (
               <svg viewBox="0 0 24 24" fill="currentColor" {...p}><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-9.5 9.5-2.5-2.5 1.41-1.41 1.09 1.09 3.09-3.09 1.41 1.41-4.5 4.5z" /></svg>
             )} />
-            <div className="grid grid-cols-2 gap-4 flex-1">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:col-span-1 lg:col-span-auto">
               <RightStatCard title="Total Contacts" value={contacts.length} icon={ContactStatIcon} onClick={() => navigate('/contacts')} />
               <RightStatCard title="Total Accounts" value={accounts.length} icon={AccountStatIcon} onClick={() => navigate('/accounts')} />
             </div>
@@ -600,7 +600,7 @@ const Dashboard: React.FC = () => {
               subtitle="Integrations Health"
             />
           </div>
-          <div className="grid grid-cols-2 gap-5 md:grid-cols-3 xl:grid-cols-6">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 xl:grid-cols-6">
             <ChannelCard title="WhatsApp Business" value={channelStats.whatsapp || 1} icon={WhatsAppBusinessIcon} color="#25D366" />
             <ChannelCard title="Email" value={channelStats.email || 2} icon={EmailIcon} color="#3B82F6" />
             <ChannelCard title="Live Chat" value={channelStats.livechat || 0} icon={LiveChatIcon} color="#0EA5E9" />
