@@ -50,10 +50,10 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({ isOpen, o
       <div className="flex justify-between items-center p-3 border-b border-slate-200 dark:border-slate-700">
         <h3 className="font-semibold text-slate-900 dark:text-white">Notifications</h3>
         <div className="flex items-center space-x-2">
-            <button onClick={handleMarkAllRead} className="text-green-500 hover:text-green-600 dark:hover:text-green-400 p-1" title="Mark all as read">
+            <button onClick={handleMarkAllRead} className="text-green-500 hover:text-green-600 dark:hover:text-green-400 p-1">
                 <CheckAllIcon className="h-5 w-5" />
             </button>
-            <button onClick={onClose} className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-1" title="Close">
+            <button onClick={onClose} className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-1">
                 <CloseIcon className="h-5 w-5" />
             </button>
         </div>

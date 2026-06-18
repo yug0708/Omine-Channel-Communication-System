@@ -301,7 +301,6 @@ const Contacts: React.FC = () => {
                         <button
                           onClick={() => handleOpenModal(contact)}
                           className="text-slate-400 hover:text-emerald-500 transition-colors p-1"
-                          title="Edit"
                         >
                           <EditIcon className="h-4 w-4" />
                         </button>
@@ -311,7 +310,6 @@ const Contacts: React.FC = () => {
                             handleDeleteContact(contact.id)
                           }
                           className="text-slate-400 hover:text-red-500 transition-colors p-1"
-                          title="Delete"
                         >
                           <DeleteIcon className="h-4 w-4" />
                         </button>

@@ -670,14 +670,13 @@ const AccountDetails: React.FC = () => {
               <button
                 onClick={() => setIsEditModalOpen(true)}
                 className="absolute bottom-0 right-0 h-8 w-8 bg-emerald-600 hover:bg-emerald-700 rounded-full flex items-center justify-center text-white border-2 border-white dark:border-[#151B25] shadow-md transition-colors"
-                title="Edit Account Details"
               >
                 <PencilIcon className="h-4 w-4" />
               </button>
             </div>
 
             {/* Title / Name */}
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white truncate max-w-[280px]" title={account.name}>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white truncate max-w-[280px]">
               {account.name}
             </h2>
 
@@ -694,28 +693,28 @@ const AccountDetails: React.FC = () => {
             {/* Circular buttons */}
             <div className="flex items-center justify-center gap-3.5 mt-6 w-full">
               {/* Button 1: Note */}
-              <button className="h-10 w-10 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full flex items-center justify-center shadow-sm hover:scale-105 transition-all" title="Add Note">
+              <button className="h-10 w-10 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full flex items-center justify-center shadow-sm hover:scale-105 transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                 </svg>
               </button>
 
               {/* Button 2: Campaign/Link */}
-              <button className="h-10 w-10 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full flex items-center justify-center shadow-sm hover:scale-105 transition-all" title="Link Campaign">
+              <button className="h-10 w-10 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full flex items-center justify-center shadow-sm hover:scale-105 transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
                 </svg>
               </button>
 
               {/* Button 3: Schedule */}
-              <button className="h-10 w-10 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full flex items-center justify-center shadow-sm hover:scale-105 transition-all" title="Schedule Event">
+              <button className="h-10 w-10 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full flex items-center justify-center shadow-sm hover:scale-105 transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
                 </svg>
               </button>
 
               {/* Button 4: More */}
-              <button className="h-10 w-10 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full flex items-center justify-center shadow-sm hover:scale-105 transition-all" title="More Actions">
+              <button className="h-10 w-10 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full flex items-center justify-center shadow-sm hover:scale-105 transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
                 </svg>
@@ -923,12 +922,12 @@ const AccountDetails: React.FC = () => {
                     />
                   </div>
                   {/* Settings columns and options icons */}
-                  <button className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 transition" title="Table Config">
+                  <button className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 transition">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
                     </svg>
                   </button>
-                  <button className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1" title="More Options">
+                  <button className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1">
                     <MoreVertIcon className="h-5 w-5" />
                   </button>
                 </div>
@@ -1036,14 +1035,12 @@ const AccountDetails: React.FC = () => {
                                 <button
                                   onClick={() => handleOpenContactModal(c)}
                                   className="text-slate-400 hover:text-emerald-500 p-1 transition-colors"
-                                  title="Edit Contact"
                                 >
                                   <EditIcon className="h-4 w-4" />
                                 </button>
                                 <button
                                   onClick={() => handleDeleteContact(c.id)}
                                   className="text-slate-400 hover:text-rose-500 p-1 transition-colors"
-                                  title="Delete Contact"
                                 >
                                   <DeleteIcon className="h-4 w-4" />
                                 </button>
@@ -1144,7 +1141,6 @@ const AccountDetails: React.FC = () => {
                             <button
                               onClick={() => handleDeleteTicket(t.id)}
                               className="text-slate-400 hover:text-rose-500 p-1.5 transition-colors font-bold"
-                              title="Delete Ticket"
                             >
                               ✕
                             </button>

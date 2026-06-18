@@ -79,7 +79,6 @@ const Sidebar: React.FC = () => {
             <li key={to} className="w-full">
               <NavLink
                 to={to}
-                title={label}
                 className={({ isActive }) =>
                   `flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-xl w-full transition-all duration-200 group ${
                     isActive

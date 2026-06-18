@@ -110,6 +110,31 @@ const inputClass =
 
 const labelClass = 'block text-sm font-medium text-slate-700 dark:text-slate-300';
 
+// Floating label field wrapper — defined at module scope to prevent
+// React from recreating it as a new component type on every render,
+// which would cause inputs inside it to lose focus after each keystroke.
+const FloatField: React.FC<{
+  label: string;
+  fieldName: string;
+  children: React.ReactNode;
+  error?: string;
+  errors?: Record<string, string>;
+}> = ({ label, fieldName, children, error, errors = {} }) => (
+  <div className="relative mt-5">
+    <label
+      className={`absolute -top-2.5 left-4 px-1.5 text-[11px] font-semibold z-10 bg-white dark:bg-[#151B25] ${
+        errors[fieldName] ? 'text-rose-500' : 'text-slate-500 dark:text-slate-400'
+      }`}
+    >
+      {label}
+    </label>
+    {children}
+    {error && (
+      <p className="text-xs text-rose-500 dark:text-rose-400 font-semibold mt-1.5 pl-4">{error}</p>
+    )}
+  </div>
+);
+
 const AccountForm: React.FC<{
   account?: Account | null;
   onSave: (data: AccountFormData & Partial<Pick<Account, 'id' | 'createdAt' | 'updatedAt'>>) => void;
@@ -242,24 +267,6 @@ const AccountForm: React.FC<{
     return `${base} border border-slate-300 dark:border-slate-700 focus:border-emerald-500 focus:ring-0 ${extraClasses}`;
   };
 
-  // Floating label field wrapper — bg must match modal bg exactly
-  const FloatField = ({
-    label, fieldName, children, error,
-  }: { label: string; fieldName: string; children: React.ReactNode; error?: string }) => (
-    <div className="relative mt-5">
-      <label
-        className={`absolute -top-2.5 left-4 px-1.5 text-[11px] font-semibold z-10 bg-white dark:bg-[#151B25] ${errors[fieldName] ? 'text-rose-500' : 'text-slate-500 dark:text-slate-400'
-          }`}
-      >
-        {label}
-      </label>
-      {children}
-      {error && (
-        <p className="text-xs text-rose-500 dark:text-rose-400 font-semibold mt-1.5 pl-4">{error}</p>
-      )}
-    </div>
-  );
-
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-4">
 
@@ -270,7 +277,7 @@ const AccountForm: React.FC<{
       </div>
 
       {/* 1. Account Name */}
-      <FloatField label="Account Name *" fieldName="name" error={errors.name}>
+      <FloatField label="Account Name *" fieldName="name" error={errors.name} errors={errors}>
         <input
           type="text"
           name="name"
@@ -282,7 +289,7 @@ const AccountForm: React.FC<{
       </FloatField>
 
       {/* 2. Email */}
-      <FloatField label="Email *" fieldName="email" error={errors.email}>
+      <FloatField label="Email *" fieldName="email" error={errors.email} errors={errors}>
         <input
           type="email"
           name="email"
@@ -294,7 +301,7 @@ const AccountForm: React.FC<{
       </FloatField>
 
       {/* 3. Phone Number */}
-      <FloatField label="Phone Number *" fieldName="phone" error={errors.phone}>
+      <FloatField label="Phone Number *" fieldName="phone" error={errors.phone} errors={errors}>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center z-20" ref={countryDropdownRef}>
             <button
@@ -373,32 +380,32 @@ const AccountForm: React.FC<{
       </div>
 
       {/* 4. City */}
-      <FloatField label="City" fieldName="city">
+      <FloatField label="City" fieldName="city" errors={errors}>
         <input type="text" name="city" value={form.city} onChange={handleChange} placeholder="Enter city" className={getInputClass('city')} />
       </FloatField>
 
       {/* 5. Country */}
-      <FloatField label="Country" fieldName="country">
+      <FloatField label="Country" fieldName="country" errors={errors}>
         <input type="text" name="country" value={form.country} onChange={handleChange} placeholder="Enter country" className={getInputClass('country')} />
       </FloatField>
 
       {/* 6. CR Number */}
-      <FloatField label="CR Number" fieldName="crNumber">
+      <FloatField label="CR Number" fieldName="crNumber" errors={errors}>
         <input type="text" name="crNumber" value={form.crNumber} onChange={handleChange} placeholder="Enter CR number" className={getInputClass('crNumber')} />
       </FloatField>
 
       {/* 7. Pincode */}
-      <FloatField label="Pincode" fieldName="pincode">
+      <FloatField label="Pincode" fieldName="pincode" errors={errors}>
         <input type="text" name="pincode" value={form.pincode} onChange={handleChange} placeholder="Enter pincode" className={getInputClass('pincode')} />
       </FloatField>
 
       {/* 8. Website */}
-      <FloatField label="Website" fieldName="website">
+      <FloatField label="Website" fieldName="website" errors={errors}>
         <input type="url" name="website" value={form.website} onChange={handleChange} placeholder="Enter website URL" className={getInputClass('website')} />
       </FloatField>
 
       {/* 9. Address */}
-      <FloatField label="Address" fieldName="address">
+      <FloatField label="Address" fieldName="address" errors={errors}>
         <input type="text" name="address" value={form.address} onChange={handleChange} placeholder="Enter address" className={getInputClass('address')} />
       </FloatField>
 
@@ -556,6 +563,9 @@ const Accounts: React.FC = () => {
   // Selection state
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
 
+  // Delete confirm modal state
+  const [deleteConfirm, setDeleteConfirm] = useState<{ ids: string[]; count: number } | null>(null);
+
   // Search & pagination
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -616,10 +626,7 @@ const Accounts: React.FC = () => {
   };
 
   const handleDeleteAccount = (id: string) => {
-    if (window.confirm('Are you sure you want to delete this account?')) {
-      setAccounts(accounts.filter((a) => a.id !== id));
-      setSelectedAccounts((prev) => prev.filter((s) => s !== id));
-    }
+    setDeleteConfirm({ ids: [id], count: 1 });
   };
 
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -638,10 +645,14 @@ const Accounts: React.FC = () => {
 
   const handleDeleteSelected = () => {
     if (!selectedAccounts.length) return;
-    if (window.confirm(`Delete ${selectedAccounts.length} selected account(s)?`)) {
-      setAccounts(accounts.filter((a) => !selectedAccounts.includes(a.id)));
-      setSelectedAccounts([]);
-    }
+    setDeleteConfirm({ ids: [...selectedAccounts], count: selectedAccounts.length });
+  };
+
+  const confirmDelete = () => {
+    if (!deleteConfirm) return;
+    setAccounts(accounts.filter((a) => !deleteConfirm.ids.includes(a.id)));
+    setSelectedAccounts((prev) => prev.filter((s) => !deleteConfirm.ids.includes(s)));
+    setDeleteConfirm(null);
   };
 
   // ── Render ────────────────────────────────────────────────────────────────
@@ -852,23 +863,33 @@ const Accounts: React.FC = () => {
 
                       {/* Actions */}
                       <td className="px-4 py-2 text-center">
-                        <div className="flex items-center justify-center gap-1">
-                          <button
-                            onClick={() => handleOpenModal(account)}
-                            className="text-slate-400 hover:text-emerald-500 transition-colors p-1 rounded"
-                            aria-label={`Edit ${account.name}`}
-                            title="Edit"
-                          >
-                            <EditIcon className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteAccount(account.id)}
-                            className="text-slate-400 hover:text-red-500 transition-colors p-1 rounded"
-                            aria-label={`Delete ${account.name}`}
-                            title="Delete"
-                          >
-                            <DeleteIcon className="h-4 w-4" />
-                          </button>
+                        <div className="flex items-center justify-center gap-2">
+                          {/* Edit button */}
+                          <div className="relative group flex flex-col items-center">
+                            <button
+                              onClick={() => handleOpenModal(account)}
+                              aria-label={`Edit ${account.name}`}
+                              className="flex items-center justify-center w-8 h-8 rounded-full text-slate-400 transition-all duration-200 group-hover:bg-emerald-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-emerald-400/40 group-hover:scale-110"
+                            >
+                              <EditIcon className="h-4 w-4" />
+                            </button>
+                            <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] font-bold text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                              Edit
+                            </span>
+                          </div>
+                          {/* Delete button */}
+                          <div className="relative group flex flex-col items-center">
+                            <button
+                              onClick={() => handleDeleteAccount(account.id)}
+                              aria-label={`Delete ${account.name}`}
+                              className="flex items-center justify-center w-8 h-8 rounded-full text-slate-400 transition-all duration-200 group-hover:bg-rose-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-rose-400/40 group-hover:scale-110"
+                            >
+                              <DeleteIcon className="h-4 w-4" />
+                            </button>
+                            <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] font-bold text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                              Delete
+                            </span>
+                          </div>
                         </div>
                       </td>
                     </tr>
@@ -923,6 +944,47 @@ const Accounts: React.FC = () => {
           currentUserName={currentUserName}
         />
       </Modal>
+
+      {/* Delete Confirm Modal */}
+      {deleteConfirm && (
+        <div
+          className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center"
+          onClick={() => setDeleteConfirm(null)}
+        >
+          <div
+            className="bg-white dark:bg-[#1a2235] rounded-2xl shadow-2xl w-full max-w-sm mx-4 border border-slate-200 dark:border-slate-700 overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="px-6 pt-6 pb-2">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">Delete</h2>
+            </div>
+            {/* Body */}
+            <div className="px-6 py-4">
+              <p className="text-sm text-slate-600 dark:text-slate-300">
+                Are you sure want to delete{' '}
+                <span className="font-bold text-slate-900 dark:text-white">{deleteConfirm.count}</span>{' '}
+                Account Record{deleteConfirm.count > 1 ? 's' : ''} ?
+              </p>
+            </div>
+            {/* Footer */}
+            <div className="px-6 pb-6 flex items-center justify-end gap-3">
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                className="px-5 py-2 rounded-full text-sm font-bold border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-5 py-2 rounded-full text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

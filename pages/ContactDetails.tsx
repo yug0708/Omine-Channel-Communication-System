@@ -251,14 +251,12 @@ const ContactDetails: React.FC = () => {
                         <div className="flex items-center gap-3">
                           <button
                             className="text-slate-400 hover:text-emerald-500 transition-colors"
-                            title="Edit"
                           >
                             <EditIcon className="h-3.5 w-3.5" />
                           </button>
 
                           <button
                             className="text-red-500 hover:text-red-400 transition-colors"
-                            title="Delete"
                           >
                             ✕
                           </button>
