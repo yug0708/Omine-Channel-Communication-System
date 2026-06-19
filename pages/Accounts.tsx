@@ -11,7 +11,6 @@ import {
   EditIcon,
   DeleteIcon,
   SearchIcon,
-  FilterFunnelIcon,
 } from '../components/icons/Icons';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -62,14 +61,12 @@ const AccountAvatar: React.FC<{ name: string }> = ({ name }) => (
 
 interface TableHeaderProps {
   children: React.ReactNode;
-  hasFilter?: boolean;
 }
 
-const TableHeader: React.FC<TableHeaderProps> = ({ children, hasFilter }) => (
+const TableHeader: React.FC<TableHeaderProps> = ({ children }) => (
   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide whitespace-nowrap">
     <div className="flex items-center gap-1">
       {children}
-      {hasFilter && <FilterFunnelIcon className="h-3 w-3 opacity-50" />}
     </div>
   </th>
 );
@@ -122,9 +119,8 @@ const FloatField: React.FC<{
 }> = ({ label, fieldName, children, error, errors = {} }) => (
   <div className="relative mt-5">
     <label
-      className={`absolute -top-2.5 left-4 px-1.5 text-[11px] font-semibold z-10 bg-white dark:bg-[#151B25] ${
-        errors[fieldName] ? 'text-rose-500' : 'text-slate-500 dark:text-slate-400'
-      }`}
+      className={`absolute -top-2.5 left-4 px-1.5 text-[11px] font-semibold z-10 bg-white dark:bg-[#151B25] ${errors[fieldName] ? 'text-rose-500' : 'text-slate-500 dark:text-slate-400'
+        }`}
     >
       {label}
     </label>
@@ -546,7 +542,41 @@ const checkboxClasses =
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-const ITEMS_PER_PAGE = 10;
+const ROW_OPTIONS = [5, 10, 25];
+
+// ─── Sample CSV Download ──────────────────────────────────────────────────────
+
+const downloadSampleCsv = () => {
+  const headers = ['Name', 'Address', 'CrNumber', 'Phone Number', 'Email', 'Website', 'Pincode', 'City', 'Country'];
+  const rows = [
+    [
+      ['BrightWave Technologies', '123 Main St', '1000012345', '12025550001', 'info@brightwave.com', 'www.brightwave.com', '10001', 'New York', 'United States'],
+      ['Skyline Solutions', '456 Market St', '1000067890', '13105550002', 'contact@skylinesolutions.com', 'www.skylinesolutions.com', '94105', 'San Francisco', 'United States'],
+      ['BluePeak LLC', '789 Sunset Blvd', '1000011223', '12135550003', 'support@bluepeakllc.com', 'www.bluepeakllc.com', '90028', 'Los Angeles', 'United States'],
+      ['RiverStone Inc', '321 Oak Ave', '1000044556', '17135550004', 'hello@riverstoneinc.com', 'www.riverstoneinc.com', '60601', 'Chicago', 'United States'],
+      ['NextGen Group', '654 Pine St', '1000077889', '18325550005', 'team@nextgengroup.com', 'www.nextgengroup.com', '77002', 'Houston', 'United States'],
+      ['NovaTech Systems', '987 Broadway', '1000099001', '12065550006', 'sales@novatechsystems.com', 'www.novatechsystems.com', '98101', 'Seattle', 'United States'],
+      ['Liberty Co', '101 Washington Ave', '1000022334', '13035550007', 'admin@libertyco.com', 'www.libertyco.com', '33131', 'Miami', 'United States'],
+      ['Evergreen Enterprises', '202 Elm St', '1000055667', '16175550008', 'info@evergreenent.com', 'www.evergreenent.com', '85004', 'Phoenix', 'United States'],
+      ['Summit Partners', '303 Lake Shore Dr', '1000088990', '16125550009', 'partners@summitpartners.com', 'www.summitpartners.com', '80202', 'Denver', 'United States'],
+      ['Pioneer Systems', '404 Central Ave', '1000033445', '16195550010', 'service@pioneersystems.com', 'www.pioneersystems.com', '30303', 'Atlanta', 'United States']
+    ]
+  ];
+
+  const csvContent = [headers, ...rows]
+    .map(row => row.map(cell => `"${cell.replace(/"/g, '""')}"`).join(','))
+    .join('\r\n');
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'sample_accounts.csv';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
 
 const Accounts: React.FC = () => {
   const { accounts, setAccounts } = useData();
@@ -574,10 +604,21 @@ const Accounts: React.FC = () => {
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [importFile, setImportFile] = useState<File | null>(null);
 
+  // Column visibility
+  const ALL_COLS = ['Website','Email','Phone','Address','CR Number','Assigned To','Country','Created Date','Updated Date','Actions'] as const;
+  type ColKey = typeof ALL_COLS[number];
+  const [visibleCols, setVisibleCols] = useState<Set<ColKey>>(new Set(ALL_COLS));
+  const [colToggleOpen, setColToggleOpen] = useState(false);
+  const [colSearch, setColSearch] = useState('');
+  const colToggleRef = React.useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const handleOutside = (e: MouseEvent) => {
       if (importExportRef.current && !importExportRef.current.contains(e.target as Node)) {
         setImportExportOpen(false);
+      }
+      if (colToggleRef.current && !colToggleRef.current.contains(e.target as Node)) {
+        setColToggleOpen(false);
       }
     };
     document.addEventListener('mousedown', handleOutside);
@@ -596,6 +637,7 @@ const Accounts: React.FC = () => {
   // Search & pagination
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(ROW_OPTIONS[1]);
 
   // ── Derived data ──────────────────────────────────────────────────────────
 
@@ -611,11 +653,11 @@ const Accounts: React.FC = () => {
     );
   }, [accounts, search]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
+  const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
   const safePage = Math.min(page, totalPages);
   const paginatedAccounts = filtered.slice(
-    (safePage - 1) * ITEMS_PER_PAGE,
-    safePage * ITEMS_PER_PAGE
+    (safePage - 1) * rowsPerPage,
+    safePage * rowsPerPage
   );
 
   // ── Handlers ─────────────────────────────────────────────────────────────
@@ -686,6 +728,39 @@ const Accounts: React.FC = () => {
     setSuccessMessage(`Record${count > 1 ? 's' : ''} Deleted Successfully`);
   };
 
+  const exportAccountsCsv = () => {
+    const headers = ['Name', 'Website', 'Email', 'Phone Number', 'Address', 'CR Number', 'Assigned To', 'Country', 'Pincode', 'City', 'Created Date', 'Updated Date'];
+    const rows = accounts.map(a => [
+      a.name        || '',
+      a.website     || '',
+      a.email       || '',
+      a.phone       || '',
+      a.address     || '',
+      a.crNumber    || '',
+      a.assignedTo  || '',
+      a.country     || '',
+      a.pincode     || '',
+      a.city        || '',
+      a.createdAt   ? new Date(a.createdAt).toLocaleString() : '',
+      a.updatedAt   ? new Date(a.updatedAt).toLocaleString() : '',
+    ]);
+
+    const csvContent = [headers, ...rows]
+      .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+      .join('\r\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `accounts_export_${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    setSuccessMessage(`${accounts.length} Account${accounts.length !== 1 ? 's' : ''} Exported Successfully`);
+  };
+
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
@@ -706,7 +781,131 @@ const Accounts: React.FC = () => {
             </button>
           </div>
 
-          <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="flex items-center gap-2">
+
+            {/* Column toggle button */}
+            <div className="relative flex-shrink-0" ref={colToggleRef}>
+              <button
+                onClick={() => setColToggleOpen(o => !o)}
+                className="flex items-center justify-center w-8 h-8 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+                aria-label="Toggle columns"
+              >
+                <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                  <rect x="2" y="3" width="5" height="18" rx="1" />
+                  <rect x="9.5" y="3" width="5" height="18" rx="1" />
+                  <rect x="17" y="3" width="5" height="18" rx="1" />
+                </svg>
+              </button>
+
+              {colToggleOpen && (
+                <div
+                  className="absolute right-0 top-[calc(100%+6px)] z-50 bg-white dark:bg-[#1e2a3a] rounded-xl overflow-hidden"
+                  style={{ width: 220, boxShadow: '0 4px 24px rgba(0,0,0,0.13)', border: '1px solid #e5e7eb' }}
+                >
+                  {/* Search */}
+                  <div className="px-3 pt-3 pb-2">
+                    <div className="relative">
+                      <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z" />
+                      </svg>
+                      <input
+                        type="text"
+                        value={colSearch}
+                        onChange={e => setColSearch(e.target.value)}
+                        placeholder="Search"
+                        className="w-full pl-7 pr-3 py-1.5 text-sm rounded-md focus:outline-none focus:border-emerald-500"
+                        style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', color: '#374151' }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Account Name — always locked */}
+                  <div className="flex items-center gap-2.5 px-3 py-[7px]" style={{ opacity: 0.55 }}>
+                    <span className="flex items-center justify-center h-5 w-5 rounded" style={{ background: '#10B981', flexShrink: 0 }}>
+                      <svg className="h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </span>
+                    <span className="text-sm text-slate-700 dark:text-slate-200">Account Name</span>
+                  </div>
+
+                  {/* Scrollable columns list */}
+                  <div style={{ maxHeight: 220, overflowY: 'auto' }}>
+                    {ALL_COLS.filter(c => c.toLowerCase().includes(colSearch.toLowerCase())).map(col => {
+                      const checked = visibleCols.has(col);
+                      return (
+                        <label key={col} className="flex items-center gap-2.5 px-3 py-[7px] cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/60">
+                          <span
+                            className="flex items-center justify-center h-5 w-5 rounded flex-shrink-0 transition-colors"
+                            style={{ background: checked ? '#10B981' : '#fff', border: checked ? 'none' : '2px solid #d1d5db' }}
+                          >
+                            {checked && (
+                              <svg className="h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </span>
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => {
+                              setVisibleCols(prev => {
+                                const next = new Set(prev);
+                                next.has(col) ? next.delete(col) : next.add(col);
+                                return next;
+                              });
+                            }}
+                            className="sr-only"
+                          />
+                          <span className="text-sm text-slate-700 dark:text-slate-200">{col}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+
+                  {/* Footer: Show/Hide All + Reset */}
+                  <div className="flex items-center justify-between px-3 py-[7px]" style={{ borderTop: '1px solid #f1f1f1' }}>
+                    <label className="flex items-center gap-2.5 cursor-pointer">
+                      {(() => {
+                        const allChecked = visibleCols.size === ALL_COLS.length;
+                        return (
+                          <>
+                            <span
+                              className="flex items-center justify-center h-5 w-5 rounded flex-shrink-0 transition-colors"
+                              style={{ background: allChecked ? '#10B981' : '#fff', border: allChecked ? 'none' : '2px solid #d1d5db' }}
+                            >
+                              {allChecked && (
+                                <svg className="h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                              )}
+                            </span>
+                            <input
+                              type="checkbox"
+                              checked={allChecked}
+                              onChange={() => {
+                                if (allChecked) setVisibleCols(new Set());
+                                else setVisibleCols(new Set(ALL_COLS));
+                              }}
+                              className="sr-only"
+                            />
+                            <span className="text-sm text-slate-700 dark:text-slate-200">Show/Hide All</span>
+                          </>
+                        );
+                      })()}
+                    </label>
+                    <button
+                      onClick={() => setVisibleCols(new Set(ALL_COLS))}
+                      className="text-sm font-semibold transition-colors"
+                      style={{ color: '#10B981' }}
+                    >
+                      Reset
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* Search */}
             <div className="relative flex-1 sm:flex-none">
               <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -746,7 +945,7 @@ const Accounts: React.FC = () => {
                   </button>
                   {/* Export */}
                   <button
-                    onClick={() => { setImportExportOpen(false); }}
+                    onClick={() => { setImportExportOpen(false); exportAccountsCsv(); }}
                     className="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors"
                   >
                     <svg className="h-4 w-4 text-teal-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -762,13 +961,13 @@ const Accounts: React.FC = () => {
 
 
         {/* Table */}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto hide-scrollbar">
           <table className="min-w-[900px] w-full whitespace-nowrap text-left text-sm">
             <thead className="sticky top-0 z-10">
               {/* Selection Banner Row — replaces headers when rows are selected */}
               {selectedAccounts.length > 0 ? (
-                <tr style={{ backgroundColor: 'rgba(16,185,129,0.12)', borderBottom: '1px solid rgba(16,185,129,0.25)' }}>
-                  <th className="px-4 py-3">
+                <tr style={{ borderBottom: '1px solid rgba(16,185,129,0.25)' }}>
+                  <th className="px-4 py-3" style={{ backgroundColor: 'rgba(16,185,129,0.12)' }}>
                     <input
                       type="checkbox"
                       className={checkboxClasses}
@@ -780,12 +979,19 @@ const Accounts: React.FC = () => {
                       readOnly={paginatedAccounts.length === 0}
                     />
                   </th>
-                  <th colSpan={10} className="px-2 py-3">
+                  <th colSpan={10} className="px-2 py-3" style={{ backgroundColor: 'rgba(16,185,129,0.12)' }}>
                     <span className="text-sm font-bold" style={{ color: '#10B981' }}>
                       {selectedAccounts.length} Selected
                     </span>
                   </th>
-                  <th className="px-4 py-3 text-right">
+                  <th
+                    className="px-4 py-3 text-right"
+                    style={{
+                      position: 'sticky',
+                      right: 0,
+                      backgroundColor: 'rgba(16,185,129,0.12)',
+                    }}
+                  >
                     <button
                       onClick={handleDeleteSelected}
                       aria-label="Delete selected"
@@ -809,17 +1015,17 @@ const Accounts: React.FC = () => {
                       readOnly={paginatedAccounts.length === 0}
                     />
                   </th>
-                <TableHeader hasFilter>Account Name</TableHeader>
-                <TableHeader>Website</TableHeader>
-                <TableHeader>Email</TableHeader>
-                  <TableHeader hasFilter>Phone</TableHeader>
-                  <TableHeader>Address</TableHeader>
-                  <TableHeader>CR Number</TableHeader>
-                  <TableHeader>Assigned To</TableHeader>
-                  <TableHeader hasFilter>Country</TableHeader>
-                  <TableHeader hasFilter>Created Date</TableHeader>
-                  <TableHeader hasFilter>Updated Date</TableHeader>
-                  <TableHeader>Actions</TableHeader>
+                  <TableHeader>Account Name</TableHeader>
+                  {visibleCols.has('Website') && <TableHeader>Website</TableHeader>}
+                  {visibleCols.has('Email') && <TableHeader>Email</TableHeader>}
+                  {visibleCols.has('Phone') && <TableHeader>Phone</TableHeader>}
+                  {visibleCols.has('Address') && <TableHeader>Address</TableHeader>}
+                  {visibleCols.has('CR Number') && <TableHeader>CR Number</TableHeader>}
+                  {visibleCols.has('Assigned To') && <TableHeader>Assigned To</TableHeader>}
+                  {visibleCols.has('Country') && <TableHeader>Country</TableHeader>}
+                  {visibleCols.has('Created Date') && <TableHeader>Created Date</TableHeader>}
+                  {visibleCols.has('Updated Date') && <TableHeader>Updated Date</TableHeader>}
+                  {visibleCols.has('Actions') && <TableHeader>Actions</TableHeader>}
                 </tr>
               )}
             </thead>
@@ -903,93 +1109,101 @@ const Accounts: React.FC = () => {
                       </td>
 
                       {/* Website */}
-                      <td className="px-4 py-2 text-slate-500 dark:text-slate-400">
-                        {account.website ? (
-                          <a
-                            href={account.website.startsWith('http') ? account.website : `https://${account.website}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="hover:text-emerald-500 transition-colors"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {account.website}
-                          </a>
-                        ) : '—'}
-                      </td>
+                      {visibleCols.has('Website') && (
+                        <td className="px-4 py-2 text-slate-500 dark:text-slate-400">
+                          {account.website ? (
+                            <a
+                              href={account.website.startsWith('http') ? account.website : `https://${account.website}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="hover:text-emerald-500 transition-colors"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {account.website}
+                            </a>
+                          ) : '—'}
+                        </td>
+                      )}
 
                       {/* Email */}
-                      <td className="px-4 py-2 text-slate-500 dark:text-slate-400">
-                        {account.email || '—'}
-                      </td>
+                      {visibleCols.has('Email') && (
+                        <td className="px-4 py-2 text-slate-500 dark:text-slate-400">{account.email || '—'}</td>
+                      )}
 
                       {/* Phone */}
-                      <td className="px-4 py-2 text-slate-500 dark:text-slate-400">
-                        {account.phone || '—'}
-                      </td>
+                      {visibleCols.has('Phone') && (
+                        <td className="px-4 py-2 text-slate-500 dark:text-slate-400">{account.phone || '—'}</td>
+                      )}
 
                       {/* Address */}
-                      <td className="px-4 py-2 text-slate-500 dark:text-slate-400 max-w-[180px] truncate">
-                        {account.address || '—'}
-                      </td>
+                      {visibleCols.has('Address') && (
+                        <td className="px-4 py-2 text-slate-500 dark:text-slate-400 max-w-[180px] truncate">{account.address || '—'}</td>
+                      )}
 
                       {/* CR Number */}
-                      <td className="px-4 py-2 text-slate-500 dark:text-slate-400">
-                        {account.crNumber || '—'}
-                      </td>
+                      {visibleCols.has('CR Number') && (
+                        <td className="px-4 py-2 text-slate-500 dark:text-slate-400">{account.crNumber || '—'}</td>
+                      )}
 
                       {/* Assigned To */}
-                      <td className="px-4 py-2 text-slate-500 dark:text-slate-400">
-                        {account.assignedTo || '—'}
-                      </td>
+                      {visibleCols.has('Assigned To') && (
+                        <td className="px-4 py-2 text-slate-500 dark:text-slate-400">{account.assignedTo || '—'}</td>
+                      )}
 
                       {/* Country */}
-                      <td className="px-4 py-2 text-slate-500 dark:text-slate-400">
-                        {account.country || '—'}
-                      </td>
+                      {visibleCols.has('Country') && (
+                        <td className="px-4 py-2 text-slate-500 dark:text-slate-400">{account.country || '—'}</td>
+                      )}
 
                       {/* Created */}
-                      <td className="px-4 py-2 text-slate-900 dark:text-white">
-                        <div>{createdDate}</div>
-                        <div className="text-xs text-slate-400">{createdTime}</div>
-                      </td>
+                      {visibleCols.has('Created Date') && (
+                        <td className="px-4 py-2 text-slate-900 dark:text-white">
+                          <div>{createdDate}</div>
+                          <div className="text-xs text-slate-400">{createdTime}</div>
+                        </td>
+                      )}
 
                       {/* Updated */}
-                      <td className="px-4 py-2 text-slate-900 dark:text-white">
-                        <div>{updatedDate}</div>
-                        <div className="text-xs text-slate-400">{updatedTime}</div>
-                      </td>
+                      {visibleCols.has('Updated Date') && (
+                        <td className="px-4 py-2 text-slate-900 dark:text-white">
+                          <div>{updatedDate}</div>
+                          <div className="text-xs text-slate-400">{updatedTime}</div>
+                        </td>
+                      )}
 
                       {/* Actions */}
-                      <td className="px-4 py-2 text-center">
-                        <div className="flex items-center justify-center gap-2">
-                          {/* Edit button */}
-                          <div className="relative group flex flex-col items-center">
-                            <button
-                              onClick={() => handleOpenModal(account)}
-                              aria-label={`Edit ${account.name}`}
-                              className="flex items-center justify-center w-8 h-8 rounded-full text-slate-400 transition-all duration-200 group-hover:bg-emerald-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-emerald-400/40 group-hover:scale-110"
-                            >
-                              <EditIcon className="h-4 w-4" />
-                            </button>
-                            <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] font-bold text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
-                              Edit
-                            </span>
+                      {visibleCols.has('Actions') && (
+                        <td className="px-4 py-2 text-center">
+                          <div className="flex items-center justify-center gap-2">
+                            {/* Edit button */}
+                            <div className="relative group flex flex-col items-center">
+                              <button
+                                onClick={() => handleOpenModal(account)}
+                                aria-label={`Edit ${account.name}`}
+                                className="flex items-center justify-center w-8 h-8 rounded-full text-slate-400 transition-all duration-200 group-hover:bg-emerald-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-emerald-400/40 group-hover:scale-110"
+                              >
+                                <EditIcon className="h-4 w-4" />
+                              </button>
+                              <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] font-bold text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                                Edit
+                              </span>
+                            </div>
+                            {/* Delete button */}
+                            <div className="relative group flex flex-col items-center">
+                              <button
+                                onClick={() => handleDeleteAccount(account.id)}
+                                aria-label={`Delete ${account.name}`}
+                                className="flex items-center justify-center w-8 h-8 rounded-full text-rose-500 hover:bg-rose-500/20 transition-all duration-200"
+                              >
+                                <DeleteIcon className="h-4 w-4" />
+                              </button>
+                              <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] font-bold text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                                Delete
+                              </span>
+                            </div>
                           </div>
-                          {/* Delete button */}
-                          <div className="relative group flex flex-col items-center">
-                            <button
-                              onClick={() => handleDeleteAccount(account.id)}
-                              aria-label={`Delete ${account.name}`}
-                              className="flex items-center justify-center w-8 h-8 rounded-full text-rose-500 hover:bg-rose-500/20 transition-all duration-200"
-                            >
-                              <DeleteIcon className="h-4 w-4" />
-                            </button>
-                            <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] font-bold text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
-                              Delete
-                            </span>
-                          </div>
-                        </div>
-                      </td>
+                        </td>
+                      )}
                     </tr>
                   );
                 })
@@ -999,29 +1213,51 @@ const Accounts: React.FC = () => {
         </div>
 
         {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="px-3 sm:px-4 py-3 border-t border-slate-200 dark:border-slate-800/80 flex flex-col xs:flex-row items-center justify-between gap-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-            <span className="shrink-0">
-              Showing {(safePage - 1) * ITEMS_PER_PAGE + 1}–
-              {Math.min(safePage * ITEMS_PER_PAGE, filtered.length)} of {filtered.length}
+        {filtered.length > 0 && (
+          <div className="px-4 py-2.5 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-end gap-4 text-sm text-slate-500 dark:text-slate-400">
+            {/* Row Per page */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium whitespace-nowrap">Row Per page</span>
+              <div className="relative">
+                <select
+                  value={rowsPerPage}
+                  onChange={e => { setRowsPerPage(Number(e.target.value)); setPage(1); }}
+                  className="appearance-none pl-2 pr-6 py-1 text-xs font-semibold rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1a2235] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-emerald-500 cursor-pointer"
+                >
+                  {ROW_OPTIONS.map(n => <option key={n} value={n}>{n}</option>)}
+                </select>
+                <svg className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 h-3 w-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
+
+            {/* Range */}
+            <span className="text-xs font-medium tabular-nums whitespace-nowrap">
+              {(safePage - 1) * rowsPerPage + 1}–{Math.min(safePage * rowsPerPage, filtered.length)} of {filtered.length}
             </span>
+
+            {/* Arrow buttons */}
             <div className="flex items-center gap-1">
               <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={safePage === 1}
-                className="px-2.5 sm:px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700 disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="flex items-center justify-center w-7 h-7 rounded-md border border-slate-200 dark:border-slate-700 disabled:opacity-30 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                aria-label="Previous page"
               >
-                ← Prev
+                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
               </button>
-              <span className="px-2.5 sm:px-3 py-1 font-medium text-slate-700 dark:text-slate-200">
-                {safePage} / {totalPages}
-              </span>
               <button
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={safePage === totalPages}
-                className="px-2.5 sm:px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700 disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="flex items-center justify-center w-7 h-7 rounded-md border border-slate-200 dark:border-slate-700 disabled:opacity-30 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                aria-label="Next page"
               >
-                Next →
+                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
               </button>
             </div>
           </div>
@@ -1066,7 +1302,7 @@ const Accounts: React.FC = () => {
                   href="#"
                   className="hover:underline font-medium"
                   style={{ color: '#10B981' }}
-                  onClick={e => e.preventDefault()}
+                  onClick={e => { e.preventDefault(); downloadSampleCsv(); }}
                 >
                   Download a sample csv.
                 </a>
@@ -1113,9 +1349,85 @@ const Accounts: React.FC = () => {
                 disabled={!importFile}
                 onClick={() => {
                   if (!importFile) return;
-                  setIsImportOpen(false);
-                  setImportFile(null);
-                  setSuccessMessage('Accounts Imported Successfully');
+
+                  const reader = new FileReader();
+                  reader.onload = (e) => {
+                    const text = e.target?.result as string;
+                    if (!text) return;
+
+                    // ── CSV parser (handles quoted fields) ──
+                    const parseRow = (line: string): string[] => {
+                      const result: string[] = [];
+                      let cur = '';
+                      let inQuotes = false;
+                      for (let i = 0; i < line.length; i++) {
+                        const ch = line[i];
+                        if (ch === '"') {
+                          if (inQuotes && line[i + 1] === '"') { cur += '"'; i++; }
+                          else { inQuotes = !inQuotes; }
+                        } else if (ch === ',' && !inQuotes) {
+                          result.push(cur.trim()); cur = '';
+                        } else {
+                          cur += ch;
+                        }
+                      }
+                      result.push(cur.trim());
+                      return result;
+                    };
+
+                    const lines = text.split(/\r?\n/).filter(l => l.trim());
+                    if (lines.length < 2) return;
+
+                    // Build a header→index map (case-insensitive)
+                    const headers = parseRow(lines[0]).map(h => h.toLowerCase().replace(/\s+/g, ''));
+                    const idx = (names: string[]) => {
+                      for (const n of names) {
+                        const i = headers.indexOf(n.toLowerCase().replace(/\s+/g, ''));
+                        if (i !== -1) return i;
+                      }
+                      return -1;
+                    };
+
+                    const col = {
+                      name:       idx(['name']),
+                      address:    idx(['address']),
+                      crNumber:   idx(['crnumber', 'cr number', 'crnumber']),
+                      phone:      idx(['phonenumber', 'phone number', 'phone']),
+                      email:      idx(['email']),
+                      website:    idx(['website']),
+                      pincode:    idx(['pincode', 'zip', 'postal']),
+                      city:       idx(['city']),
+                      country:    idx(['country']),
+                      assignedTo: idx(['assignedto', 'assigned to']),
+                    };
+
+                    const now = new Date().toISOString();
+                    const imported: Account[] = lines.slice(1).map((line, i) => {
+                      const cells = parseRow(line);
+                      const get = (c: number) => (c !== -1 ? cells[c] ?? '' : '');
+                      return {
+                        id:         `imp_${Date.now()}_${i}`,
+                        name:       get(col.name),
+                        website:    get(col.website),
+                        email:      get(col.email),
+                        phone:      get(col.phone),
+                        address:    get(col.address),
+                        crNumber:   get(col.crNumber),
+                        assignedTo: get(col.assignedTo),
+                        country:    get(col.country),
+                        city:       get(col.city),
+                        pincode:    get(col.pincode),
+                        createdAt:  now,
+                        updatedAt:  now,
+                      };
+                    }).filter(a => a.name);   // skip empty rows
+
+                    setAccounts(prev => [...imported, ...prev]);
+                    setIsImportOpen(false);
+                    setImportFile(null);
+                    setSuccessMessage(`${imported.length} Account${imported.length !== 1 ? 's' : ''} Imported Successfully`);
+                  };
+                  reader.readAsText(importFile);
                 }}
                 className="px-5 py-2 rounded-full text-sm font-bold text-white shadow-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 style={{ backgroundColor: '#10B981' }}

@@ -394,7 +394,7 @@ const Dashboard: React.FC = () => {
           <div className="relative mb-6 overflow-hidden rounded-3xl border border-emerald-400/30 bg-gradient-to-br from-emerald-400/90 to-teal-500/90 p-5 shadow-lg shadow-emerald-400/20 backdrop-blur-xl dark:border-emerald-400/20">
             <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
             <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
-              <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between gap-3 sm:gap-4">
+            <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-teal-950/10 ring-1 ring-teal-950/20 shadow-lg">
                   <span className="text-xl">👋</span>
