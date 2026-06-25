@@ -11,7 +11,9 @@ import {
   SearchIcon,
   MoreVertIcon,
   FilterFunnelIcon,
-  UserIcon
+  UserIcon,
+  UKFlagIcon,
+  CloseIcon
 } from '../components/icons/Icons';
 
 // Helper to generate initials
@@ -43,6 +45,37 @@ const getAvatarColor = (name: string) => {
   return colors[Math.abs(hash) % colors.length];
 };
 
+const FloatingInput: React.FC<{
+  label: string;
+  name?: string;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  required?: boolean;
+  type?: string;
+  placeholder?: string;
+  icon?: React.ReactNode;
+  suffix?: React.ReactNode;
+  children?: React.ReactNode;
+}> = ({ label, required, children, icon, suffix, ...props }) => (
+  <div className="relative mt-3">
+    <label className="absolute -top-2 left-4 bg-white dark:bg-[#1a2235] px-1 text-[11px] font-bold text-slate-500 dark:text-slate-400 z-10">
+      {label} {required && '*'}
+    </label>
+    {children ? (
+      children
+    ) : (
+      <div className="flex items-center w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-transparent text-sm text-slate-800 dark:text-white focus-within:border-[#0056D2] overflow-hidden">
+        {icon && <div className="pl-3">{icon}</div>}
+        <input
+          {...props}
+          className="w-full px-4 py-3 bg-transparent focus:outline-none placeholder-slate-400"
+        />
+        {suffix && <div className="pr-3">{suffix}</div>}
+      </div>
+    )}
+  </div>
+);
+
 const ContactForm: React.FC<{
   contact?: Contact | null;
   onSave: (
@@ -55,8 +88,12 @@ const ContactForm: React.FC<{
     lastName: contact?.lastName || '',
     email: contact?.email || '',
     contactNumber: contact?.contactNumber || '',
+    address: contact?.address || '',
+    city: contact?.city || '',
+    nationalId: contact?.nationalId || '',
+    country: contact?.country || '',
     accountName: contact?.accountName || '',
-    assignedTo: contact?.assignedTo || 'Unassigned',
+    assignedTo: contact?.assignedTo || 'Rahul Patel',
     lifecycle: contact?.lifecycle || 'NA',
     labels: contact?.labels || ''
   });
@@ -65,7 +102,6 @@ const ContactForm: React.FC<{
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-
     setFormData((prev) => ({
       ...prev,
       [name]: value
@@ -78,77 +114,109 @@ const ContactForm: React.FC<{
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-            First Name
-          </label>
+    <form onSubmit={handleSubmit} className="pt-2 pb-4">
+      
+      {/* Contact Details Section */}
+      <div className="mb-6">
+        <h3 className="text-sm font-extrabold text-slate-800 dark:text-slate-200 mb-4">Contact Details</h3>
+        <div className="space-y-4">
+          <FloatingInput label="First Name" name="firstName" value={formData.firstName} onChange={handleChange} placeholder="Enter first name" />
+          <FloatingInput label="Last Name" required name="lastName" value={formData.lastName} onChange={handleChange} placeholder="Enter last name" />
+          <FloatingInput label="Email" type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Enter email address" />
+          
+          <FloatingInput label="Contact Number">
+             <div className="flex items-center w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-transparent text-sm text-slate-800 dark:text-white focus-within:border-[#0056D2] overflow-hidden">
+               <div className="flex items-center pl-4 pr-3 border-r border-slate-200 dark:border-slate-700">
+                 <UKFlagIcon className="w-5 h-3.5 mr-1.5 rounded-sm object-cover" />
+                 <svg className="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+               </div>
+               <input
+                 type="tel"
+                 name="contactNumber"
+                 value={formData.contactNumber}
+                 onChange={handleChange}
+                 placeholder="Enter phone number"
+                 className="w-full px-4 py-3 bg-transparent focus:outline-none placeholder-slate-400"
+               />
+             </div>
+          </FloatingInput>
 
-          <input
-            type="text"
-            name="firstName"
-            value={formData.firstName}
-            onChange={handleChange}
-            className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-[#0056D2] focus:ring-[#0056D2] dark:bg-slate-700 dark:border-slate-600 dark:text-white"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-            Last Name
-          </label>
-
-          <input
-            type="text"
-            name="lastName"
-            value={formData.lastName}
-            onChange={handleChange}
-            className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-[#0056D2] focus:ring-[#0056D2] dark:bg-slate-700 dark:border-slate-600 dark:text-white"
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-            Contact Number
-          </label>
-
-          <input
-            type="tel"
-            name="contactNumber"
-            value={formData.contactNumber}
-            onChange={handleChange}
-            className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-[#0056D2] focus:ring-[#0056D2] dark:bg-slate-700 dark:border-slate-600 dark:text-white"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-            Email
-          </label>
-
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-[#0056D2] focus:ring-[#0056D2] dark:bg-slate-700 dark:border-slate-600 dark:text-white"
-          />
+          <FloatingInput label="Address" name="address" value={formData.address} onChange={handleChange} placeholder="Enter address" />
+          <FloatingInput label="City" name="city" value={formData.city} onChange={handleChange} placeholder="Enter city" />
+          <FloatingInput label="National/Iqama ID" name="nationalId" value={formData.nationalId} onChange={handleChange} placeholder="Enter national ID" />
+          <FloatingInput label="Country" name="country" value={formData.country} onChange={handleChange} placeholder="Enter country" />
         </div>
       </div>
 
-      <div className="flex justify-end space-x-2 pt-4">
-        <Button type="button" variant="secondary" onClick={onClose}>
+      {/* Assignment & Account Section */}
+      <div className="mb-6">
+        <h3 className="text-sm font-extrabold text-slate-800 dark:text-slate-200 mb-4">Assignment & Account</h3>
+        <div className="space-y-4">
+          <FloatingInput label="Assigned to">
+             <div className="flex items-center w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-transparent p-2 text-sm">
+                {formData.assignedTo && (
+                  <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-full py-1 pl-1 pr-2 mr-2">
+                     <span className="w-5 h-5 rounded-full bg-slate-300 dark:bg-slate-600 flex items-center justify-center text-[10px] font-bold mr-1.5 text-slate-700 dark:text-slate-200 uppercase">
+                       {formData.assignedTo.charAt(0)}
+                     </span>
+                     <span className="text-[11px] font-extrabold text-slate-700 dark:text-slate-300 mr-1.5">{formData.assignedTo}</span>
+                     <CloseIcon className="w-3 h-3 text-slate-500 hover:text-slate-700 cursor-pointer" />
+                  </div>
+                )}
+                <input type="text" placeholder="+ Recipients" className="flex-1 bg-transparent focus:outline-none placeholder-slate-400 text-sm ml-1 px-1 py-1" />
+             </div>
+          </FloatingInput>
+
+          <FloatingInput label="Account Name">
+            <div className="flex items-center gap-3">
+              <div className="flex-1 flex items-center w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-transparent text-sm text-slate-800 dark:text-white focus-within:border-[#0056D2] overflow-hidden">
+                <input
+                  type="text"
+                  name="accountName"
+                  value={formData.accountName}
+                  onChange={handleChange}
+                  placeholder="Search Account..."
+                  className="w-full px-4 py-3 bg-transparent focus:outline-none placeholder-slate-400"
+                />
+              </div>
+              <button type="button" className="bg-[#10B981] text-white p-3 rounded-full hover:bg-[#059669] flex-shrink-0 transition-colors shadow-sm">
+                <SearchIcon className="w-5 h-5" />
+              </button>
+              <button type="button" className="bg-[#10B981] text-white p-3 rounded-full hover:bg-[#059669] flex-shrink-0 transition-colors shadow-sm">
+                <PlusIcon className="w-5 h-5" />
+              </button>
+            </div>
+          </FloatingInput>
+        </div>
+      </div>
+
+      <div className="flex justify-center md:justify-end space-x-4 pt-6 border-t border-slate-100 dark:border-slate-800 mt-6">
+        <button type="button" onClick={onClose} className="px-8 py-2.5 bg-[#10B981] hover:bg-[#059669] text-white rounded-full text-sm font-bold transition-colors shadow-sm">
           Cancel
-        </Button>
-
-        <Button type="submit">Save</Button>
+        </button>
+        <button type="submit" className="px-8 py-2.5 bg-[#10B981] hover:bg-[#059669] text-white rounded-full text-sm font-bold transition-colors shadow-sm">
+          Save
+        </button>
       </div>
     </form>
   );
 };
+
+const TableHeader = ({ title1, title2, hasFilter, className }: { title1: string, title2?: string, hasFilter?: boolean, className?: string }) => (
+  <th className={`px-4 py-3 font-semibold text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap ${className || ''}`}>
+    <div className="flex items-center gap-2">
+      {title2 ? (
+        <div className="flex flex-col text-[11px] leading-tight">
+          <span>{title1}</span>
+          <span>{title2}</span>
+        </div>
+      ) : (
+        <span className="text-[11px]">{title1}</span>
+      )}
+      {hasFilter && <FilterFunnelIcon className="w-3.5 h-3.5 text-slate-400 cursor-pointer hover:text-slate-600 dark:hover:text-slate-300" />}
+    </div>
+  </th>
+);
 
 const Contacts: React.FC = () => {
   const { contacts, setContacts } = useData();
@@ -156,6 +224,11 @@ const Contacts: React.FC = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingContact, setEditingContact] = useState<Contact | null>(null);
+
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [search, setSearch] = useState('');
+  const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
 
   const handleOpenModal = (contact: Contact | null = null) => {
     setEditingContact(contact);
@@ -198,6 +271,35 @@ const Contacts: React.FC = () => {
     }
   };
 
+  const filteredContacts = contacts.filter((c) =>
+    Object.values(c).some((val) =>
+      String(val).toLowerCase().includes(search.toLowerCase())
+    )
+  );
+
+  const totalPages = Math.max(1, Math.ceil(filteredContacts.length / rowsPerPage));
+  const safePage = Math.max(1, Math.min(page, totalPages));
+
+  const paginatedContacts = filteredContacts.slice(
+    (safePage - 1) * rowsPerPage,
+    safePage * rowsPerPage
+  );
+
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setSelectedContacts(paginatedContacts.map((c) => c.id));
+    } else {
+      setSelectedContacts([]);
+    }
+  };
+
+  const handleSelectContact = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedContacts((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
+  };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
 
@@ -221,7 +323,7 @@ const Contacts: React.FC = () => {
         <div className="p-4 flex justify-between items-center border-b border-slate-200 dark:border-slate-800/80">
           <button
             onClick={() => handleOpenModal()}
-            className="bg-[#0056D2] hover:bg-[#00449E] text-white px-4 py-2 rounded-full text-sm font-medium shadow-sm flex items-center transition-colors"
+            className="bg-[#10B981] hover:bg-[#059669] text-white px-4 py-2 rounded-full text-sm font-medium shadow-sm flex items-center transition-colors"
           >
             <PlusIcon className="h-4 w-4 mr-1.5" />
             New Contact
@@ -233,6 +335,8 @@ const Contacts: React.FC = () => {
 
               <input
                 type="text"
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
                 placeholder="Search..."
                 className="pl-9 pr-4 py-1.5 bg-transparent border border-slate-300 dark:border-slate-700 rounded-full text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#0056D2] focus:ring-1 focus:ring-[#0056D2] w-64"
               />
@@ -244,89 +348,163 @@ const Contacts: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto hide-scrollbar">
           <table className="min-w-full w-full whitespace-nowrap text-left text-sm">
-            <thead className="bg-transparent text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-slate-800/80">
+            <thead className="bg-transparent border-b border-slate-200 dark:border-slate-800/80">
               <tr>
-                <th className="px-4 py-3">First Name</th>
-                <th className="px-4 py-3">Last Name</th>
-                <th className="px-4 py-3">Contact Number</th>
-                <th className="px-4 py-3">Email</th>
-                <th className="px-4 py-3">Actions</th>
+                <th className="px-4 py-3">
+                  <input
+                    type="checkbox"
+                    onChange={handleSelectAll}
+                    checked={paginatedContacts.length > 0 && selectedContacts.length === paginatedContacts.length}
+                    className="h-3.5 w-3.5 rounded border-slate-300 dark:border-slate-700 text-[#0056D2] focus:ring-[#0056D2]"
+                  />
+                </th>
+                <TableHeader title1="First" title2="Name" />
+                <TableHeader title1="Last" title2="Name" />
+                <TableHeader title1="Contact" title2="Number" />
+                <TableHeader title1="Email" />
+                <TableHeader title1="Account" title2="Name" />
+                <TableHeader title1="Assigned" title2="to" />
+                <TableHeader title1="Created" title2="Date" />
+                <TableHeader title1="Updated" title2="Date" />
+                <TableHeader title1="Actions" />
               </tr>
             </thead>
 
             <tbody className="divide-y divide-slate-200 dark:divide-slate-800/80">
-              {contacts.map((contact) => {
-                return (
-                  <tr
-                    key={contact.id}
-                    onClick={() => navigate(`/contacts/${contact.id}`)}
-                    className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors cursor-pointer"
-                  >
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold text-white ${getAvatarColor(
-                            contact.firstName || contact.lastName
-                          )}`}
-                        >
-                          {getInitials(
-                            contact.firstName,
-                            contact.lastName
-                          )}
-                        </div>
+              {paginatedContacts.length === 0 ? (
+                <tr>
+                  <td colSpan={10} className="px-4 py-8 text-center text-slate-500">
+                    No Contacts Found
+                  </td>
+                </tr>
+              ) : (
+                paginatedContacts.map((contact) => {
+                  const created = formatDate(contact.createdAt);
+                  const updated = formatDate(contact.updatedAt);
+                  const isSelected = selectedContacts.includes(contact.id);
 
-                        {contact.firstName}
-                      </div>
-                    </td>
-
-                    <td className="px-4 py-3">
-                      {contact.lastName}
-                    </td>
-
-                    <td className="px-4 py-3">
-                      {contact.contactNumber}
-                    </td>
-
-                    <td className="px-4 py-3">
-                      {contact.email}
-                    </td>
-
-                    <td
-                      className="px-4 py-3 text-center"
-                      onClick={(e) => e.stopPropagation()}
+                  return (
+                    <tr
+                      key={contact.id}
+                      onClick={() => navigate(`/contacts/${contact.id}`)}
+                      className={`hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors cursor-pointer ${isSelected ? 'bg-slate-50/50 dark:bg-slate-800/20' : ''}`}
                     >
-                      <div className="flex items-center justify-center gap-2">
-                        <button
-                          onClick={() => handleOpenModal(contact)}
-                          className="text-slate-400 hover:text-emerald-500 transition-colors p-1"
-                        >
-                          <EditIcon className="h-4 w-4" />
-                        </button>
-
-                        <button
-                          onClick={() =>
-                            handleDeleteContact(contact.id)
-                          }
-                          className="text-slate-400 hover:text-red-500 transition-colors p-1"
-                        >
-                          <DeleteIcon className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
+                      <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={(e) => handleSelectContact(contact.id, e as any)}
+                          className="h-3.5 w-3.5 rounded border-slate-300 dark:border-slate-700 text-[#0056D2] focus:ring-[#0056D2]"
+                        />
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <div
+                            className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold text-white ${getAvatarColor(
+                              contact.firstName || contact.lastName
+                            )}`}
+                          >
+                            {getInitials(contact.firstName, contact.lastName)}
+                          </div>
+                          {contact.firstName}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">{contact.lastName}</td>
+                      <td className="px-4 py-3">{contact.contactNumber}</td>
+                      <td className="px-4 py-3 text-slate-500 text-xs">{contact.email}</td>
+                      <td className="px-4 py-3 text-slate-500 text-xs">{contact.accountName}</td>
+                      <td className="px-4 py-3 text-slate-500 text-xs">
+                        <span className="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded-full text-[10px] font-medium text-slate-500">
+                          {contact.assignedTo === 'Unassigned' ? 'Unassigned' : getInitials(contact.assignedTo, '')}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-slate-500 text-[11px] leading-tight text-center">
+                        <div>{created.date}</div>
+                        <div>{created.time}</div>
+                      </td>
+                      <td className="px-4 py-3 text-slate-500 text-[11px] leading-tight text-center">
+                        <div>{updated.date}</div>
+                        <div>{updated.time}</div>
+                      </td>
+                      <td className="px-4 py-3 text-center" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => handleOpenModal(contact)}
+                            className="text-slate-400 hover:text-emerald-500 transition-colors p-1"
+                          >
+                            <EditIcon className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteContact(contact.id)}
+                            className="text-slate-400 hover:text-red-500 transition-colors p-1"
+                          >
+                            <DeleteIcon className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
+        </div>
+
+        {/* Pagination Footer */}
+        <div className="flex items-center justify-between px-4 py-3 border-t border-slate-100 dark:border-slate-800 text-xs bg-slate-50/50 dark:bg-slate-900/30">
+          <div className="flex items-center gap-3">
+            <span className="text-slate-500 dark:text-slate-400 font-medium">Row Per page</span>
+            <select
+              value={rowsPerPage}
+              onChange={(e) => {
+                setRowsPerPage(Number(e.target.value));
+                setPage(1);
+              }}
+              className="bg-transparent border border-slate-200 dark:border-slate-700 rounded-md py-1 px-2 text-slate-700 dark:text-slate-300 focus:outline-none focus:border-[#0056D2]"
+            >
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <span className="text-slate-500 dark:text-slate-400 font-medium">
+              {(safePage - 1) * rowsPerPage + (filteredContacts.length > 0 ? 1 : 0)}-
+              {Math.min(safePage * rowsPerPage, filteredContacts.length)} of {filteredContacts.length}
+            </span>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={safePage === 1}
+                className="p-1 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors disabled:opacity-40 disabled:hover:bg-transparent"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={safePage === totalPages}
+                className="p-1 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors disabled:opacity-40 disabled:hover:bg-transparent"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
       <Modal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        title={editingContact ? 'Edit Contact' : 'Add New Contact'}
+        title={editingContact ? 'Edit Contact' : 'Create Contact'}
+        variant="drawer"
       >
         <ContactForm
           contact={editingContact}

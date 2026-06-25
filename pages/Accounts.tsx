@@ -64,7 +64,7 @@ interface TableHeaderProps {
 }
 
 const TableHeader: React.FC<TableHeaderProps> = ({ children }) => (
-  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide whitespace-nowrap">
+  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wide whitespace-nowrap">
     <div className="flex items-center gap-1">
       {children}
     </div>
@@ -549,18 +549,16 @@ const ROW_OPTIONS = [5, 10, 25];
 const downloadSampleCsv = () => {
   const headers = ['Name', 'Address', 'CrNumber', 'Phone Number', 'Email', 'Website', 'Pincode', 'City', 'Country'];
   const rows = [
-    [
-      ['BrightWave Technologies', '123 Main St', '1000012345', '12025550001', 'info@brightwave.com', 'www.brightwave.com', '10001', 'New York', 'United States'],
-      ['Skyline Solutions', '456 Market St', '1000067890', '13105550002', 'contact@skylinesolutions.com', 'www.skylinesolutions.com', '94105', 'San Francisco', 'United States'],
-      ['BluePeak LLC', '789 Sunset Blvd', '1000011223', '12135550003', 'support@bluepeakllc.com', 'www.bluepeakllc.com', '90028', 'Los Angeles', 'United States'],
-      ['RiverStone Inc', '321 Oak Ave', '1000044556', '17135550004', 'hello@riverstoneinc.com', 'www.riverstoneinc.com', '60601', 'Chicago', 'United States'],
-      ['NextGen Group', '654 Pine St', '1000077889', '18325550005', 'team@nextgengroup.com', 'www.nextgengroup.com', '77002', 'Houston', 'United States'],
-      ['NovaTech Systems', '987 Broadway', '1000099001', '12065550006', 'sales@novatechsystems.com', 'www.novatechsystems.com', '98101', 'Seattle', 'United States'],
-      ['Liberty Co', '101 Washington Ave', '1000022334', '13035550007', 'admin@libertyco.com', 'www.libertyco.com', '33131', 'Miami', 'United States'],
-      ['Evergreen Enterprises', '202 Elm St', '1000055667', '16175550008', 'info@evergreenent.com', 'www.evergreenent.com', '85004', 'Phoenix', 'United States'],
-      ['Summit Partners', '303 Lake Shore Dr', '1000088990', '16125550009', 'partners@summitpartners.com', 'www.summitpartners.com', '80202', 'Denver', 'United States'],
-      ['Pioneer Systems', '404 Central Ave', '1000033445', '16195550010', 'service@pioneersystems.com', 'www.pioneersystems.com', '30303', 'Atlanta', 'United States']
-    ]
+    ['BrightWave Technologies', '123 Main St', '1000012345', '12025550001', 'info@brightwave.com', 'www.brightwave.com', '10001', 'New York', 'United States'],
+    ['Skyline Solutions', '456 Market St', '1000067890', '13105550002', 'contact@skylinesolutions.com', 'www.skylinesolutions.com', '94105', 'San Francisco', 'United States'],
+    ['BluePeak LLC', '789 Sunset Blvd', '1000011223', '12135550003', 'support@bluepeakllc.com', 'www.bluepeakllc.com', '90028', 'Los Angeles', 'United States'],
+    ['RiverStone Inc', '321 Oak Ave', '1000044556', '17135550004', 'hello@riverstoneinc.com', 'www.riverstoneinc.com', '60601', 'Chicago', 'United States'],
+    ['NextGen Group', '654 Pine St', '1000077889', '18325550005', 'team@nextgengroup.com', 'www.nextgengroup.com', '77002', 'Houston', 'United States'],
+    ['NovaTech Systems', '987 Broadway', '1000099001', '12065550006', 'sales@novatechsystems.com', 'www.novatechsystems.com', '98101', 'Seattle', 'United States'],
+    ['Liberty Co', '101 Washington Ave', '1000022334', '13035550007', 'admin@libertyco.com', 'www.libertyco.com', '33131', 'Miami', 'United States'],
+    ['Evergreen Enterprises', '202 Elm St', '1000055667', '16175550008', 'info@evergreenent.com', 'www.evergreenent.com', '85004', 'Phoenix', 'United States'],
+    ['Summit Partners', '303 Lake Shore Dr', '1000088990', '16125550009', 'partners@summitpartners.com', 'www.summitpartners.com', '80202', 'Denver', 'United States'],
+    ['Pioneer Systems', '404 Central Ave', '1000033445', '16195550010', 'service@pioneersystems.com', 'www.pioneersystems.com', '30303', 'Atlanta', 'United States']
   ];
 
   const csvContent = [headers, ...rows]
@@ -625,14 +623,21 @@ const Accounts: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleOutside);
   }, []);
 
-  // Success toast state
+  // Success & Error toast states
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (!successMessage) return;
     const timer = setTimeout(() => setSuccessMessage(null), 3000);
     return () => clearTimeout(timer);
   }, [successMessage]);
+
+  useEffect(() => {
+    if (!errorMessage) return;
+    const timer = setTimeout(() => setErrorMessage(null), 3000);
+    return () => clearTimeout(timer);
+  }, [errorMessage]);
 
   // Search & pagination
   const [search, setSearch] = useState('');
@@ -1413,7 +1418,7 @@ const Accounts: React.FC = () => {
                         phone:      get(col.phone),
                         address:    get(col.address),
                         crNumber:   get(col.crNumber),
-                        assignedTo: get(col.assignedTo),
+                        assignedTo: get(col.assignedTo) || currentUserName,
                         country:    get(col.country),
                         city:       get(col.city),
                         pincode:    get(col.pincode),
@@ -1422,10 +1427,29 @@ const Accounts: React.FC = () => {
                       };
                     }).filter(a => a.name);   // skip empty rows
 
-                    setAccounts(prev => [...imported, ...prev]);
+                    const existingEmails = new Set(
+                      accounts.filter(a => a.email).map(a => a.email.toLowerCase())
+                    );
+                    
+                    const duplicateAccounts = imported.filter(
+                      a => a.email && existingEmails.has(a.email.toLowerCase())
+                    );
+                    
+                    const newAccounts = imported.filter(
+                      a => !a.email || !existingEmails.has(a.email.toLowerCase())
+                    );
+
+                    if (duplicateAccounts.length > 0) {
+                      setErrorMessage('Records already exist');
+                    }
+
+                    if (newAccounts.length > 0) {
+                      setAccounts(prev => [...newAccounts, ...prev]);
+                      setSuccessMessage(`${newAccounts.length} Account${newAccounts.length !== 1 ? 's' : ''} Imported Successfully`);
+                    }
+
                     setIsImportOpen(false);
                     setImportFile(null);
-                    setSuccessMessage(`${imported.length} Account${imported.length !== 1 ? 's' : ''} Imported Successfully`);
                   };
                   reader.readAsText(importFile);
                 }}
@@ -1480,6 +1504,37 @@ const Accounts: React.FC = () => {
                 to   { width: 0%; }
               }
             `}</style>
+          </div>
+        </div>
+      )}
+
+      {/* Error Toast */}
+      {errorMessage && (
+        <div
+          style={{
+            position: 'fixed',
+            top: successMessage ? '5rem' : '1.25rem',
+            right: '1.5rem',
+            zIndex: 9999,
+            animation: 'slideDownFade 0.35s ease',
+          }}
+        >
+          <div
+            className="flex items-center gap-3 px-5 py-3 rounded-2xl shadow-2xl border border-rose-400/30 bg-rose-600 text-white text-sm font-bold relative overflow-hidden"
+            style={{ minWidth: 260 }}
+          >
+            {/* Warning icon */}
+            <div className="flex items-center justify-center w-7 h-7 rounded-full bg-white/20 shrink-0">
+              <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            {errorMessage}
+            {/* Auto-close progress bar */}
+            <div
+              className="absolute bottom-0 left-0 h-1 rounded-b-2xl bg-white/30"
+              style={{ animation: 'shrink 3s linear forwards' }}
+            />
           </div>
         </div>
       )}

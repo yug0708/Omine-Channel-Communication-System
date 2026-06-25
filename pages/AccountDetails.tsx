@@ -93,7 +93,7 @@ const DetailField: React.FC<DetailFieldProps> = ({ icon, label, value, placehold
 };
 
 const NoDataIllustration: React.FC = () => (
-  <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+  <div className="flex flex-col items-center justify-center min-h-[400px] px-4 text-center w-full">
     <div className="relative mb-4">
       {/* Floating green dots around the box */}
       <div className="absolute -top-5 -left-8 w-2 h-2 rounded-full bg-emerald-300 dark:bg-emerald-500/40 select-none animate-pulse" />
@@ -934,9 +934,9 @@ const AccountDetails: React.FC = () => {
               </div>
 
               {/* Table wrapper */}
-              <div className="flex-1 overflow-auto">
+              <div className="flex-1 overflow-auto hide-scrollbar">
                 <table className="min-w-full w-full whitespace-nowrap text-left text-xs">
-                  <thead className="bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 font-bold border-b border-slate-100 dark:border-slate-800 sticky top-0 z-10 uppercase tracking-wider">
+                  <thead className="bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 font-bold border-b border-slate-100 dark:border-slate-800 sticky top-0 z-10 tracking-wider">
                     <tr>
                       <th className="px-4 py-3.5 w-6">
                         <input
@@ -1099,9 +1099,9 @@ const AccountDetails: React.FC = () => {
           {/* Tab Contents: Tickets */}
           {activeTab === 'tickets' && (
             <div className="flex-1 flex flex-col overflow-hidden">
-              <div className="flex-1 overflow-auto p-4">
-                <table className="min-w-full w-full whitespace-nowrap text-left text-xs bg-[#1C232E] rounded-2xl overflow-hidden border border-slate-800/80">
-                  <thead className="bg-[#242C38] text-slate-400 font-bold border-b border-slate-700 uppercase tracking-wide">
+              <div className="flex-1 overflow-auto hide-scrollbar p-4">
+                <table className="min-w-full w-full whitespace-nowrap text-left text-xs bg-white dark:bg-[#1C232E] rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800/80 shadow-sm dark:shadow-none">
+                  <thead className="bg-slate-50 dark:bg-[#242C38] text-slate-500 dark:text-slate-400 font-bold border-b border-slate-200 dark:border-slate-700 tracking-wide">
                     <tr>
                       <th className="px-5 py-3.5">Ticket No</th>
                       <th className="px-5 py-3.5">Title</th>
@@ -1111,17 +1111,17 @@ const AccountDetails: React.FC = () => {
                     </tr>
                   </thead>
 
-                  <tbody className="divide-y divide-slate-800/60 text-white font-medium">
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-white font-medium">
                     {accountTickets.length === 0 ? (
                       <tr>
-                        <td colSpan={5} className="bg-slate-900/10">
+                        <td colSpan={5} className="bg-slate-50/50 dark:bg-slate-900/10">
                           <NoDataIllustration />
                         </td>
                       </tr>
                     ) : (
                       accountTickets.map((t) => (
-                        <tr key={t.id} className="hover:bg-slate-800/20 transition-colors">
-                          <td className="px-5 py-3.5 font-bold text-slate-400">
+                        <tr key={t.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
+                          <td className="px-5 py-3.5 font-bold text-slate-500 dark:text-slate-400">
                             #{t.ticketNo || '—'}
                           </td>
                           <td className="px-5 py-3.5 font-semibold">

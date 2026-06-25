@@ -56,10 +56,10 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, variant
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-[#151B25] rounded-3xl shadow-2xl w-full max-w-lg m-4 border border-slate-200 dark:border-slate-800/80 overflow-hidden"
+        className="bg-white dark:bg-[#151B25] rounded-3xl shadow-2xl w-full max-w-lg m-4 border border-slate-200 dark:border-slate-800/80 overflow-hidden flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center p-6 border-b border-slate-100 dark:border-slate-800/80">
+        <div className="flex justify-between items-center p-6 border-b border-slate-100 dark:border-slate-800/80 flex-shrink-0">
           <h2 className="text-xl font-bold text-slate-900 dark:text-white">{title}</h2>
           <button
             onClick={onClose}
@@ -70,7 +70,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, variant
             </svg>
           </button>
         </div>
-        <div className="p-6">{children}</div>
+        <div className="p-6 overflow-y-auto custom-scrollbar">{children}</div>
       </div>
     </div>
   );

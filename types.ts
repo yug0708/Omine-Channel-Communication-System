@@ -24,6 +24,10 @@ export interface Contact {
   lastName: string;
   email: string;
   contactNumber: string;
+  address?: string;
+  city?: string;
+  nationalId?: string;
+  country?: string;
   accountName: string;
   assignedTo: string;
   lifecycle: string;
