@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useData } from '../hooks/useData';
+import { useAuth } from '../hooks/useAuth';
 import { Contact } from '../types';
 import Button from '../components/ui/Button';
 import Modal from '../components/ui/Modal';
@@ -51,28 +52,31 @@ const FloatingInput: React.FC<{
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   required?: boolean;
+  error?: string;
   type?: string;
   placeholder?: string;
   icon?: React.ReactNode;
   suffix?: React.ReactNode;
   children?: React.ReactNode;
-}> = ({ label, required, children, icon, suffix, ...props }) => (
-  <div className="relative mt-3">
-    <label className="absolute -top-2 left-4 bg-white dark:bg-[#1a2235] px-1 text-[11px] font-bold text-slate-500 dark:text-slate-400 z-10">
+}> = ({ label, required, error, children, icon, suffix, ...props }) => (
+  <div className="relative mt-4">
+    <label className={`absolute -top-2 left-4 bg-white dark:bg-[#1a2235] px-1 text-[11px] font-bold z-10 ${error ? 'text-rose-500' : 'text-slate-500 dark:text-slate-400'}`}>
       {label} {required && '*'}
     </label>
     {children ? (
       children
     ) : (
-      <div className="flex items-center w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-transparent text-sm text-slate-800 dark:text-white focus-within:border-[#0056D2] overflow-hidden">
+      <div className={`flex items-center w-full rounded-2xl border bg-transparent text-sm overflow-hidden ${error ? 'border-rose-500 text-rose-500' : 'border-slate-300 dark:border-slate-700 text-slate-800 dark:text-white focus-within:border-[#0056D2]'}`}>
         {icon && <div className="pl-3">{icon}</div>}
         <input
           {...props}
-          className="w-full px-4 py-3 bg-transparent focus:outline-none placeholder-slate-400"
+          required={required}
+          className={`w-full px-4 py-3 bg-transparent focus:outline-none placeholder-slate-400 ${error ? 'text-slate-800 dark:text-white' : ''}`}
         />
         {suffix && <div className="pr-3">{suffix}</div>}
       </div>
     )}
+    {error && <p className="text-rose-500 text-xs mt-1 ml-4 font-semibold">{error}</p>}
   </div>
 );
 
@@ -82,7 +86,8 @@ const ContactForm: React.FC<{
     contact: Omit<Contact, 'id' | 'createdAt' | 'updatedAt'> | Contact
   ) => void;
   onClose: () => void;
-}> = ({ contact, onSave, onClose }) => {
+  currentUserName?: string;
+}> = ({ contact, onSave, onClose, currentUserName = '' }) => {
   const [formData, setFormData] = useState({
     firstName: contact?.firstName || '',
     lastName: contact?.lastName || '',
@@ -93,36 +98,94 @@ const ContactForm: React.FC<{
     nationalId: contact?.nationalId || '',
     country: contact?.country || '',
     accountName: contact?.accountName || '',
-    assignedTo: contact?.assignedTo || 'Rahul Patel',
+    assignedTo: contact?.assignedTo || currentUserName,
     lifecycle: contact?.lifecycle || 'NA',
     labels: contact?.labels || ''
   });
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const assigneeDropdownRef = React.useRef<HTMLDivElement>(null);
+  const [isAssigneeOpen, setIsAssigneeOpen] = useState(false);
+
+  const availableUsers = React.useMemo(() => {
+    if (!currentUserName) return [];
+    return [{ name: currentUserName, role: 'User' }];
+  }, [currentUserName]);
+
+  React.useEffect(() => {
+    const handleOutsideAssignee = (e: MouseEvent) => {
+      if (assigneeDropdownRef.current && !assigneeDropdownRef.current.contains(e.target as Node)) {
+        setIsAssigneeOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideAssignee);
+    return () => document.removeEventListener('mousedown', handleOutsideAssignee);
+  }, []);
+
+  const handleSelectAssignee = (name: string) => {
+    setFormData((prev) => ({ ...prev, assignedTo: name }));
+    setIsAssigneeOpen(false);
+    if (isSubmitted) {
+      setErrors(validate({ ...formData, assignedTo: name }));
+    }
+  };
+
+  const handleRemoveAssignee = () => {
+    setFormData((prev) => ({ ...prev, assignedTo: '' }));
+    if (isSubmitted) {
+      setErrors(validate({ ...formData, assignedTo: '' }));
+    }
+  };
+
+  const validate = (currentFormData = formData) => {
+    const newErrors: Record<string, string> = {};
+    if (!currentFormData.firstName.trim()) {
+      newErrors.firstName = "First Name is required!";
+    }
+    if (!currentFormData.lastName.trim()) {
+      newErrors.lastName = "Last Name is required!";
+    }
+    if (!currentFormData.assignedTo.trim()) {
+      newErrors.assignedTo = "Assigned To is required!";
+    }
+    return newErrors;
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value
-    }));
+    const updated = { ...formData, [name]: value };
+    setFormData(updated);
+    
+    if (isSubmitted) {
+      setErrors(validate(updated));
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitted(true);
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
     onSave({ ...contact, ...formData } as any);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="pt-2 pb-4">
+    <form onSubmit={handleSubmit} noValidate className="pt-2 pb-4">
       
       {/* Contact Details Section */}
       <div className="mb-6">
         <h3 className="text-sm font-extrabold text-slate-800 dark:text-slate-200 mb-4">Contact Details</h3>
         <div className="space-y-4">
-          <FloatingInput label="First Name" name="firstName" value={formData.firstName} onChange={handleChange} placeholder="Enter first name" />
-          <FloatingInput label="Last Name" required name="lastName" value={formData.lastName} onChange={handleChange} placeholder="Enter last name" />
-          <FloatingInput label="Email" type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Enter email address" />
+          <FloatingInput label="First Name" required name="firstName" value={formData.firstName} onChange={handleChange} placeholder="Enter first name" error={errors.firstName} />
+          <FloatingInput label="Last Name" required name="lastName" value={formData.lastName} onChange={handleChange} placeholder="Enter last name" error={errors.lastName} />
+          <FloatingInput label="Email" type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Enter email address" error={errors.email} />
           
           <FloatingInput label="Contact Number">
              <div className="flex items-center w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-transparent text-sm text-slate-800 dark:text-white focus-within:border-[#0056D2] overflow-hidden">
@@ -152,20 +215,104 @@ const ContactForm: React.FC<{
       <div className="mb-6">
         <h3 className="text-sm font-extrabold text-slate-800 dark:text-slate-200 mb-4">Assignment & Account</h3>
         <div className="space-y-4">
-          <FloatingInput label="Assigned to">
-             <div className="flex items-center w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-transparent p-2 text-sm">
-                {formData.assignedTo && (
-                  <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-full py-1 pl-1 pr-2 mr-2">
-                     <span className="w-5 h-5 rounded-full bg-slate-300 dark:bg-slate-600 flex items-center justify-center text-[10px] font-bold mr-1.5 text-slate-700 dark:text-slate-200 uppercase">
-                       {formData.assignedTo.charAt(0)}
-                     </span>
-                     <span className="text-[11px] font-extrabold text-slate-700 dark:text-slate-300 mr-1.5">{formData.assignedTo}</span>
-                     <CloseIcon className="w-3 h-3 text-slate-500 hover:text-slate-700 cursor-pointer" />
-                  </div>
+          <div ref={assigneeDropdownRef} className="relative mt-2">
+            <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5 ml-1">
+              Assigned To *
+            </label>
+
+            {/* Chip input box */}
+            <div
+              onClick={() => setIsAssigneeOpen((o) => !o)}
+              className={`min-h-[42px] flex flex-wrap items-center gap-2 px-3 py-2 rounded-xl cursor-pointer transition ${errors.assignedTo
+                ? 'border-2 border-rose-500 dark:border-rose-500'
+                : isAssigneeOpen
+                  ? 'border-2 border-[#0056D2]'
+                  : 'border border-slate-300 dark:border-slate-700'
+                } bg-transparent`}
+            >
+              {formData.assignedTo ? (
+                <>
+                  {/* Selected chip */}
+                  <span className="inline-flex items-center gap-1.5 pl-1 pr-2 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-white text-xs font-semibold border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <span className={`h-5 w-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0 ${getAvatarColor(formData.assignedTo)}`}>
+                      {getInitials(formData.assignedTo.split(' ')[0] || '', formData.assignedTo.split(' ')[1] || '')}
+                    </span>
+                    {formData.assignedTo}
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); handleRemoveAssignee(); }}
+                      className="ml-0.5 text-slate-400 hover:text-rose-500 transition-colors"
+                    >
+                      <CloseIcon className="w-3 h-3" />
+                    </button>
+                  </span>
+                  <span className="text-sm text-slate-400 dark:text-slate-500">Add Recipients</span>
+                </>
+              ) : (
+                <span className="text-sm text-slate-400 dark:text-slate-500 pl-1">Add Recipients</span>
+              )}
+
+              {/* Clear all button */}
+              {formData.assignedTo && (
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); handleRemoveAssignee(); }}
+                  className="ml-auto text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                >
+                  <CloseIcon className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+
+            {/* Dropdown */}
+            {isAssigneeOpen && (
+              <div className="absolute left-0 right-0 top-[calc(100%+4px)] bg-white dark:bg-[#1a2235] border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden">
+                {availableUsers.length === 0 ? (
+                  <p className="px-4 py-3 text-xs text-slate-400">No users available</p>
+                ) : (
+                  availableUsers.map((u) => {
+                    const isSelected = formData.assignedTo === u.name;
+                    return (
+                      <button
+                        key={u.name}
+                        type="button"
+                        onClick={() => handleSelectAssignee(u.name)}
+                        className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${isSelected
+                          ? 'bg-[#0056D2]/10 dark:bg-[#0056D2]/20'
+                          : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'
+                          }`}
+                      >
+                        {/* Checkmark */}
+                        <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${isSelected ? 'bg-[#0056D2] border-[#0056D2]' : 'border-slate-300 dark:border-slate-600'
+                          }`}>
+                          {isSelected && (
+                            <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
+                        </div>
+                        {/* Avatar */}
+                        <span className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0 ${getAvatarColor(u.name)}`}>
+                          {getInitials(u.name.split(' ')[0] || '', u.name.split(' ')[1] || '')}
+                        </span>
+                        {/* Info */}
+                        <div className="flex flex-col min-w-0">
+                          <span className="text-sm font-semibold text-slate-900 dark:text-white truncate">{u.name}</span>
+                          <span className="text-xs text-slate-400 dark:text-slate-500">{u.role}</span>
+                        </div>
+                      </button>
+                    );
+                  })
                 )}
-                <input type="text" placeholder="+ Recipients" className="flex-1 bg-transparent focus:outline-none placeholder-slate-400 text-sm ml-1 px-1 py-1" />
-             </div>
-          </FloatingInput>
+              </div>
+            )}
+
+            {errors.assignedTo && (
+              <p className="text-xs text-rose-500 dark:text-rose-400 font-semibold mt-1.5 pl-1">
+                {errors.assignedTo}
+              </p>
+            )}
+          </div>
 
           <FloatingInput label="Account Name">
             <div className="flex items-center gap-3">
@@ -220,7 +367,12 @@ const TableHeader = ({ title1, title2, hasFilter, className }: { title1: string,
 
 const Contacts: React.FC = () => {
   const { contacts, setContacts } = useData();
+  const { currentUser } = useAuth();
   const navigate = useNavigate();
+
+  const currentUserName = currentUser
+    ? `${currentUser.firstName} ${currentUser.lastName}`.trim()
+    : 'User';
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingContact, setEditingContact] = useState<Contact | null>(null);
@@ -259,7 +411,7 @@ const Contacts: React.FC = () => {
         updatedAt: now
       };
 
-      setContacts([...contacts, newContact]);
+      setContacts([newContact, ...contacts]);
     }
 
     handleCloseModal();
@@ -510,6 +662,7 @@ const Contacts: React.FC = () => {
           contact={editingContact}
           onSave={handleSaveContact}
           onClose={handleCloseModal}
+          currentUserName={currentUserName}
         />
       </Modal>
     </div>
