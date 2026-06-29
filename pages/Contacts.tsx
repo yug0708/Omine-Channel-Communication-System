@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useData } from '../hooks/useData';
 import { useAuth } from '../hooks/useAuth';
-import { Contact } from '../types';
+import { Contact, Account } from '../types';
+import { AccountForm } from './Accounts';
 import Button from '../components/ui/Button';
 import Modal from '../components/ui/Modal';
+import CountryCodePicker from '../components/ui/CountryCodePicker';
+import { COUNTRIES as countries } from '../data/countries';
 import {
   PlusIcon,
   EditIcon,
@@ -13,7 +16,6 @@ import {
   MoreVertIcon,
   FilterFunnelIcon,
   UserIcon,
-  UKFlagIcon,
   CloseIcon
 } from '../components/icons/Icons';
 
@@ -80,6 +82,19 @@ const FloatingInput: React.FC<{
   </div>
 );
 
+// Per-country phone digit rules: [min, max]
+const PHONE_RULES: Record<string, [number, number]> = {
+  US: [10, 10], CA: [10, 10], GB: [10, 11], AU: [9, 10],
+  IN: [10, 10], PK: [10, 11], CN: [11, 11], JP: [10, 11],
+  DE: [10, 12], FR: [9, 10], BR: [10, 11], MX: [10, 10],
+  RU: [10, 10], SA: [9, 9],  AE: [9, 9],  EG: [10, 10],
+  NG: [10, 11], ZA: [9, 10], TR: [10, 10], IT: [9, 11],
+  ES: [9, 9],   NL: [9, 9],  SE: [7, 13], CH: [9, 10],
+  UA: [9, 10],  UG: [9, 9],  UY: [8, 9],  UZ: [9, 9],
+  RW: [9, 9],   SB: [5, 7],  SC: [7, 8],
+};
+
+
 const ContactForm: React.FC<{
   contact?: Contact | null;
   onSave: (
@@ -88,6 +103,8 @@ const ContactForm: React.FC<{
   onClose: () => void;
   currentUserName?: string;
 }> = ({ contact, onSave, onClose, currentUserName = '' }) => {
+  const { accounts, setAccounts } = useData();
+  const [countryCode, setCountryCode] = useState('IN');
   const [formData, setFormData] = useState({
     firstName: contact?.firstName || '',
     lastName: contact?.lastName || '',
@@ -105,6 +122,12 @@ const ContactForm: React.FC<{
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
+  const [accountSearch, setAccountSearch] = useState('');
+  const [accountPage, setAccountPage] = useState(1);
+  const [accountRowsPerPage, setAccountRowsPerPage] = useState(10);
+  const [isCreateAccountModalOpen, setIsCreateAccountModalOpen] = useState(false);
 
   const assigneeDropdownRef = React.useRef<HTMLDivElement>(null);
   const [isAssigneeOpen, setIsAssigneeOpen] = useState(false);
@@ -139,7 +162,7 @@ const ContactForm: React.FC<{
     }
   };
 
-  const validate = (currentFormData = formData) => {
+  const validate = (currentFormData = formData, currentCountryCode = countryCode) => {
     const newErrors: Record<string, string> = {};
     if (!currentFormData.firstName.trim()) {
       newErrors.firstName = "First Name is required!";
@@ -150,6 +173,30 @@ const ContactForm: React.FC<{
     if (!currentFormData.assignedTo.trim()) {
       newErrors.assignedTo = "Assigned To is required!";
     }
+    // Email required + format
+    if (!currentFormData.email.trim()) {
+      newErrors.email = "Email is required!";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(currentFormData.email.trim())) {
+      newErrors.email = "Please enter a valid email address.";
+    }
+    // Contact number required + format
+    if (!currentFormData.contactNumber.trim()) {
+      newErrors.contactNumber = "Contact Number is required!";
+    } else {
+      const digits = currentFormData.contactNumber.replace(/\D/g, '');
+      const rule = PHONE_RULES[currentCountryCode];
+      const country = countries.find(c => c.code === currentCountryCode);
+      const countryName = country?.name || currentCountryCode;
+      const dialCode = country?.dial_code || '';
+      if (rule) {
+        const [min, max] = rule;
+        if (digits.length < min || digits.length > max) {
+          newErrors.contactNumber = min === max
+            ? `${countryName} (${dialCode}) phone numbers must be exactly ${min} digits.`
+            : `${countryName} (${dialCode}) phone numbers must be ${min}–${max} digits.`;
+        }
+      }
+    }
     return newErrors;
   };
 
@@ -159,16 +206,33 @@ const ContactForm: React.FC<{
     const { name, value } = e.target;
     const updated = { ...formData, [name]: value };
     setFormData(updated);
-    
+    if (name === 'contactNumber') {
+      // Always validate phone live while typing
+      const allErrors = validate(updated, countryCode);
+      setErrors(prev => ({ ...prev, contactNumber: allErrors.contactNumber || '' }));
+    } else if (name === 'email') {
+      // Always validate email live while typing
+      const allErrors = validate(updated, countryCode);
+      setErrors(prev => ({ ...prev, email: allErrors.email || '' }));
+    } else if (isSubmitted) {
+      setErrors(validate(updated, countryCode));
+    }
+  };
+
+  const handleCountryCodeChange = (code: string) => {
+    setCountryCode(code);
+    // Always re-validate phone live when country changes
+    const allErrors = validate(formData, code);
+    setErrors(prev => ({ ...prev, contactNumber: allErrors.contactNumber || '' }));
     if (isSubmitted) {
-      setErrors(validate(updated));
+      setErrors(validate(formData, code));
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitted(true);
-    const validationErrors = validate();
+    const validationErrors = validate(formData, countryCode);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
@@ -185,13 +249,16 @@ const ContactForm: React.FC<{
         <div className="space-y-4">
           <FloatingInput label="First Name" required name="firstName" value={formData.firstName} onChange={handleChange} placeholder="Enter first name" error={errors.firstName} />
           <FloatingInput label="Last Name" required name="lastName" value={formData.lastName} onChange={handleChange} placeholder="Enter last name" error={errors.lastName} />
-          <FloatingInput label="Email" type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Enter email address" error={errors.email} />
+          <FloatingInput label="Email" required type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Enter email address" error={errors.email} />
           
-          <FloatingInput label="Contact Number">
-             <div className="flex items-center w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-transparent text-sm text-slate-800 dark:text-white focus-within:border-[#0056D2] overflow-hidden">
-               <div className="flex items-center pl-4 pr-3 border-r border-slate-200 dark:border-slate-700">
-                 <UKFlagIcon className="w-5 h-3.5 mr-1.5 rounded-sm object-cover" />
-                 <svg className="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+          <FloatingInput label="Contact Number" required>
+             <div className={`flex items-center w-full rounded-2xl border bg-transparent text-sm text-slate-800 dark:text-white focus-within:border-[#0056D2] ${
+               errors.contactNumber
+                 ? 'border-rose-500'
+                 : 'border-slate-300 dark:border-slate-700'
+             }`}>
+               <div className="flex-shrink-0 self-stretch flex items-center border-r border-slate-200 dark:border-slate-700">
+                 <CountryCodePicker value={countryCode} onChange={handleCountryCodeChange} />
                </div>
                <input
                  type="tel"
@@ -199,9 +266,13 @@ const ContactForm: React.FC<{
                  value={formData.contactNumber}
                  onChange={handleChange}
                  placeholder="Enter phone number"
+                 maxLength={PHONE_RULES[countryCode] ? PHONE_RULES[countryCode][1] : 15}
                  className="w-full px-4 py-3 bg-transparent focus:outline-none placeholder-slate-400"
                />
              </div>
+             {errors.contactNumber && (
+               <p className="text-rose-500 text-xs mt-1 ml-4 font-semibold">{errors.contactNumber}</p>
+             )}
           </FloatingInput>
 
           <FloatingInput label="Address" name="address" value={formData.address} onChange={handleChange} placeholder="Enter address" />
@@ -316,20 +387,37 @@ const ContactForm: React.FC<{
 
           <FloatingInput label="Account Name">
             <div className="flex items-center gap-3">
-              <div className="flex-1 flex items-center w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-transparent text-sm text-slate-800 dark:text-white focus-within:border-[#0056D2] overflow-hidden">
+              <div className="flex-1 flex items-center w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-transparent text-sm text-slate-800 dark:text-white focus-within:border-[#0056D2] overflow-hidden pr-4">
                 <input
                   type="text"
                   name="accountName"
                   value={formData.accountName}
                   onChange={handleChange}
                   placeholder="Search Account..."
-                  className="w-full px-4 py-3 bg-transparent focus:outline-none placeholder-slate-400"
+                  className="w-full pl-4 pr-2 py-3 bg-transparent focus:outline-none placeholder-slate-400"
                 />
+                {formData.accountName && (
+                  <button
+                    type="button"
+                    onClick={() => setFormData((prev) => ({ ...prev, accountName: '' }))}
+                    className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors flex-shrink-0"
+                  >
+                    <CloseIcon className="w-4 h-4" />
+                  </button>
+                )}
               </div>
-              <button type="button" className="bg-[#10B981] text-white p-3 rounded-full hover:bg-[#059669] flex-shrink-0 transition-colors shadow-sm">
+              <button
+                type="button"
+                onClick={() => setIsAccountModalOpen(true)}
+                className="bg-[#10B981] text-white p-3 rounded-full hover:bg-[#059669] flex-shrink-0 transition-colors shadow-sm"
+              >
                 <SearchIcon className="w-5 h-5" />
               </button>
-              <button type="button" className="bg-[#10B981] text-white p-3 rounded-full hover:bg-[#059669] flex-shrink-0 transition-colors shadow-sm">
+              <button
+                type="button"
+                onClick={() => setIsCreateAccountModalOpen(true)}
+                className="bg-[#10B981] text-white p-3 rounded-full hover:bg-[#059669] flex-shrink-0 transition-colors shadow-sm"
+              >
                 <PlusIcon className="w-5 h-5" />
               </button>
             </div>
@@ -345,6 +433,164 @@ const ContactForm: React.FC<{
           Save
         </button>
       </div>
+
+      {/* Account Selection Modal */}
+      <Modal
+        isOpen={isAccountModalOpen}
+        onClose={() => setIsAccountModalOpen(false)}
+        title="Select account"
+        widthClass="max-w-5xl"
+      >
+        <div className="flex flex-col h-[65vh]">
+          <div className="flex justify-end mb-4 items-center gap-4">
+            <div className="relative w-64">
+              <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search..."
+                value={accountSearch}
+                onChange={(e) => { setAccountSearch(e.target.value); setAccountPage(1); }}
+                className="pl-9 pr-4 py-1.5 bg-transparent border border-slate-300 dark:border-slate-700 rounded-full text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#0056D2] focus:ring-1 focus:ring-[#0056D2] w-full"
+              />
+            </div>
+          </div>
+          <div className="flex-1 overflow-auto hide-scrollbar">
+            <table className="min-w-full w-full whitespace-nowrap text-left text-sm">
+              <thead className="bg-transparent border-b border-slate-200 dark:border-slate-800/80">
+                <tr>
+                  <TableHeader title1="Account" title2="Name" hasFilter />
+                  <TableHeader title1="Email" />
+                  <TableHeader title1="Contact" title2="Number" />
+                  <TableHeader title1="CR" title2="Number" />
+                  <TableHeader title1="City" />
+                  <TableHeader title1="Country" />
+                </tr>
+              </thead>
+              <tbody>
+                {(() => {
+                  const filteredAccounts = accounts.filter((a) =>
+                    [a.name, a.email, a.crNumber, a.city, a.country, a.phone]
+                      .some((val) => String(val || '').toLowerCase().includes(accountSearch.toLowerCase()))
+                  );
+                  const totalAccountPages = Math.max(1, Math.ceil(filteredAccounts.length / accountRowsPerPage));
+                  const safeAccountPage = Math.max(1, Math.min(accountPage, totalAccountPages));
+                  const paginatedAccounts = filteredAccounts.slice(
+                    (safeAccountPage - 1) * accountRowsPerPage,
+                    safeAccountPage * accountRowsPerPage
+                  );
+
+                  return paginatedAccounts.map((acc) => (
+                    <tr
+                      key={acc.id}
+                      onClick={() => {
+                        setFormData((prev) => ({ ...prev, accountName: acc.name }));
+                        setIsAccountModalOpen(false);
+                      }}
+                      className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors cursor-pointer border-b border-dashed border-slate-200 dark:border-slate-700 last:border-0"
+                    >
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <div className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0 ${getAvatarColor(acc.name)}`}>
+                            {getInitials(acc.name, '')}
+                          </div>
+                          <span className="font-medium text-slate-900 dark:text-white max-w-[150px] truncate">{acc.name}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-slate-500 text-[11px]">{acc.email || '—'}</td>
+                      <td className="px-4 py-3 text-slate-500 text-[11px]">{acc.phone || '—'}</td>
+                      <td className="px-4 py-3 text-slate-500 text-[11px]">{acc.crNumber || '—'}</td>
+                      <td className="px-4 py-3 text-slate-500 text-[11px]">{acc.city || '—'}</td>
+                      <td className="px-4 py-3 text-slate-500 text-[11px]">{acc.country || '—'}</td>
+                    </tr>
+                  ));
+                })()}
+              </tbody>
+            </table>
+          </div>
+          {/* Pagination Footer */}
+          <div className="flex items-center justify-end px-2 pt-4 border-t border-slate-100 dark:border-slate-800 text-xs">
+            {(() => {
+              const filteredAccounts = accounts.filter((a) =>
+                [a.name, a.email, a.crNumber, a.city, a.country, a.phone]
+                  .some((val) => String(val || '').toLowerCase().includes(accountSearch.toLowerCase()))
+              );
+              const safeAccountPage = Math.max(1, Math.min(accountPage, Math.max(1, Math.ceil(filteredAccounts.length / accountRowsPerPage))));
+              
+              return (
+                <>
+                  <div className="flex items-center gap-3 mr-6">
+                    <span className="text-slate-500 dark:text-slate-400 font-medium">Row Per page</span>
+                    <select
+                      value={accountRowsPerPage}
+                      onChange={(e) => {
+                        setAccountRowsPerPage(Number(e.target.value));
+                        setAccountPage(1);
+                      }}
+                      className="bg-transparent border border-slate-200 dark:border-slate-700 rounded-md py-1 px-2 text-slate-700 dark:text-slate-300 focus:outline-none focus:border-[#0056D2]"
+                    >
+                      <option value={10}>10</option>
+                      <option value={25}>25</option>
+                      <option value={50}>50</option>
+                    </select>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <span className="text-slate-500 dark:text-slate-400 font-medium">
+                      {(safeAccountPage - 1) * accountRowsPerPage + (filteredAccounts.length > 0 ? 1 : 0)}-
+                      {Math.min(safeAccountPage * accountRowsPerPage, filteredAccounts.length)} of {filteredAccounts.length}
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => setAccountPage((p) => Math.max(1, p - 1))}
+                        disabled={safeAccountPage === 1}
+                        className="p-1 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors disabled:opacity-40"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 text-slate-600 dark:text-slate-300">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={() => setAccountPage((p) => Math.min(Math.ceil(filteredAccounts.length / accountRowsPerPage), p + 1))}
+                        disabled={safeAccountPage === Math.ceil(filteredAccounts.length / accountRowsPerPage) || filteredAccounts.length === 0}
+                        className="p-1 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors disabled:opacity-40"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 text-slate-600 dark:text-slate-300">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+        </div>
+      </Modal>
+
+      {/* Create Account Modal */}
+      <Modal
+        isOpen={isCreateAccountModalOpen}
+        onClose={() => setIsCreateAccountModalOpen(false)}
+        title="Create Account"
+        variant="drawer"
+      >
+        <AccountForm
+          onSave={(accountData) => {
+            const now = new Date().toISOString();
+            const newAccount = {
+              ...accountData,
+              id: `acc${Date.now()}`,
+              createdAt: now,
+              updatedAt: now,
+            } as Account;
+            setAccounts([newAccount, ...accounts]);
+            setFormData((prev) => ({ ...prev, accountName: newAccount.name }));
+            setIsCreateAccountModalOpen(false);
+          }}
+          onClose={() => setIsCreateAccountModalOpen(false)}
+          currentUserName={currentUserName}
+        />
+      </Modal>
     </form>
   );
 };
@@ -582,18 +828,32 @@ const Contacts: React.FC = () => {
                       </td>
                       <td className="px-4 py-3 text-center" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-center gap-2">
-                          <button
-                            onClick={() => handleOpenModal(contact)}
-                            className="text-slate-400 hover:text-emerald-500 transition-colors p-1"
-                          >
-                            <EditIcon className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteContact(contact.id)}
-                            className="text-slate-400 hover:text-red-500 transition-colors p-1"
-                          >
-                            <DeleteIcon className="h-4 w-4" />
-                          </button>
+                          {/* Edit button */}
+                          <div className="relative group flex flex-col items-center">
+                            <button
+                              onClick={() => handleOpenModal(contact)}
+                              aria-label={`Edit ${contact.firstName} ${contact.lastName}`}
+                              className="flex items-center justify-center w-8 h-8 rounded-full text-slate-400 transition-all duration-200 group-hover:bg-emerald-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-emerald-400/40 group-hover:scale-110"
+                            >
+                              <EditIcon className="h-4 w-4" />
+                            </button>
+                            <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] font-bold text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                              Edit
+                            </span>
+                          </div>
+                          {/* Delete button */}
+                          <div className="relative group flex flex-col items-center">
+                            <button
+                              onClick={() => handleDeleteContact(contact.id)}
+                              aria-label={`Delete ${contact.firstName} ${contact.lastName}`}
+                              className="flex items-center justify-center w-8 h-8 rounded-full text-rose-500 hover:bg-rose-500/20 transition-all duration-200"
+                            >
+                              <DeleteIcon className="h-4 w-4" />
+                            </button>
+                            <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] font-bold text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                              Delete
+                            </span>
+                          </div>
                         </div>
                       </td>
                     </tr>

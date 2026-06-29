@@ -12,6 +12,7 @@ import {
   DeleteIcon,
   SearchIcon,
 } from '../components/icons/Icons';
+import CountryCodePicker from '../components/ui/CountryCodePicker';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -102,6 +103,18 @@ const COUNTRIES_DIAL_CODES: CountryDialCode[] = COUNTRIES.map((c) => ({
   dialCode: c.dial_code,
 }));
 
+// Per-country phone digit rules: [min, max]
+const PHONE_RULES: Record<string, [number, number]> = {
+  US: [10, 10], CA: [10, 10], GB: [10, 11], AU: [9, 10],
+  IN: [10, 10], PK: [10, 11], CN: [11, 11], JP: [10, 11],
+  DE: [10, 12], FR: [9, 10], BR: [10, 11], MX: [10, 10],
+  RU: [10, 10], SA: [9, 9],  AE: [9, 9],  EG: [10, 10],
+  NG: [10, 11], ZA: [9, 10], TR: [10, 10], IT: [9, 11],
+  ES: [9, 9],   NL: [9, 9],  SE: [7, 13], CH: [9, 10],
+  UA: [9, 10],  UG: [9, 9],  UY: [8, 9],  UZ: [9, 9],
+  RW: [9, 9],   SB: [5, 7],  SC: [7, 8],
+};
+
 const inputClass =
   'mt-1 block w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition';
 
@@ -131,7 +144,7 @@ const FloatField: React.FC<{
   </div>
 );
 
-const AccountForm: React.FC<{
+export const AccountForm: React.FC<{
   account?: Account | null;
   onSave: (data: AccountFormData & Partial<Pick<Account, 'id' | 'createdAt' | 'updatedAt'>>) => void;
   onClose: () => void;
@@ -153,6 +166,7 @@ const AccountForm: React.FC<{
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [phoneCountryCode, setPhoneCountryCode] = useState('IN');
 
   // Custom Country Dropdown States & Ref
   const countryDropdownRef = React.useRef<HTMLDivElement>(null);
@@ -214,16 +228,32 @@ const AccountForm: React.FC<{
     return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, []);
 
-  const validate = (currentForm = form) => {
+  const validate = (currentForm = form, currentPhoneCode = phoneCountryCode) => {
     const newErrors: Record<string, string> = {};
     if (!currentForm.name.trim()) {
       newErrors.name = 'Account Name must be at least 1 characters.';
     }
     if (!currentForm.email.trim()) {
       newErrors.email = 'Email is required!';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(currentForm.email.trim())) {
+      newErrors.email = 'Please enter a valid email address.';
     }
     if (!currentForm.phone.trim()) {
-      newErrors.phone = 'Contact Number is required!';
+      newErrors.phone = 'Phone Number is required!';
+    } else {
+      const digits = currentForm.phone.replace(/\D/g, '');
+      const rule = PHONE_RULES[currentPhoneCode];
+      const country = COUNTRIES.find(c => c.code === currentPhoneCode);
+      const countryName = country?.name || currentPhoneCode;
+      const dialCode = country?.dial_code || '';
+      if (rule) {
+        const [min, max] = rule;
+        if (digits.length < min || digits.length > max) {
+          newErrors.phone = min === max
+            ? `${countryName} (${dialCode}) phone numbers must be exactly ${min} digits.`
+            : `${countryName} (${dialCode}) phone numbers must be ${min}–${max} digits.`;
+        }
+      }
     }
     if (!currentForm.assignedTo.trim()) {
       newErrors.assignedTo = 'Assigned To is required!';
@@ -237,16 +267,28 @@ const AccountForm: React.FC<{
     const { name, value } = e.target;
     const updatedForm = { ...form, [name]: value };
     setForm(updatedForm);
-
-    if (isSubmitted) {
+    if (name === 'phone') {
+      const allErrors = validate(updatedForm, phoneCountryCode);
+      setErrors(prev => ({ ...prev, phone: allErrors.phone || '' }));
+    } else if (name === 'email') {
+      const allErrors = validate(updatedForm, phoneCountryCode);
+      setErrors(prev => ({ ...prev, email: allErrors.email || '' }));
+    } else if (isSubmitted) {
       setErrors(validate(updatedForm));
     }
+  };
+
+  const handlePhoneCountryChange = (code: string) => {
+    setPhoneCountryCode(code);
+    const allErrors = validate(form, code);
+    setErrors(prev => ({ ...prev, phone: allErrors.phone || '' }));
+    if (isSubmitted) setErrors(validate(form, code));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitted(true);
-    const validationErrors = validate();
+    const validationErrors = validate(form, phoneCountryCode);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
@@ -298,73 +340,20 @@ const AccountForm: React.FC<{
 
       {/* 3. Phone Number */}
       <FloatField label="Phone Number *" fieldName="phone" error={errors.phone} errors={errors}>
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center z-20" ref={countryDropdownRef}>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsDropdownOpen(!isDropdownOpen);
-              }}
-              className="flex items-center gap-1 hover:bg-slate-100 dark:hover:bg-slate-700 px-1.5 py-1 rounded-lg transition text-xs font-bold text-slate-600 dark:text-slate-300"
-            >
-              <span>{selectedCountry.code}</span>
-              <svg className="h-3 w-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            <div className="h-4 w-px bg-slate-300 dark:bg-slate-700 mx-1.5" />
-            {isDropdownOpen && (
-              <div className="absolute top-[calc(100%+4px)] left-0 w-64 bg-white dark:bg-[#151B25] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-50 flex flex-col p-2 max-h-64 overflow-hidden">
-                <div className="relative mb-2 p-1">
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    value={dropdownSearch}
-                    onChange={(e) => setDropdownSearch(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 text-slate-900 dark:text-white"
-                  />
-                </div>
-                <div className="overflow-y-auto flex-1 divide-y divide-slate-100 dark:divide-slate-800/80 pr-1">
-                  {COUNTRIES_DIAL_CODES.filter(
-                    (c) =>
-                      c.name.toLowerCase().includes(dropdownSearch.toLowerCase()) ||
-                      c.code.toLowerCase().includes(dropdownSearch.toLowerCase()) ||
-                      c.dialCode.includes(dropdownSearch)
-                  ).map((c) => (
-                    <button
-                      key={c.code}
-                      type="button"
-                      onClick={() => {
-                        setSelectedCountry(c);
-                        setIsDropdownOpen(false);
-                        setDropdownSearch('');
-                        const trimmedPhone = form.phone.trim();
-                        if (!trimmedPhone || COUNTRIES_DIAL_CODES.some(x => trimmedPhone.startsWith(x.dialCode))) {
-                          setForm(prev => ({ ...prev, phone: `${c.dialCode} ` }));
-                        }
-                      }}
-                      className="w-full text-left px-2.5 py-2 flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-xl transition text-xs"
-                    >
-                      <span className="text-base shrink-0">{c.flag}</span>
-                      <div className="flex flex-col min-w-0">
-                        <span className="font-extrabold text-slate-900 dark:text-white truncate">{c.name}</span>
-                        <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase">{c.code} ({c.dialCode})</span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+        <div className={`flex items-center w-full rounded-full border bg-white dark:bg-[#151B25] text-sm text-slate-900 dark:text-white ${
+          errors.phone ? 'border-2 border-rose-500' : 'border border-slate-300 dark:border-slate-700 focus-within:border-emerald-500'
+        }`}>
+          <div className="flex-shrink-0 self-stretch flex items-center border-r border-slate-200 dark:border-slate-700">
+            <CountryCodePicker value={phoneCountryCode} onChange={handlePhoneCountryChange} />
           </div>
           <input
             type="tel"
             name="phone"
             value={form.phone}
             onChange={handleChange}
-            onFocus={() => setIsDropdownOpen(false)}
             placeholder="Enter phone number"
-            className={getInputClass('phone', 'pl-20')}
+            maxLength={PHONE_RULES[phoneCountryCode] ? PHONE_RULES[phoneCountryCode][1] : 15}
+            className="w-full px-4 py-3 bg-transparent focus:outline-none placeholder-slate-400 text-sm"
           />
         </div>
       </FloatField>

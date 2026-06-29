@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 
 interface ModalProps {
   isOpen: boolean;
@@ -6,9 +7,10 @@ interface ModalProps {
   title: string;
   children: React.ReactNode;
   variant?: 'center' | 'drawer';
+  widthClass?: string;
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, variant = 'center' }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, variant = 'center', widthClass }) => {
   if (!isOpen) return null;
 
   // Close on Escape key
@@ -22,7 +24,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, variant
   }, [onClose]);
 
   if (variant === 'drawer') {
-    return (
+    return ReactDOM.createPortal(
       <div
         className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex justify-end"
         onClick={onClose}
@@ -46,17 +48,17 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, variant
           <div className="p-6 overflow-y-auto flex-1">{children}</div>
         </div>
       </div>
-    );
+    , document.body);
   }
 
   // Standard centered modal layout
-  return (
+  return ReactDOM.createPortal(
     <div
       className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex justify-center items-center"
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-[#151B25] rounded-3xl shadow-2xl w-full max-w-lg m-4 border border-slate-200 dark:border-slate-800/80 overflow-hidden flex flex-col max-h-[90vh]"
+        className={`bg-white dark:bg-[#151B25] rounded-3xl shadow-2xl w-full m-4 border border-slate-200 dark:border-slate-800/80 overflow-hidden flex flex-col max-h-[90vh] ${widthClass || 'max-w-lg'}`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center p-6 border-b border-slate-100 dark:border-slate-800/80 flex-shrink-0">
@@ -73,7 +75,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, variant
         <div className="p-6 overflow-y-auto custom-scrollbar">{children}</div>
       </div>
     </div>
-  );
+  , document.body);
 };
 
 export default Modal;
