@@ -960,7 +960,7 @@ const Accounts: React.FC = () => {
             <thead className="sticky top-0 z-10">
               {/* Selection Banner Row — replaces headers when rows are selected */}
               {selectedAccounts.length > 0 ? (
-                <tr style={{ borderBottom: '1px solid rgba(16,185,129,0.25)' }}>
+                <tr className="bg-white dark:bg-[#151B25]" style={{ borderBottom: '1px solid rgba(16,185,129,0.25)' }}>
                   <th className="px-4 py-3" style={{ backgroundColor: 'rgba(16,185,129,0.12)' }}>
                     <input
                       type="checkbox"

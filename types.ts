@@ -30,8 +30,8 @@ export interface Contact {
   country?: string;
   accountName: string;
   assignedTo: string;
-  lifecycle: string;
-  labels: string;
+  lifecycle?: string;
+  labels?: string;
   createdAt: string;
   updatedAt: string;
   avatarUrl?: string;
