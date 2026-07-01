@@ -554,7 +554,7 @@ const ContactDetails: React.FC = () => {
         </span>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-6 items-start h-full">
+      <div className="flex flex-col lg:flex-row gap-6 items-stretch h-full">
         {/* LEFT COLUMN */}
         <div className="w-full lg:w-[380px] flex flex-col gap-4">
           {/* Profile Card */}
@@ -603,50 +603,6 @@ const ContactDetails: React.FC = () => {
               </span>
             </div>
 
-            {/* Circular buttons */}
-            <div className="flex items-center justify-center gap-3.5 mt-6 w-full">
-              {/* Call */}
-              <button className="h-10 w-10 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full flex items-center justify-center shadow-sm hover:scale-105 transition-all">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-2.824-1.802-5.122-4.1-6.924-6.924l1.293-.97a1.125 1.125 0 00.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
-                </svg>
-              </button>
-
-              {/* Email */}
-              <button className="h-10 w-10 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full flex items-center justify-center shadow-sm hover:scale-105 transition-all">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-                </svg>
-              </button>
-
-              {/* Note */}
-              <button className="h-10 w-10 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full flex items-center justify-center shadow-sm hover:scale-105 transition-all">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                </svg>
-              </button>
-
-              {/* Account/Briefcase */}
-              <button className="h-10 w-10 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full flex items-center justify-center shadow-sm hover:scale-105 transition-all">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 .621-.504 1.125-1.125 1.125H4.875A1.125 1.125 0 0 1 3.75 18.4V14.15m16.5 0a9 9 0 0 0-16.5 0m16.5 0L12 10.5 3.75 14.15M15 7.5V6a2.25 2.25 0 0 0-2.25-2.25h-1.5A2.25 2.25 0 0 0 9 6v1.5m6 0H9" />
-                </svg>
-              </button>
-
-              {/* Calendar */}
-              <button className="h-10 w-10 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full flex items-center justify-center shadow-sm hover:scale-105 transition-all">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-                </svg>
-              </button>
-
-              {/* More */}
-              <button className="h-10 w-10 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full flex items-center justify-center shadow-sm hover:scale-105 transition-all">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-                </svg>
-              </button>
-            </div>
 
             {/* Direct Details with Copy Buttons */}
             <div className="w-full flex flex-col gap-2 mt-6 text-xs font-semibold">
@@ -692,21 +648,7 @@ const ContactDetails: React.FC = () => {
               )}
             </div>
 
-            {/* Labels section */}
-            <div className="w-full flex flex-col gap-1.5 mt-5 border-t border-slate-100 dark:border-slate-800/80 pt-4">
-              <span className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Labels</span>
-              <div className="flex flex-wrap gap-1.5">
-                {contact.labels ? (
-                  contact.labels.split(',').map((lbl, idx) => (
-                    <span key={idx} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                      {lbl.trim()}
-                    </span>
-                  ))
-                ) : (
-                  <span className="text-xs text-slate-400">No labels assigned</span>
-                )}
-              </div>
-            </div>
+
           </div>
 
           {/* Accordion Lists */}
@@ -791,32 +733,6 @@ const ContactDetails: React.FC = () => {
               )}
             </div>
 
-            {/* CUSTOM FIELDS */}
-            <div className="bg-white dark:bg-[#151B25] rounded-2xl border border-slate-200 dark:border-slate-800/80 overflow-hidden shadow-sm">
-              <button
-                onClick={() => toggleAccordion('custom')}
-                className="w-full px-5 py-4 flex items-center justify-between text-left focus:outline-none"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 13.5V3.75m0 9.75a1.5 1.5 0 0 1 0 3m0-3a1.5 1.5 0 0 0 0 3m0 3.75V16.5m12-3V3.75m0 9.75a1.5 1.5 0 0 1 0 3m0-3a1.5 1.5 0 0 0 0 3m0 3.75V16.5m-6-9V3.75m0 3.75a1.5 1.5 0 0 1 0 3m0-3a1.5 1.5 0 0 0 0 3m0 9.75V10.5" />
-                    </svg>
-                  </div>
-                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-                    Custom Fields
-                  </span>
-                </div>
-                <ChevronDownIcon className={`h-4 w-4 text-slate-400 dark:text-slate-500 transition-transform duration-200 ${accordions.custom ? 'rotate-180' : ''}`} />
-              </button>
-
-              {accordions.custom && (
-                <div className="px-5 pb-5 pt-1 flex flex-col gap-3 border-t border-slate-50 dark:border-slate-900/40">
-                  <DetailField icon={<span className="text-xs font-bold font-mono">ID</span>} label="National/Iqama ID" value={contact.nationalId || ''} placeholder="Not specified" />
-                  <DetailField icon={<span className="text-xs font-bold font-mono">L</span>} label="Lifecycle Stage" value={contact.lifecycle || ''} placeholder="NA" />
-                </div>
-              )}
-            </div>
           </div>
         </div>
 
@@ -892,7 +808,7 @@ const ContactDetails: React.FC = () => {
                     <SearchIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                     <input
                       type="text"
-                      placeholder="Search tickets..."
+                      placeholder="Search..."
                       value={search}
                       onChange={(e) => {
                         setSearch(e.target.value);
@@ -902,9 +818,6 @@ const ContactDetails: React.FC = () => {
                     />
                   </div>
 
-                  <button className="p-2 border border-slate-200 dark:border-slate-700 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition-colors">
-                    <FilterFunnelIcon className="h-5 w-5" />
-                  </button>
 
                   <button className="p-2 border border-slate-200 dark:border-slate-700 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition-colors">
                     <MoreVertIcon className="h-5 w-5" />
@@ -915,8 +828,38 @@ const ContactDetails: React.FC = () => {
               {/* Table section */}
               <div className="flex-1 overflow-auto p-6">
                 {paginatedTickets.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-12 text-slate-400">
-                    No tickets found for this contact.
+                  <div className="flex flex-col items-center justify-center py-12 gap-5">
+                    {/* Illustration */}
+                    <div className="relative">
+                      {/* Decorative dots — emerald/teal palette */}
+                      <div className="absolute -top-4 -left-5 w-2.5 h-2.5 rounded-full bg-emerald-400/60 dark:bg-emerald-500/40" />
+                      <div className="absolute -top-2 -right-6 w-2 h-2 rounded-full bg-teal-400/60 dark:bg-teal-500/40" />
+                      <div className="absolute -bottom-3 -left-7 w-2 h-2 rounded-full bg-teal-300/70 dark:bg-teal-500/30" />
+                      <div className="absolute bottom-1 -right-5 w-2.5 h-2.5 rounded-full bg-emerald-300/70 dark:bg-emerald-500/30" />
+                      <div className="absolute top-1/2 -left-8 w-1.5 h-1.5 rounded-full bg-emerald-200 dark:bg-emerald-700/50" />
+                      <div className="absolute top-1/3 -right-7 w-1.5 h-1.5 rounded-full bg-teal-200 dark:bg-teal-700/50" />
+
+                      {/* Browser/document card */}
+                      <div className="w-24 h-20 rounded-2xl border border-emerald-100 dark:border-emerald-900/40 bg-white dark:bg-slate-800/80 flex flex-col overflow-hidden shadow-lg shadow-emerald-100/60 dark:shadow-emerald-900/20">
+                        {/* Gradient top bar */}
+                        <div className="flex items-center gap-1 px-2.5 py-2 bg-gradient-to-r from-emerald-500 to-teal-500">
+                          <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                          <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                          <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                        </div>
+                        {/* Content lines */}
+                        <div className="flex-1 flex flex-col justify-center gap-1.5 px-2.5 py-2">
+                          <div className="h-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 w-full" />
+                          <div className="h-1.5 rounded-full bg-teal-100 dark:bg-teal-900/30 w-4/5" />
+                          <div className="h-1.5 rounded-full bg-emerald-50 dark:bg-slate-700 w-3/5" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Message */}
+                    <p className="text-sm font-semibold text-slate-400 dark:text-slate-500 tracking-wide">
+                      No Records Found!!!
+                    </p>
                   </div>
                 ) : (
                   <table className="w-full text-left text-xs bg-[#1C232E] rounded-lg overflow-hidden border border-slate-800/80">
