@@ -117,7 +117,7 @@ const Header: React.FC = () => {
 
   return (
     <>
-      <header className="relative z-20 bg-white dark:bg-slate-900 shadow-sm p-4 flex justify-between items-center border-b border-slate-200 dark:border-white/[0.08]">
+      <header className="relative z-20 bg-white dark:bg-slate-900 shadow-sm p-2 flex justify-between items-center border-b border-slate-200 dark:border-white/[0.08]">
         <div className="flex items-center gap-2 sm:gap-3 overflow-hidden pr-2">
           <div className="flex-shrink-0">
             <UCLogo className="h-8 w-8 sm:h-10 sm:w-10" />

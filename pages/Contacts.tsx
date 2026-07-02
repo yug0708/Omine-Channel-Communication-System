@@ -95,7 +95,7 @@ const PHONE_RULES: Record<string, [number, number]> = {
 };
 
 
-const ContactForm: React.FC<{
+export const ContactForm: React.FC<{
   contact?: Contact | null;
   onSave: (
     contact: Omit<Contact, 'id' | 'createdAt' | 'updatedAt'> | Contact
