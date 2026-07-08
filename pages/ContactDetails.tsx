@@ -160,6 +160,31 @@ const DetailField: React.FC<DetailFieldProps> = ({ icon, label, value, placehold
 
 
 
+interface AboutFieldProps {
+  icon?: React.ReactNode;
+  value?: string;
+  placeholder: string;
+  indent?: boolean;
+}
+
+const AboutField: React.FC<AboutFieldProps> = ({ icon, value, placeholder, indent = false }) => {
+  const hasValue = !!value?.trim();
+  return (
+    <div className={`flex items-center gap-3.5 ${indent ? 'pl-[34px]' : ''}`}>
+      {icon && (
+        <div className="text-slate-400 dark:text-slate-500 shrink-0 w-5 h-5 flex items-center justify-center">
+          {icon}
+        </div>
+      )}
+      <span className={`text-xs ${hasValue ? 'text-slate-850 dark:text-slate-200 font-semibold' : 'text-slate-400 dark:text-slate-500 italic'}`}>
+        {hasValue ? value : placeholder}
+      </span>
+    </div>
+  );
+};
+
+
+
 // Sub-component: ContactForm modal editor
 
 const ContactForm: React.FC<{
@@ -1244,7 +1269,319 @@ const ContactDetails: React.FC = () => {
 
     <div className="flex flex-col h-full gap-4 w-full">
 
-      {/* Breadcrumb */}
+      {/* ─── MOBILE VIEW ─── */}
+      <div className="block lg:hidden w-full pb-28">
+        {/* Header backdrop */}
+        <div className="relative -mx-3 -mt-3 w-[calc(100%+24px)] bg-gradient-to-br from-emerald-600 to-teal-600 text-white pt-6 pb-16 px-6 rounded-b-[40px] shadow-lg">
+          <div className="flex items-center justify-between mb-6">
+            <button onClick={() => navigate('/contacts')} className="p-2 bg-white/10 hover:bg-white/20 rounded-full transition">
+              <ChevronLeftIcon className="h-5 w-5 text-white" />
+            </button>
+            <div className="flex items-center gap-2">
+              <button className="p-2 bg-white/10 hover:bg-white/20 rounded-full transition">
+                <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.907c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                </svg>
+              </button>
+              <button className="p-2 bg-white/10 hover:bg-white/20 rounded-full transition">
+                <MoreVertIcon className="h-5 w-5 text-white" />
+              </button>
+            </div>
+          </div>
+          <div className="flex flex-col items-center">
+            <div className={`h-24 w-24 rounded-full flex items-center justify-center text-3xl font-extrabold border-4 border-white/20 shadow-xl mb-3 ${avatarColor}`}>
+              {getInitials(contact.firstName, contact.lastName)}
+            </div>
+            <h1 className="text-xl font-black tracking-tight">{fullName}</h1>
+          </div>
+        </div>
+
+        {/* Floating actions */}
+        <div className="mx-4 -mt-8 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-4 shadow-md flex items-center justify-around z-10 relative">
+          <a href={`tel:${contact.contactNumber}`} className="flex flex-col items-center gap-1">
+            <div className="h-12 w-12 rounded-full bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+              <PhoneIcon className="h-5 w-5" />
+            </div>
+            <span className="text-[10px] font-bold text-slate-500">Call</span>
+          </a>
+          <a href={`sms:${contact.contactNumber}`} className="flex flex-col items-center gap-1">
+            <div className="h-12 w-12 rounded-full bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+            </div>
+            <span className="text-[10px] font-bold text-slate-500">Message</span>
+          </a>
+          <a href={`mailto:${contact.email}`} className="flex flex-col items-center gap-1">
+            <div className="h-12 w-12 rounded-full bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+              <EmailIcon className="h-5 w-5" />
+            </div>
+            <span className="text-[10px] font-bold text-slate-500">Email</span>
+          </a>
+          <button onClick={() => setIsContactEditModalOpen(true)} className="flex flex-col items-center gap-1">
+            <div className="h-12 w-12 rounded-full bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+              <EditIcon className="h-5 w-5" />
+            </div>
+            <span className="text-[10px] font-bold text-slate-500">Edit</span>
+          </button>
+        </div>
+
+        <div className="mx-4 mt-4">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-5 shadow-sm flex flex-col gap-4">
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">About</h3>
+            <div className="space-y-4">
+              {/* First Name */}
+              <AboutField 
+                icon={
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                }
+                value={contact.firstName}
+                placeholder="Enter first name"
+              />
+
+              {/* Last Name */}
+              <AboutField 
+                icon={
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                }
+                value={contact.lastName}
+                placeholder="Enter last name"
+              />
+
+              {/* Email */}
+              <AboutField 
+                icon={
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                }
+                value={contact.email}
+                placeholder="Enter email address"
+              />
+
+              {/* Contact Number */}
+              <AboutField 
+                icon={
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                }
+                value={contact.contactNumber}
+                placeholder="Enter phone number"
+              />
+
+              {/* Address */}
+              <div className="space-y-2.5">
+                <AboutField 
+                  icon={
+                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  }
+                  value={contact.address}
+                  placeholder="Enter address"
+                />
+                
+                {/* City */}
+                <AboutField 
+                  value={contact.city}
+                  placeholder="Enter city"
+                  indent
+                />
+
+                {/* Country */}
+                <AboutField 
+                  value={contact.country}
+                  placeholder="Enter country"
+                  indent
+                />
+              </div>
+
+              {/* National ID */}
+              <AboutField 
+                icon={
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8h1.01M19 13h-4m4 4h-4" />
+                  </svg>
+                }
+                value={contact.nationalId}
+                placeholder="Enter national ID"
+              />
+
+              {/* Assigned To */}
+              <AboutField 
+                icon={
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                  </svg>
+                }
+                value={contact.assignedTo}
+                placeholder="Enter assigned owner"
+              />
+
+              {/* Account Name */}
+              <AboutField 
+                icon={
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                }
+                value={contact.accountName}
+                placeholder="Search account"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Tab section */}
+        <div className="mx-4 mt-6">
+          <div className="flex p-1 bg-slate-100 dark:bg-slate-800/80 rounded-2xl mb-4">
+            <button
+              onClick={() => setActiveTab('tickets')}
+              className={`flex-1 py-2.5 text-xs font-extrabold rounded-xl transition flex items-center justify-center gap-1.5 ${
+                activeTab === 'tickets'
+                  ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm'
+                  : 'text-slate-500'
+              }`}
+            >
+              <span>Tickets</span>
+              <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${activeTab === 'tickets' ? 'bg-emerald-500 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-650'}`}>
+                {contactTickets.length}
+              </span>
+            </button>
+            <button
+              onClick={() => setActiveTab('conversation')}
+              className={`flex-1 py-2.5 text-xs font-extrabold rounded-xl transition flex items-center justify-center gap-1.5 ${
+                activeTab === 'conversation'
+                  ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm'
+                  : 'text-slate-500'
+              }`}
+            >
+              <span>Conversation</span>
+              <span className={`text-[9px] px-1.5 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-650`}>
+                0
+              </span>
+            </button>
+            <button
+              onClick={() => setActiveTab('mergeHistory')}
+              className={`flex-1 py-2.5 text-xs font-extrabold rounded-xl transition flex items-center justify-center gap-1.5 ${
+                activeTab === 'mergeHistory'
+                  ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm'
+                  : 'text-slate-500'
+              }`}
+            >
+              <span>History</span>
+            </button>
+          </div>
+
+          <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-5 shadow-sm">
+            {activeTab === 'tickets' && (
+              <div className="space-y-4">
+                <button
+                  onClick={() => {
+                    setEditingTicket(null);
+                    setIsTicketModalOpen(true);
+                  }}
+                  className="w-full py-2.5 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold rounded-2xl border border-emerald-500/20 hover:bg-emerald-100/50 transition flex items-center justify-center gap-1"
+                >
+                  <PlusIcon className="h-3.5 w-3.5" /> Create ticket
+                </button>
+
+                {contactTickets.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-8 gap-3">
+                    <div className="h-12 w-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                      </svg>
+                    </div>
+                    <span className="text-xs font-bold text-slate-400">No tickets</span>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {contactTickets.map((ticket) => (
+                      <div key={ticket.id} className="p-3.5 rounded-2xl border border-slate-150 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex flex-col gap-2.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-extrabold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md">
+                            {ticket.ticketNo}
+                          </span>
+                          <div className="flex gap-2">
+                            <button onClick={() => { setEditingTicket(ticket); setIsTicketModalOpen(true); }} className="text-slate-400 hover:text-emerald-500">
+                              <EditIcon className="h-3.5 w-3.5" />
+                            </button>
+                            <button onClick={() => handleDeleteTicket(ticket.id)} className="text-slate-400 hover:text-rose-500 text-xs font-bold">
+                              ✕
+                            </button>
+                          </div>
+                        </div>
+                        <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">{ticket.subject}</h4>
+                        <div className="flex gap-1.5">
+                          <span className={`px-2 py-0.5 rounded-full text-[8px] font-extrabold border ${getStatusColor(ticket.status)}`}>
+                            {ticket.status}
+                          </span>
+                          <span className={`px-2 py-0.5 rounded-full text-[8px] font-extrabold border ${getPriorityColor(ticket.priority)}`}>
+                            {ticket.priority || 'Normal'}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === 'conversation' && (
+              <div className="flex flex-col items-center justify-center py-8 gap-3">
+                <div className="h-12 w-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                </div>
+                <span className="text-xs font-bold text-slate-400">No conversations</span>
+              </div>
+            )}
+
+            {activeTab === 'mergeHistory' && (
+              <div className="flex flex-col items-center justify-center py-8 gap-3">
+                <div className="h-12 w-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
+                  </svg>
+                </div>
+                <span className="text-xs font-bold text-slate-400">No merge history</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Fixed bottom actions bar */}
+      <div className="fixed bottom-0 inset-x-0 bg-white dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-800/80 p-4 flex gap-3 z-30 lg:hidden shadow-[0_-4px_12px_rgba(0,0,0,0.04)]">
+        <button
+          onClick={() => setIsContactEditModalOpen(true)}
+          className="flex-1 py-3 text-xs font-extrabold text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 rounded-2xl hover:bg-emerald-50 dark:hover:bg-emerald-950/20 transition-all text-center"
+        >
+          Edit contact
+        </button>
+        <button
+          onClick={() => {
+            setEditingTicket(null);
+            setIsTicketModalOpen(true);
+          }}
+          className="flex-1 py-3 text-xs font-extrabold text-white bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 rounded-2xl hover:shadow-lg transition-all text-center"
+        >
+          New ticket
+        </button>
+      </div>
+
+      {/* ─── DESKTOP VIEW ─── */}
+      <div className="hidden lg:flex flex-col gap-4 w-full">
+
+        {/* Breadcrumb */}
 
       <div className="flex items-center text-sm font-semibold text-slate-500 dark:text-slate-400 ml-1">
 
@@ -2328,7 +2665,7 @@ const ContactDetails: React.FC = () => {
 
       </div>
 
-
+      </div>
 
       {/* Edit Contact Modal */}
 

@@ -764,21 +764,33 @@ const Accounts: React.FC = () => {
       <div className="bg-white dark:bg-[#151B25] shadow-sm rounded-2xl border border-slate-200 dark:border-slate-800/80 flex flex-col flex-1 overflow-hidden">
 
         {/* Toolbar */}
-        <div className="p-3 sm:p-4 flex flex-col sm:flex-row sm:flex-wrap sm:justify-between sm:items-center gap-2 sm:gap-3 border-b border-slate-200 dark:border-slate-800/80">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => handleOpenModal()}
-              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-4 sm:px-5 py-2 rounded-full text-sm font-bold shadow-md shadow-emerald-500/10 flex items-center gap-1.5 transition-all duration-200"
-            >
-              <PlusIcon className="h-4 w-4" />
-              New Account
-            </button>
+        <div className="p-3 sm:p-4 flex items-center justify-between md:justify-end gap-2.5 border-b border-slate-200 dark:border-slate-800/80">
+          {/* Search bar expanding to fill space */}
+          <div className="relative flex-1 md:max-w-xs">
+            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+              placeholder="Search accounts…"
+              className="pl-9 pr-4 py-1.5 bg-transparent border border-slate-300 dark:border-slate-700 rounded-full text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 w-full transition"
+            />
           </div>
 
-          <div className="flex items-center gap-2">
+          {/* Action controls grouped on the right */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {/* New Account Button */}
+            <button
+              onClick={() => handleOpenModal()}
+              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white p-2 sm:px-4 sm:py-2 rounded-full text-sm font-bold shadow-md shadow-emerald-500/10 flex items-center justify-center transition-all duration-200"
+              title="New Account"
+            >
+              <PlusIcon className="h-4 w-4" />
+              <span className="hidden sm:inline ml-1.5">New Account</span>
+            </button>
 
             {/* Column toggle button */}
-            <div className="relative flex-shrink-0" ref={colToggleRef}>
+            <div className="relative flex-shrink-0 hidden md:block" ref={colToggleRef}>
               <button
                 onClick={() => setColToggleOpen(o => !o)}
                 className="flex items-center justify-center w-8 h-8 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
@@ -900,18 +912,6 @@ const Accounts: React.FC = () => {
               )}
             </div>
 
-            {/* Search */}
-            <div className="relative flex-1 sm:flex-none">
-              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                placeholder="Search accounts…"
-                className="pl-9 pr-4 py-1.5 bg-transparent border border-slate-300 dark:border-slate-700 rounded-full text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 w-full sm:w-56 md:w-64 transition"
-              />
-            </div>
-
             {/* Import / Export dropdown */}
             <div className="relative flex-shrink-0" ref={importExportRef}>
               <button
@@ -954,8 +954,8 @@ const Accounts: React.FC = () => {
         </div>
 
 
-        {/* Table */}
-        <div className="flex-1 overflow-auto hide-scrollbar">
+        {/* Table for Desktop */}
+        <div className="hidden md:block flex-1 overflow-auto hide-scrollbar">
           <table className="min-w-[900px] w-full whitespace-nowrap text-left text-sm">
             <thead className="sticky top-0 z-10">
               {/* Selection Banner Row — replaces headers when rows are selected */}
@@ -1204,6 +1204,119 @@ const Accounts: React.FC = () => {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Card View for Mobile */}
+        <div className="block md:hidden flex-1 overflow-y-auto pr-1 px-3 sm:px-4 py-3 hide-scrollbar">
+          {paginatedAccounts.length === 0 ? (
+            <div className="flex flex-col items-center justify-center min-h-[300px] gap-5 py-8">
+              <div className="relative">
+                <div className="absolute -top-4 -left-5 w-2.5 h-2.5 rounded-full bg-emerald-400/60" />
+                <div className="absolute -top-2 -right-6 w-2 h-2 rounded-full bg-teal-400/60" />
+                <div className="absolute -bottom-3 -left-7 w-2 h-2 rounded-full bg-teal-300/70" />
+                <div className="absolute bottom-1 -right-5 w-2.5 h-2.5 rounded-full bg-emerald-300/70" />
+                <div className="w-24 h-20 rounded-2xl border border-emerald-100 dark:border-emerald-900/40 bg-white dark:bg-slate-800/80 flex flex-col overflow-hidden shadow-lg shadow-emerald-100/60">
+                  <div className="flex items-center gap-1 px-2.5 py-2 bg-gradient-to-r from-emerald-500 to-teal-500">
+                    <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                  </div>
+                  <div className="flex-1 flex flex-col justify-center gap-1.5 px-2.5 py-2">
+                    <div className="h-1.5 rounded-full bg-emerald-100 w-full" />
+                    <div className="h-1.5 rounded-full bg-teal-100 w-4/5" />
+                  </div>
+                </div>
+              </div>
+              <p className="text-sm font-semibold text-slate-400 dark:text-slate-500 tracking-wide text-center">
+                {search ? 'No Records Found!!!' : 'No accounts yet. Click "New Account" to add one.'}
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {paginatedAccounts.map((account) => {
+                const { date } = formatDate(account.createdAt);
+                return (
+                  <div
+                    key={account.id}
+                    onClick={() => navigate(`/accounts/${account.id}`)}
+                    className="p-4 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 bg-white/85 dark:bg-slate-900/85 shadow-sm backdrop-blur-2xl flex flex-col gap-3.5 cursor-pointer hover:shadow-md active:scale-[0.99] transition-all"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <AccountAvatar name={account.name} />
+                        <div className="flex flex-col min-w-0">
+                          <span className="font-bold text-slate-900 dark:text-white truncate">
+                            {account.name}
+                          </span>
+                          <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500">
+                            Created {date}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1 flex-shrink-0" onClick={e => e.stopPropagation()}>
+                        <button
+                          onClick={() => handleOpenModal(account)}
+                          className="flex items-center justify-center w-8 h-8 rounded-full text-slate-400 hover:bg-emerald-500 hover:text-white transition-all"
+                          title="Edit"
+                        >
+                          <EditIcon className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteAccount(account.id)}
+                          className="flex items-center justify-center w-8 h-8 rounded-full text-rose-500 hover:bg-rose-500/20 transition-all"
+                          title="Delete"
+                        >
+                          <DeleteIcon className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-x-3 gap-y-2.5 text-xs pt-3 border-t border-slate-100 dark:border-slate-800/60">
+                      {account.email && (
+                        <div className="flex flex-col min-w-0">
+                          <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Email</span>
+                          <span className="text-slate-700 dark:text-slate-300 truncate">{account.email}</span>
+                        </div>
+                      )}
+                      {account.phone && (
+                        <div className="flex flex-col min-w-0">
+                          <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Phone</span>
+                          <span className="text-slate-700 dark:text-slate-300 truncate">{account.phone}</span>
+                        </div>
+                      )}
+                      {account.website && (
+                        <div className="flex flex-col min-w-0">
+                          <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Website</span>
+                          <a
+                            href={account.website.startsWith('http') ? account.website : `https://${account.website}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-emerald-500 dark:text-emerald-400 font-bold hover:underline truncate"
+                            onClick={e => e.stopPropagation()}
+                          >
+                            {account.website}
+                          </a>
+                        </div>
+                      )}
+                      {account.country && (
+                        <div className="flex flex-col min-w-0">
+                          <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Country</span>
+                          <span className="text-slate-700 dark:text-slate-300 truncate">{account.country}</span>
+                        </div>
+                      )}
+                      {account.assignedTo && (
+                        <div className="flex flex-col col-span-2 min-w-0">
+                          <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Assigned To</span>
+                          <span className="text-slate-700 dark:text-slate-300 truncate">{account.assignedTo}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Pagination */}

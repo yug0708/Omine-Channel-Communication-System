@@ -842,18 +842,34 @@ const Contacts: React.FC = () => {
       </h1>
 
       <div className="bg-white dark:bg-[#151B25] shadow-sm rounded-2xl border border-slate-200 dark:border-slate-800/80 flex flex-col flex-1 overflow-hidden">
-        <div className="p-4 flex justify-between items-center border-b border-slate-200 dark:border-slate-800/80">
-          <button
-            onClick={() => handleOpenModal()}
-            className="bg-[#10B981] hover:bg-[#059669] text-white px-4 py-2 rounded-full text-sm font-medium shadow-sm flex items-center transition-colors"
-          >
-            <PlusIcon className="h-4 w-4 mr-1.5" />
-            New Contact
-          </button>
+        {/* Toolbar */}
+        <div className="p-3 sm:p-4 flex items-center justify-between md:justify-end gap-2.5 border-b border-slate-200 dark:border-slate-800/80">
+          {/* Search bar expanding to fill space */}
+          <div className="relative flex-1 md:max-w-xs">
+            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+              placeholder="Search..."
+              className="pl-9 pr-4 py-1.5 bg-transparent border border-slate-300 dark:border-slate-700 rounded-full text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#0056D2] focus:ring-1 focus:ring-[#0056D2] w-full transition"
+            />
+          </div>
 
-          <div className="flex items-center gap-4">
+          {/* Action controls grouped on the right */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {/* New Contact Button */}
+            <button
+              onClick={() => handleOpenModal()}
+              className="bg-[#10B981] hover:bg-[#059669] text-white p-2 sm:px-4 sm:py-2 rounded-full text-sm font-medium shadow-sm flex items-center justify-center transition-colors"
+              title="New Contact"
+            >
+              <PlusIcon className="h-4 w-4" />
+              <span className="hidden sm:inline ml-1.5">New Contact</span>
+            </button>
+
             {/* Column toggle button */}
-            <div className="relative flex-shrink-0" ref={colToggleRef}>
+            <div className="relative flex-shrink-0 hidden md:block" ref={colToggleRef}>
               <button
                 onClick={() => setColToggleOpen(o => !o)}
                 className="flex items-center justify-center w-8 h-8 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
@@ -972,22 +988,11 @@ const Contacts: React.FC = () => {
               )}
             </div>
 
-            <div className="relative">
-              <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                placeholder="Search..."
-                className="pl-9 pr-4 py-1.5 bg-transparent border border-slate-300 dark:border-slate-700 rounded-full text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#0056D2] focus:ring-1 focus:ring-[#0056D2] w-64"
-              />
-            </div>
-
+            {/* Import / Export dropdown */}
             <div className="relative flex-shrink-0" ref={importExportRef}>
               <button
                 onClick={() => setImportExportOpen(o => !o)}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 w-8 h-8 flex items-center justify-center"
                 aria-label="Import / Export"
               >
                 <MoreVertIcon className="h-5 w-5" />
@@ -1020,7 +1025,55 @@ const Contacts: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex-1 overflow-auto hide-scrollbar">
+        {/* Mobile Summary Cards */}
+        <div className="block md:hidden flex gap-3 overflow-x-auto pb-4 pt-3.5 px-3.5 hide-scrollbar select-none border-b border-slate-100 dark:border-slate-800/40 bg-slate-50/20 dark:bg-slate-900/5">
+          {/* All Contacts */}
+          <div className="flex-1 min-w-[105px] p-3 rounded-2xl bg-emerald-500/5 dark:bg-emerald-950/20 border-2 border-emerald-500 flex flex-col gap-3.5 shadow-sm">
+            <div className="h-8 w-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center">
+              <svg className="h-4 w-4 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[10px] font-bold text-slate-450 dark:text-slate-555 whitespace-nowrap">All Contacts</span>
+              <span className="text-lg font-black text-slate-850 dark:text-white leading-none mt-0.5">{contacts.length}</span>
+            </div>
+          </div>
+
+          {/* Favorites */}
+          <div className="flex-1 min-w-[105px] p-3 rounded-2xl bg-amber-500/[0.04] dark:bg-amber-950/10 border border-slate-200 dark:border-slate-800 flex flex-col gap-3.5 shadow-sm">
+            <div className="h-8 w-8 rounded-lg bg-amber-100/60 dark:bg-amber-900/20 flex items-center justify-center">
+              <svg className="h-4 w-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[10px] font-bold text-slate-450 dark:text-slate-555 whitespace-nowrap">Favorites</span>
+              <span className="text-lg font-black text-slate-850 dark:text-white leading-none mt-0.5">0</span>
+            </div>
+          </div>
+
+          {/* Recently Added */}
+          <div className="flex-1 min-w-[105px] p-3 rounded-2xl bg-emerald-500/[0.04] dark:bg-emerald-950/10 border border-slate-200 dark:border-slate-800 flex flex-col gap-3.5 shadow-sm">
+            <div className="h-8 w-8 rounded-lg bg-emerald-100/60 dark:bg-emerald-900/20 flex items-center justify-center">
+              <svg className="h-4 w-4 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[10px] font-bold text-slate-450 dark:text-slate-555 whitespace-nowrap">Recently Added</span>
+              <span className="text-lg font-black text-slate-850 dark:text-white leading-none mt-0.5">
+                {contacts.filter(c => {
+                  if (!c.createdAt) return false;
+                  return (Date.now() - new Date(c.createdAt).getTime()) < 7 * 24 * 60 * 60 * 1000;
+                }).length}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Table for Desktop */}
+        <div className="hidden md:block flex-1 overflow-auto hide-scrollbar">
           <table className="min-w-full w-full whitespace-nowrap text-left text-sm">
             <thead className="border-b border-slate-200 dark:border-slate-800/80 sticky top-0 z-10">
               {selectedContacts.length > 0 ? (
@@ -1250,9 +1303,128 @@ const Contacts: React.FC = () => {
           </table>
         </div>
 
+        {/* Card View for Mobile */}
+        <div className="block md:hidden flex-1 overflow-y-auto pr-1 px-3 sm:px-4 py-3 hide-scrollbar">
+          {/* Contacts count header */}
+          <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 px-1 mb-3.5 select-none">
+            {filteredContacts.length} / {contacts.length} Contacts
+          </div>
+
+          {filteredContacts.length === 0 ? (
+            <div className="flex flex-col items-center justify-center min-h-[300px] gap-5 py-8">
+              <div className="relative">
+                <div className="absolute -top-4 -left-5 w-2.5 h-2.5 rounded-full bg-emerald-400/60" />
+                <div className="absolute -top-2 -right-6 w-2 h-2 rounded-full bg-teal-400/60" />
+                <div className="absolute -bottom-3 -left-7 w-2 h-2 rounded-full bg-teal-300/70" />
+                <div className="absolute bottom-1 -right-5 w-2.5 h-2.5 rounded-full bg-emerald-300/70" />
+                <div className="w-24 h-20 rounded-2xl border border-emerald-100 dark:border-emerald-900/40 bg-white dark:bg-slate-800/80 flex flex-col overflow-hidden shadow-lg shadow-emerald-100/60">
+                  <div className="flex items-center gap-1 px-2.5 py-2 bg-gradient-to-r from-emerald-500 to-teal-500">
+                    <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                  </div>
+                  <div className="flex-1 flex flex-col justify-center gap-1.5 px-2.5 py-2">
+                    <div className="h-1.5 rounded-full bg-emerald-100 w-full" />
+                    <div className="h-1.5 rounded-full bg-teal-100 w-4/5" />
+                  </div>
+                </div>
+              </div>
+              <p className="text-sm font-semibold text-slate-400 dark:text-slate-500 tracking-wide text-center">
+                {search ? 'No Records Found!!!' : 'No contacts yet. Click "New Contact" to add one.'}
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {filteredContacts.map((contact) => {
+                const created = formatDate(contact.createdAt);
+                const isSelected = selectedContacts.includes(contact.id);
+                const fullName = `${contact.firstName} ${contact.lastName}`.trim() || 'No Name';
+                return (
+                  <div
+                    key={contact.id}
+                    onClick={() => navigate(`/contacts/${contact.id}`)}
+                    className={`p-4 rounded-3xl border shadow-sm backdrop-blur-2xl flex flex-col gap-3.5 cursor-pointer hover:shadow-md active:scale-[0.99] transition-all duration-150 ${
+                      isSelected
+                        ? 'bg-emerald-500/10 border-emerald-500/30'
+                        : 'bg-white/85 dark:bg-slate-900/85 border-slate-200/80 dark:border-slate-800/80'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div
+                          className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0 ${getAvatarColor(
+                            contact.firstName || contact.lastName
+                          )}`}
+                        >
+                          {getInitials(contact.firstName, contact.lastName)}
+                        </div>
+
+                        <div className="flex flex-col min-w-0">
+                          <span className="font-bold text-slate-900 dark:text-white truncate">
+                            {fullName}
+                          </span>
+                          <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500">
+                            Created {created.date}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1 flex-shrink-0" onClick={e => e.stopPropagation()}>
+                        <button
+                          onClick={() => handleOpenModal(contact)}
+                          className="flex items-center justify-center w-8 h-8 rounded-full text-slate-400 hover:bg-emerald-500 hover:text-white transition-all"
+                          title="Edit"
+                        >
+                          <EditIcon className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteContact(contact.id)}
+                          className="flex items-center justify-center w-8 h-8 rounded-full text-rose-500 hover:bg-rose-500/20 transition-all"
+                          title="Delete"
+                        >
+                          <DeleteIcon className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-x-3 gap-y-2.5 text-xs pt-3 border-t border-slate-100 dark:border-slate-800/60">
+                      {contact.contactNumber && (
+                        <div className="flex flex-col min-w-0">
+                          <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Phone</span>
+                          <span className="text-slate-700 dark:text-slate-300 truncate">{contact.contactNumber}</span>
+                        </div>
+                      )}
+                      {contact.email && (
+                        <div className="flex flex-col min-w-0">
+                          <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Email</span>
+                          <span className="text-slate-700 dark:text-slate-350 truncate">{contact.email}</span>
+                        </div>
+                      )}
+                      {contact.accountName && (
+                        <div className="flex flex-col min-w-0">
+                          <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Account</span>
+                          <span className="text-slate-700 dark:text-slate-300 truncate">{contact.accountName}</span>
+                        </div>
+                      )}
+                      {contact.assignedTo && (
+                        <div className="flex flex-col min-w-0">
+                          <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Assigned To</span>
+                          <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded-full text-[10px] font-medium text-slate-650 dark:text-slate-350 w-fit truncate max-w-full">
+                            {contact.assignedTo}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
         {/* Pagination Footer */}
         {filteredContacts.length > 0 && (
-          <div className="px-4 py-2.5 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-end gap-4 text-sm text-slate-500 dark:text-slate-400">
+          <div className="hidden md:flex px-4 py-2.5 border-t border-slate-200 dark:border-slate-800/80 items-center justify-end gap-4 text-sm text-slate-500 dark:text-slate-400">
             {/* Row Per page */}
             <div className="flex items-center gap-2">
               <span className="text-xs font-medium whitespace-nowrap">Row Per page</span>

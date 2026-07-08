@@ -17,7 +17,11 @@ import {
   UCLogo
 } from '../icons/Icons';
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  onMenuClick?: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] =
     useState(false);
 
@@ -119,6 +123,23 @@ const Header: React.FC = () => {
     <>
       <header className="relative z-20 bg-white dark:bg-slate-900 shadow-sm p-2 flex justify-between items-center border-b border-slate-200 dark:border-white/[0.08]">
         <div className="flex items-center gap-2 sm:gap-3 overflow-hidden pr-2">
+          {/* Mobile Hamburger Menu button */}
+          <button
+            onClick={onMenuClick}
+            className="p-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 md:hidden flex-shrink-0 transition-colors"
+            title="Open Menu"
+          >
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2.5}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+
           <div className="flex-shrink-0">
             <UCLogo className="h-8 w-8 sm:h-10 sm:w-10" />
           </div>

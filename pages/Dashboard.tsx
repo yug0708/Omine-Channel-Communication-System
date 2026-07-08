@@ -401,7 +401,12 @@ const Dashboard: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-teal-950 font-extrabold text-lg leading-tight">Welcome to Your Dashboard!</h3>
-                  <p className="text-teal-900/80 text-sm mt-0.5 leading-relaxed">Real-time overview of your communication performance — calls, messages, tickets & more.</p>
+                  <p className="text-teal-900/80 text-sm mt-0.5 leading-relaxed hidden sm:block">
+                    Real-time overview of your communication performance — calls, messages, tickets & more.
+                  </p>
+                  <p className="text-teal-900/80 text-xs mt-0.5 leading-normal block sm:hidden">
+                    Overview of calls, messages & tickets.
+                  </p>
                 </div>
               </div>
               <button onClick={() => setShowWelcome(false)}
@@ -428,19 +433,19 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* ─── Page Title + Filter ─── */}
-        <div className="mb-6 flex flex-col gap-3 sm:gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="mb-6 flex items-start justify-between gap-4">
           <div>
             <p className="text-xs sm:text-sm font-semibold uppercase tracking-widest text-emerald-600 dark:text-emerald-400 mb-1">Analytics</p>
             <h1 className="text-2xl sm:text-[32px] font-black tracking-tight text-slate-900 dark:text-white leading-tight">Overview</h1>
             <p className="mt-1 flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">
-              Tracking performance metrics
-              <span className="h-1 w-1 rounded-full bg-slate-300 dark:bg-slate-600" />
-              <span className="font-bold text-slate-700 dark:text-slate-300">{selectedFilter}</span>
+              Tracking metrics
+              <span className="h-1 w-1 rounded-full bg-slate-300 dark:bg-slate-600 hidden sm:inline" />
+              <span className="font-bold text-slate-700 dark:text-slate-300 hidden sm:inline">{selectedFilter}</span>
             </p>
           </div>
-          <div className="relative w-full md:w-auto" ref={filterRef}>
+          <div className="relative w-fit flex-shrink-0 mt-1" ref={filterRef}>
             <button onClick={() => setIsFilterOpen(!isFilterOpen)}
-              className="w-full md:w-auto flex items-center gap-2 rounded-2xl border border-slate-200/90 bg-white/90 px-4 sm:px-5 py-2 sm:py-2.5 text-sm font-bold text-slate-700 shadow-sm backdrop-blur-sm transition-all hover:bg-white hover:shadow-md dark:border-white/[0.1] dark:bg-slate-900/80 dark:text-white dark:hover:bg-slate-800">
+              className="flex items-center gap-1.5 sm:gap-2 rounded-2xl border border-slate-200/90 bg-white/90 px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-bold text-slate-700 shadow-sm backdrop-blur-sm transition-all hover:bg-white hover:shadow-md dark:border-white/[0.1] dark:bg-slate-900/80 dark:text-white dark:hover:bg-slate-800">
               <FilterIcon className="h-4 w-4 text-emerald-500" />
               <span>{selectedFilter}</span>
               <svg className={`h-4 w-4 transition-transform duration-200 ${isFilterOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">

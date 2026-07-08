@@ -64,23 +64,45 @@ const navLinks = [
   { to: '/tenants', icon: TenantsIcon, label: 'Tenants' },
 ];
 
-const Sidebar: React.FC = () => {
+const Sidebar: React.FC<{ isOpen?: boolean; onClose?: () => void }> = ({ isOpen = false, onClose }) => {
   return (
-    <div className="relative z-20 w-[72px] bg-white dark:bg-slate-900/95 flex flex-col items-center py-3 border-r border-slate-200 dark:border-white/[0.08] flex-shrink-0 overflow-y-auto overflow-x-hidden backdrop-blur-sm">
-      {/* Logo */}
-      <div className="mb-4 flex-shrink-0 p-1.5">
+    <div
+      className={`fixed inset-y-0 left-0 z-40 w-[260px] bg-white dark:bg-slate-900/95 flex flex-col items-stretch py-3 border-r border-slate-200 dark:border-white/[0.08] flex-shrink-0 overflow-y-auto overflow-x-hidden backdrop-blur-sm transition-transform duration-300 ease-in-out md:translate-x-0 md:relative md:w-[72px] md:flex md:items-center ${
+        isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
+      }`}
+    >
+      {/* Sidebar Mobile Header */}
+      <div className="w-full flex items-center justify-between px-4 mb-5 md:hidden flex-shrink-0">
+        <div className="flex items-center gap-2.5">
+          <UCLogo className="h-8 w-8" />
+          <span className="font-extrabold text-sm tracking-wide text-slate-800 dark:text-white">CommuniDesk</span>
+        </div>
+        <button
+          onClick={onClose}
+          className="p-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition-colors"
+          title="Close Menu"
+        >
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Logo for Desktop */}
+      <div className="hidden md:block mb-4 flex-shrink-0 p-1.5">
         <UCLogo className="h-9 w-9" />
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 w-full">
-        <ul className="flex flex-col items-center gap-1 px-1">
+        <ul className="flex flex-col items-stretch md:items-center gap-1.5 px-3 md:px-1">
           {navLinks.map(({ to, icon: Icon, label }) => (
             <li key={to} className="w-full">
               <NavLink
                 to={to}
+                onClick={onClose}
                 className={({ isActive }) =>
-                  `flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-xl w-full transition-all duration-200 group ${
+                  `flex flex-row md:flex-col items-center justify-start md:justify-center gap-3 md:gap-1 py-3 md:py-2 px-4 md:px-1 rounded-xl w-full transition-all duration-200 group ${
                     isActive
                       ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
                       : 'text-slate-500 dark:text-slate-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:text-emerald-500 dark:hover:text-emerald-400'
@@ -96,7 +118,7 @@ const Sidebar: React.FC = () => {
                     />
 
                     <span
-                      className={`text-[9px] font-bold tracking-wide leading-none text-center truncate w-full px-0.5 ${
+                      className={`text-sm md:text-[9px] font-bold tracking-wide leading-none text-left md:text-center truncate w-full px-0.5 ${
                         isActive
                           ? 'text-white'
                           : 'text-slate-500 dark:text-slate-400 group-hover:text-emerald-500 dark:group-hover:text-emerald-400'
