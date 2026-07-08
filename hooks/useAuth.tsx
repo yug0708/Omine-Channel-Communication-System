@@ -29,6 +29,31 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // On Vercel, API is served at /api/* (relative), so fallback to '' when not set.
 const API_URL = import.meta.env.VITE_API_URL || '';
 
+// Helper to manage mock users in local storage for fully offline standalone mode (e.g., APK)
+const getLocalUsers = (): any[] => {
+  const users = localStorage.getItem('localUsers');
+  if (!users) {
+    const defaultUsers = [
+      {
+        id: 'default_tenant',
+        email: 'yugshah82@gmail.com',
+        password: 'Variance@2025',
+        firstName: 'Yug',
+        lastName: 'Shah',
+        organizationName: 'Default Org',
+        phone: '',
+        crNumber: '',
+        website: '',
+        industry: '',
+        companySize: ''
+      }
+    ];
+    localStorage.setItem('localUsers', JSON.stringify(defaultUsers));
+    return defaultUsers;
+  }
+  return JSON.parse(users);
+};
+
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
     const user = localStorage.getItem('currentUser');
@@ -38,6 +63,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const isAuthenticated = !!currentUser && !!localStorage.getItem('authToken');
 
   const login = async (email: string, pass: string): Promise<void> => {
+    // If no backend API URL is configured, run in offline local mock mode
+    if (!API_URL) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          const users = getLocalUsers();
+          const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+          if (!user || user.password !== pass) {
+            reject(new Error('Invalid credentials'));
+            return;
+          }
+          localStorage.setItem('authToken', 'fake_local_token_' + Date.now());
+          localStorage.setItem('currentUser', JSON.stringify(user));
+          setCurrentUser(user);
+          resolve();
+        }, 600);
+      });
+    }
+
     try {
       const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
@@ -61,6 +104,36 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const register = async (userData: any): Promise<void> => {
+    // If no backend API URL is configured, run in offline local mock mode
+    if (!API_URL) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          const users = getLocalUsers();
+          const emailExists = users.some(u => u.email.toLowerCase() === userData.email.toLowerCase());
+          if (emailExists) {
+            reject(new Error('User with this email already exists'));
+            return;
+          }
+          const newUser = {
+            id: Date.now().toString(),
+            email: userData.email,
+            password: userData.password,
+            firstName: userData.firstName || '',
+            lastName: userData.lastName || '',
+            organizationName: userData.organizationName || 'QA Team',
+            phone: userData.phone || '',
+            crNumber: userData.crNumber || '',
+            website: userData.website || '',
+            industry: userData.industry || '',
+            companySize: userData.companySize || '',
+          };
+          users.push(newUser);
+          localStorage.setItem('localUsers', JSON.stringify(users));
+          resolve();
+        }, 600);
+      });
+    }
+
     try {
       const response = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
