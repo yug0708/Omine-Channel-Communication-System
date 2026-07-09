@@ -108,11 +108,11 @@ const PHONE_RULES: Record<string, [number, number]> = {
   US: [10, 10], CA: [10, 10], GB: [10, 11], AU: [9, 10],
   IN: [10, 10], PK: [10, 11], CN: [11, 11], JP: [10, 11],
   DE: [10, 12], FR: [9, 10], BR: [10, 11], MX: [10, 10],
-  RU: [10, 10], SA: [9, 9],  AE: [9, 9],  EG: [10, 10],
+  RU: [10, 10], SA: [9, 9], AE: [9, 9], EG: [10, 10],
   NG: [10, 11], ZA: [9, 10], TR: [10, 10], IT: [9, 11],
-  ES: [9, 9],   NL: [9, 9],  SE: [7, 13], CH: [9, 10],
-  UA: [9, 10],  UG: [9, 9],  UY: [8, 9],  UZ: [9, 9],
-  RW: [9, 9],   SB: [5, 7],  SC: [7, 8],
+  ES: [9, 9], NL: [9, 9], SE: [7, 13], CH: [9, 10],
+  UA: [9, 10], UG: [9, 9], UY: [8, 9], UZ: [9, 9],
+  RW: [9, 9], SB: [5, 7], SC: [7, 8],
 };
 
 const inputClass =
@@ -340,9 +340,8 @@ export const AccountForm: React.FC<{
 
       {/* 3. Phone Number */}
       <FloatField label="Phone Number *" fieldName="phone" error={errors.phone} errors={errors}>
-        <div className={`flex items-center w-full rounded-full border bg-white dark:bg-[#151B25] text-sm text-slate-900 dark:text-white ${
-          errors.phone ? 'border-2 border-rose-500' : 'border border-slate-300 dark:border-slate-700 focus-within:border-emerald-500'
-        }`}>
+        <div className={`flex items-center w-full rounded-full border bg-white dark:bg-[#151B25] text-sm text-slate-900 dark:text-white ${errors.phone ? 'border-2 border-rose-500' : 'border border-slate-300 dark:border-slate-700 focus-within:border-emerald-500'
+          }`}>
           <div className="flex-shrink-0 self-stretch flex items-center border-r border-slate-200 dark:border-slate-700">
             <CountryCodePicker value={phoneCountryCode} onChange={handlePhoneCountryChange} />
           </div>
@@ -592,7 +591,7 @@ const Accounts: React.FC = () => {
   const [importFile, setImportFile] = useState<File | null>(null);
 
   // Column visibility
-  const ALL_COLS = ['Website','Email','Phone','Address','CR Number','Assigned To','Country','Created Date','Updated Date','Actions'] as const;
+  const ALL_COLS = ['Website', 'Email', 'Phone', 'Address', 'CR Number', 'Assigned To', 'Country', 'Created Date', 'Updated Date', 'Actions'] as const;
   type ColKey = typeof ALL_COLS[number];
   const [visibleCols, setVisibleCols] = useState<Set<ColKey>>(new Set(ALL_COLS));
   const [colToggleOpen, setColToggleOpen] = useState(false);
@@ -725,18 +724,18 @@ const Accounts: React.FC = () => {
   const exportAccountsCsv = () => {
     const headers = ['Name', 'Website', 'Email', 'Phone Number', 'Address', 'CR Number', 'Assigned To', 'Country', 'Pincode', 'City', 'Created Date', 'Updated Date'];
     const rows = accounts.map(a => [
-      a.name        || '',
-      a.website     || '',
-      a.email       || '',
-      a.phone       || '',
-      a.address     || '',
-      a.crNumber    || '',
-      a.assignedTo  || '',
-      a.country     || '',
-      a.pincode     || '',
-      a.city        || '',
-      a.createdAt   ? new Date(a.createdAt).toLocaleString() : '',
-      a.updatedAt   ? new Date(a.updatedAt).toLocaleString() : '',
+      a.name || '',
+      a.website || '',
+      a.email || '',
+      a.phone || '',
+      a.address || '',
+      a.crNumber || '',
+      a.assignedTo || '',
+      a.country || '',
+      a.pincode || '',
+      a.city || '',
+      a.createdAt ? new Date(a.createdAt).toLocaleString() : '',
+      a.updatedAt ? new Date(a.updatedAt).toLocaleString() : '',
     ]);
 
     const csvContent = [headers, ...rows]
@@ -744,7 +743,7 @@ const Accounts: React.FC = () => {
       .join('\r\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url  = URL.createObjectURL(blob);
+    const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
     link.download = `accounts_export_${new Date().toISOString().slice(0, 10)}.csv`;
@@ -1496,15 +1495,15 @@ const Accounts: React.FC = () => {
                     };
 
                     const col = {
-                      name:       idx(['name']),
-                      address:    idx(['address']),
-                      crNumber:   idx(['crnumber', 'cr number', 'crnumber']),
-                      phone:      idx(['phonenumber', 'phone number', 'phone']),
-                      email:      idx(['email']),
-                      website:    idx(['website']),
-                      pincode:    idx(['pincode', 'zip', 'postal']),
-                      city:       idx(['city']),
-                      country:    idx(['country']),
+                      name: idx(['name']),
+                      address: idx(['address']),
+                      crNumber: idx(['crnumber', 'cr number', 'crnumber']),
+                      phone: idx(['phonenumber', 'phone number', 'phone']),
+                      email: idx(['email']),
+                      website: idx(['website']),
+                      pincode: idx(['pincode', 'zip', 'postal']),
+                      city: idx(['city']),
+                      country: idx(['country']),
                       assignedTo: idx(['assignedto', 'assigned to']),
                     };
 
@@ -1513,30 +1512,30 @@ const Accounts: React.FC = () => {
                       const cells = parseRow(line);
                       const get = (c: number) => (c !== -1 ? cells[c] ?? '' : '');
                       return {
-                        id:         `imp_${Date.now()}_${i}`,
-                        name:       get(col.name),
-                        website:    get(col.website),
-                        email:      get(col.email),
-                        phone:      get(col.phone),
-                        address:    get(col.address),
-                        crNumber:   get(col.crNumber),
+                        id: `imp_${Date.now()}_${i}`,
+                        name: get(col.name),
+                        website: get(col.website),
+                        email: get(col.email),
+                        phone: get(col.phone),
+                        address: get(col.address),
+                        crNumber: get(col.crNumber),
                         assignedTo: get(col.assignedTo) || currentUserName,
-                        country:    get(col.country),
-                        city:       get(col.city),
-                        pincode:    get(col.pincode),
-                        createdAt:  now,
-                        updatedAt:  now,
+                        country: get(col.country),
+                        city: get(col.city),
+                        pincode: get(col.pincode),
+                        createdAt: now,
+                        updatedAt: now,
                       };
                     }).filter(a => a.name);   // skip empty rows
 
                     const existingEmails = new Set(
                       accounts.filter(a => a.email).map(a => a.email.toLowerCase())
                     );
-                    
+
                     const duplicateAccounts = imported.filter(
                       a => a.email && existingEmails.has(a.email.toLowerCase())
                     );
-                    
+
                     const newAccounts = imported.filter(
                       a => !a.email || !existingEmails.has(a.email.toLowerCase())
                     );

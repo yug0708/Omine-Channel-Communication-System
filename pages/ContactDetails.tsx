@@ -1331,7 +1331,7 @@ const ContactDetails: React.FC = () => {
             <h3 className="text-sm font-bold text-slate-900 dark:text-white">About</h3>
             <div className="space-y-4">
               {/* First Name */}
-              <AboutField 
+              <AboutField
                 icon={
                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -1342,7 +1342,7 @@ const ContactDetails: React.FC = () => {
               />
 
               {/* Last Name */}
-              <AboutField 
+              <AboutField
                 icon={
                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -1353,7 +1353,7 @@ const ContactDetails: React.FC = () => {
               />
 
               {/* Email */}
-              <AboutField 
+              <AboutField
                 icon={
                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -1364,7 +1364,7 @@ const ContactDetails: React.FC = () => {
               />
 
               {/* Contact Number */}
-              <AboutField 
+              <AboutField
                 icon={
                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -1376,7 +1376,7 @@ const ContactDetails: React.FC = () => {
 
               {/* Address */}
               <div className="space-y-2.5">
-                <AboutField 
+                <AboutField
                   icon={
                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -1386,16 +1386,16 @@ const ContactDetails: React.FC = () => {
                   value={contact.address}
                   placeholder="Enter address"
                 />
-                
+
                 {/* City */}
-                <AboutField 
+                <AboutField
                   value={contact.city}
                   placeholder="Enter city"
                   indent
                 />
 
                 {/* Country */}
-                <AboutField 
+                <AboutField
                   value={contact.country}
                   placeholder="Enter country"
                   indent
@@ -1403,7 +1403,7 @@ const ContactDetails: React.FC = () => {
               </div>
 
               {/* National ID */}
-              <AboutField 
+              <AboutField
                 icon={
                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8h1.01M19 13h-4m4 4h-4" />
@@ -1414,7 +1414,7 @@ const ContactDetails: React.FC = () => {
               />
 
               {/* Assigned To */}
-              <AboutField 
+              <AboutField
                 icon={
                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
@@ -1425,7 +1425,7 @@ const ContactDetails: React.FC = () => {
               />
 
               {/* Account Name */}
-              <AboutField 
+              <AboutField
                 icon={
                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -1443,11 +1443,10 @@ const ContactDetails: React.FC = () => {
           <div className="flex p-1 bg-slate-100 dark:bg-slate-800/80 rounded-2xl mb-4">
             <button
               onClick={() => setActiveTab('tickets')}
-              className={`flex-1 py-2.5 text-xs font-extrabold rounded-xl transition flex items-center justify-center gap-1.5 ${
-                activeTab === 'tickets'
+              className={`flex-1 py-2.5 text-xs font-extrabold rounded-xl transition flex items-center justify-center gap-1.5 ${activeTab === 'tickets'
                   ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm'
                   : 'text-slate-500'
-              }`}
+                }`}
             >
               <span>Tickets</span>
               <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${activeTab === 'tickets' ? 'bg-emerald-500 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-650'}`}>
@@ -1456,11 +1455,10 @@ const ContactDetails: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveTab('conversation')}
-              className={`flex-1 py-2.5 text-xs font-extrabold rounded-xl transition flex items-center justify-center gap-1.5 ${
-                activeTab === 'conversation'
+              className={`flex-1 py-2.5 text-xs font-extrabold rounded-xl transition flex items-center justify-center gap-1.5 ${activeTab === 'conversation'
                   ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm'
                   : 'text-slate-500'
-              }`}
+                }`}
             >
               <span>Conversation</span>
               <span className={`text-[9px] px-1.5 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-650`}>
@@ -1469,11 +1467,10 @@ const ContactDetails: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveTab('mergeHistory')}
-              className={`flex-1 py-2.5 text-xs font-extrabold rounded-xl transition flex items-center justify-center gap-1.5 ${
-                activeTab === 'mergeHistory'
+              className={`flex-1 py-2.5 text-xs font-extrabold rounded-xl transition flex items-center justify-center gap-1.5 ${activeTab === 'mergeHistory'
                   ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm'
                   : 'text-slate-500'
-              }`}
+                }`}
             >
               <span>History</span>
             </button>
@@ -1583,79 +1580,211 @@ const ContactDetails: React.FC = () => {
 
         {/* Breadcrumb */}
 
-      <div className="flex items-center text-sm font-semibold text-slate-500 dark:text-slate-400 ml-1">
+        <div className="flex items-center text-sm font-semibold text-slate-500 dark:text-slate-400 ml-1">
 
-        <span
+          <span
 
-          className="hover:text-slate-800 dark:hover:text-slate-200 cursor-pointer transition-colors"
+            className="hover:text-slate-800 dark:hover:text-slate-200 cursor-pointer transition-colors"
 
-          onClick={() => navigate('/contacts')}
+            onClick={() => navigate('/contacts')}
 
-        >
+          >
 
-          Contacts
+            Contacts
 
-        </span>
+          </span>
 
-        <span className="mx-2 text-slate-400 select-none">·</span>
+          <span className="mx-2 text-slate-400 select-none">·</span>
 
-        <span className="text-slate-900 dark:text-slate-300 font-bold">
+          <span className="text-slate-900 dark:text-slate-300 font-bold">
 
-          {fullName}
+            {fullName}
 
-        </span>
+          </span>
 
-      </div>
-
-
-
-      <div className="flex flex-col lg:flex-row gap-6 items-stretch h-full">
-
-        {/* LEFT COLUMN */}
-
-        <div className="w-full lg:w-[380px] flex flex-col gap-4">
-
-          {/* Profile Card */}
-
-          <div className="bg-white dark:bg-[#151B25] rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-800/80 flex flex-col items-center">
+        </div>
 
 
 
-            {/* Avatar */}
+        <div className="flex flex-col lg:flex-row gap-6 items-stretch h-full">
 
-            <div className="relative mb-4">
+          {/* LEFT COLUMN */}
 
-              <div
+          <div className="w-full lg:w-[380px] flex flex-col gap-4">
 
-                className={`h-24 w-24 rounded-full flex items-center justify-center text-2xl font-bold border border-slate-200 dark:border-slate-800 select-none ${isNameBlank
+            {/* Profile Card */}
 
-                  ? 'bg-slate-300 dark:bg-slate-500 text-slate-900'
+            <div className="bg-white dark:bg-[#151B25] rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-800/80 flex flex-col items-center">
 
-                  : `text-white ${avatarColor}`
 
-                  }`}
 
-              >
+              {/* Avatar */}
 
-                {isNameBlank ? (
+              <div className="relative mb-4">
 
-                  <UserIcon className="h-12 w-12" />
+                <div
 
-                ) : contact.avatarUrl ? (
+                  className={`h-24 w-24 rounded-full flex items-center justify-center text-2xl font-bold border border-slate-200 dark:border-slate-800 select-none ${isNameBlank
 
-                  <img
+                    ? 'bg-slate-300 dark:bg-slate-500 text-slate-900'
 
-                    src={contact.avatarUrl}
+                    : `text-white ${avatarColor}`
 
-                    alt="Contact"
+                    }`}
 
-                    className="h-full w-full rounded-full object-cover"
+                >
 
-                  />
+                  {isNameBlank ? (
 
-                ) : (
+                    <UserIcon className="h-12 w-12" />
 
-                  getInitials(contact.firstName, contact.lastName)
+                  ) : contact.avatarUrl ? (
+
+                    <img
+
+                      src={contact.avatarUrl}
+
+                      alt="Contact"
+
+                      className="h-full w-full rounded-full object-cover"
+
+                    />
+
+                  ) : (
+
+                    getInitials(contact.firstName, contact.lastName)
+
+                  )}
+
+                </div>
+
+
+
+                <button
+
+                  onClick={() => setIsContactEditModalOpen(true)}
+
+                  className="absolute bottom-0 right-0 h-8 w-8 bg-emerald-600 hover:bg-emerald-700 rounded-full flex items-center justify-center text-white border-2 border-white dark:border-[#151B25] shadow-md transition-colors"
+
+                >
+
+                  <PencilIcon className="h-4 w-4" />
+
+                </button>
+
+              </div>
+
+
+
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white truncate max-w-[280px]">
+
+                {fullName}
+
+              </h2>
+
+
+
+              <div className="flex items-center gap-2.5 mt-2">
+
+                <span className="inline-flex items-center px-3 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500 text-white tracking-wide uppercase">
+
+                  Contact
+
+                </span>
+
+                <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500">
+
+                  Created {formatDate(contact.createdAt)}
+
+                </span>
+
+              </div>
+
+
+
+
+
+              {/* Direct Details with Copy Buttons */}
+
+              <div className="w-full flex flex-col gap-2 mt-6 text-xs font-semibold">
+
+                {contact.email && (
+
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800/80">
+
+                    <div className="flex items-center gap-2 truncate">
+
+                      <EmailIcon className="h-4 w-4 text-slate-400 shrink-0" />
+
+                      <span className="text-slate-800 dark:text-slate-200 truncate">{contact.email}</span>
+
+                    </div>
+
+                    <button
+
+                      onClick={() => handleCopy(contact.email, 'email')}
+
+                      className="text-slate-400 hover:text-emerald-500 transition-colors ml-2"
+
+                    >
+
+                      {copiedEmail ? (
+
+                        <span className="text-[10px] text-emerald-500 font-bold">Copied!</span>
+
+                      ) : (
+
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
+
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H5.25m11.25 11.25l3.375-3.375M16.5 16.5V6a2.25 2.25 0 0 0-2.25-2.25H7.5A2.25 2.25 0 0 0 5.25 6v10.5a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25z" />
+
+                        </svg>
+
+                      )}
+
+                    </button>
+
+                  </div>
+
+                )}
+
+                {contact.contactNumber && (
+
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800/80">
+
+                    <div className="flex items-center gap-2 truncate">
+
+                      <PhoneIcon className="h-4 w-4 text-slate-400 shrink-0" />
+
+                      <span className="text-slate-800 dark:text-slate-200 truncate">{contact.contactNumber}</span>
+
+                    </div>
+
+                    <button
+
+                      onClick={() => handleCopy(contact.contactNumber, 'phone')}
+
+                      className="text-slate-400 hover:text-emerald-500 transition-colors ml-2"
+
+                    >
+
+                      {copiedPhone ? (
+
+                        <span className="text-[10px] text-emerald-500 font-bold">Copied!</span>
+
+                      ) : (
+
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
+
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H5.25m11.25 11.25l3.375-3.375M16.5 16.5V6a2.25 2.25 0 0 0-2.25-2.25H7.5A2.25 2.25 0 0 0 5.25 6v10.5a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25z" />
+
+                        </svg>
+
+                      )}
+
+                    </button>
+
+                  </div>
 
                 )}
 
@@ -1663,905 +1792,671 @@ const ContactDetails: React.FC = () => {
 
 
 
-              <button
 
-                onClick={() => setIsContactEditModalOpen(true)}
-
-                className="absolute bottom-0 right-0 h-8 w-8 bg-emerald-600 hover:bg-emerald-700 rounded-full flex items-center justify-center text-white border-2 border-white dark:border-[#151B25] shadow-md transition-colors"
-
-              >
-
-                <PencilIcon className="h-4 w-4" />
-
-              </button>
 
             </div>
 
 
 
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white truncate max-w-[280px]">
+            {/* Accordion Lists */}
 
-              {fullName}
+            <div className="flex flex-col gap-3">
 
-            </h2>
+              {/* CONTACT INFORMATION */}
 
-
-
-            <div className="flex items-center gap-2.5 mt-2">
-
-              <span className="inline-flex items-center px-3 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500 text-white tracking-wide uppercase">
-
-                Contact
-
-              </span>
-
-              <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500">
-
-                Created {formatDate(contact.createdAt)}
-
-              </span>
-
-            </div>
-
-
-
-
-
-            {/* Direct Details with Copy Buttons */}
-
-            <div className="w-full flex flex-col gap-2 mt-6 text-xs font-semibold">
-
-              {contact.email && (
-
-                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800/80">
-
-                  <div className="flex items-center gap-2 truncate">
-
-                    <EmailIcon className="h-4 w-4 text-slate-400 shrink-0" />
-
-                    <span className="text-slate-800 dark:text-slate-200 truncate">{contact.email}</span>
-
-                  </div>
-
-                  <button
-
-                    onClick={() => handleCopy(contact.email, 'email')}
-
-                    className="text-slate-400 hover:text-emerald-500 transition-colors ml-2"
-
-                  >
-
-                    {copiedEmail ? (
-
-                      <span className="text-[10px] text-emerald-500 font-bold">Copied!</span>
-
-                    ) : (
-
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
-
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H5.25m11.25 11.25l3.375-3.375M16.5 16.5V6a2.25 2.25 0 0 0-2.25-2.25H7.5A2.25 2.25 0 0 0 5.25 6v10.5a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25z" />
-
-                      </svg>
-
-                    )}
-
-                  </button>
-
-                </div>
-
-              )}
-
-              {contact.contactNumber && (
-
-                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800/80">
-
-                  <div className="flex items-center gap-2 truncate">
-
-                    <PhoneIcon className="h-4 w-4 text-slate-400 shrink-0" />
-
-                    <span className="text-slate-800 dark:text-slate-200 truncate">{contact.contactNumber}</span>
-
-                  </div>
-
-                  <button
-
-                    onClick={() => handleCopy(contact.contactNumber, 'phone')}
-
-                    className="text-slate-400 hover:text-emerald-500 transition-colors ml-2"
-
-                  >
-
-                    {copiedPhone ? (
-
-                      <span className="text-[10px] text-emerald-500 font-bold">Copied!</span>
-
-                    ) : (
-
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
-
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H5.25m11.25 11.25l3.375-3.375M16.5 16.5V6a2.25 2.25 0 0 0-2.25-2.25H7.5A2.25 2.25 0 0 0 5.25 6v10.5a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25z" />
-
-                      </svg>
-
-                    )}
-
-                  </button>
-
-                </div>
-
-              )}
-
-            </div>
-
-
-
-
-
-          </div>
-
-
-
-          {/* Accordion Lists */}
-
-          <div className="flex flex-col gap-3">
-
-            {/* CONTACT INFORMATION */}
-
-            <div className="bg-white dark:bg-[#151B25] rounded-2xl border border-slate-200 dark:border-slate-800/80 overflow-hidden shadow-sm">
-
-              <button
-
-                onClick={() => toggleAccordion('contact')}
-
-                className="w-full px-5 py-4 flex items-center justify-between text-left focus:outline-none"
-
-              >
-
-                <div className="flex items-center gap-3">
-
-                  <div className="h-8 w-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white shrink-0">
-
-                    <UserIcon className="h-4 w-4" />
-
-                  </div>
-
-                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-
-                    Contact Information
-
-                  </span>
-
-                </div>
-
-                <ChevronDownIcon className={`h-4 w-4 text-slate-400 dark:text-slate-500 transition-transform duration-200 ${accordions.contact ? 'rotate-180' : ''}`} />
-
-              </button>
-
-
-
-              {accordions.contact && (
-
-                <div className="px-5 pb-5 pt-1 flex flex-col gap-3 border-t border-slate-50 dark:border-slate-900/40">
-
-                  <DetailField icon={<UserIcon className="h-4 w-4" />} label="First Name" value={contact.firstName} />
-
-                  <DetailField icon={<UserIcon className="h-4 w-4" />} label="Last Name" value={contact.lastName} />
-
-                  <DetailField icon={<EmailIcon className="h-4 w-4 text-white" />} label="Email" value={contact.email} />
-
-                  <DetailField icon={<PhoneIcon className="h-4 w-4 text-white" />} label="Contact Number" value={contact.contactNumber} />
-
-                </div>
-
-              )}
-
-            </div>
-
-
-
-            {/* ADDRESS INFORMATION */}
-
-            <div className="bg-white dark:bg-[#151B25] rounded-2xl border border-slate-200 dark:border-slate-800/80 overflow-hidden shadow-sm">
-
-              <button
-
-                onClick={() => toggleAccordion('address')}
-
-                className="w-full px-5 py-4 flex items-center justify-between text-left focus:outline-none"
-
-              >
-
-                <div className="flex items-center gap-3">
-
-                  <div className="h-8 w-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white shrink-0">
-
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-
-                    </svg>
-
-                  </div>
-
-                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-
-                    Address Information
-
-                  </span>
-
-                </div>
-
-                <ChevronDownIcon className={`h-4 w-4 text-slate-400 dark:text-slate-500 transition-transform duration-200 ${accordions.address ? 'rotate-180' : ''}`} />
-
-              </button>
-
-
-
-              {accordions.address && (
-
-                <div className="px-5 pb-5 pt-1 flex flex-col gap-3 border-t border-slate-50 dark:border-slate-900/40">
-
-                  <DetailField icon={<span className="text-xs font-bold font-mono">A</span>} label="Address" value={contact.address || ''} placeholder="No Address specified" />
-
-                  <DetailField icon={<span className="text-xs font-bold font-mono">C</span>} label="City" value={contact.city || ''} placeholder="No City specified" />
-
-                  <DetailField icon={<span className="text-xs font-bold font-mono">K</span>} label="Country" value={contact.country || ''} placeholder="No Country specified" />
-
-                </div>
-
-              )}
-
-            </div>
-
-
-
-            {/* ASSIGNMENT DETAILS */}
-
-            <div className="bg-white dark:bg-[#151B25] rounded-2xl border border-slate-200 dark:border-slate-800/80 overflow-hidden shadow-sm">
-
-              <button
-
-                onClick={() => toggleAccordion('assignment')}
-
-                className="w-full px-5 py-4 flex items-center justify-between text-left focus:outline-none"
-
-              >
-
-                <div className="flex items-center gap-3">
-
-                  <div className="h-8 w-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white shrink-0">
-
-                    <UserIcon className="h-4 w-4" />
-
-                  </div>
-
-                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-
-                    Assignment Details
-
-                  </span>
-
-                </div>
-
-                <ChevronDownIcon className={`h-4 w-4 text-slate-400 dark:text-slate-500 transition-transform duration-200 ${accordions.assignment ? 'rotate-180' : ''}`} />
-
-              </button>
-
-
-
-              {accordions.assignment && (
-
-                <div className="px-5 pb-5 pt-1 flex flex-col gap-3 border-t border-slate-50 dark:border-slate-900/40">
-
-                  <DetailField icon={<UserIcon className="h-4 w-4" />} label="Assigned To" value={contact.assignedTo} placeholder="Unassigned" />
-
-                </div>
-
-              )}
-
-            </div>
-
-
-
-          </div>
-
-        </div>
-
-
-
-        {/* RIGHT COLUMN */}
-
-        <div className="flex-1 w-full bg-white dark:bg-[#151B25] rounded-3xl border border-slate-200 dark:border-slate-800/80 shadow-sm flex flex-col overflow-hidden">
-
-          {/* Tab Navigation Headers */}
-
-          <div className="flex items-center px-6 border-b border-slate-200 dark:border-slate-800/80">
-
-            <button
-
-              className={`px-6 py-4 text-sm font-bold border-b-2 flex items-center gap-2 transition-all ${activeTab === 'tickets'
-
-                ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400'
-
-                : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
-
-                }`}
-
-              onClick={() => {
-
-                setActiveTab('tickets');
-
-                setSearch('');
-
-                setPage(1);
-
-              }}
-
-            >
-
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z" />
-
-              </svg>
-
-              Tickets
-
-            </button>
-
-
-
-            <button
-
-              className={`px-6 py-4 text-sm font-bold border-b-2 flex items-center gap-2 transition-all ${activeTab === 'conversation'
-
-                ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400'
-
-                : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
-
-                }`}
-
-              onClick={() => setActiveTab('conversation')}
-
-            >
-
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-
-                <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 8.511c.073.322.073.657 0 .979L19 13.25h-5.25L12 17.5h-.75V13.25H6l-1.25-3.76c-.073-.322-.073-.657 0-.979L6 5h12l2.25 3.511z" />
-
-              </svg>
-
-              Conversation
-
-            </button>
-
-
-
-            <button
-
-              className={`px-6 py-4 text-sm font-bold border-b-2 flex items-center gap-2 transition-all ${activeTab === 'mergeHistory'
-
-                ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400'
-
-                : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
-
-                }`}
-
-              onClick={() => setActiveTab('mergeHistory')}
-
-            >
-
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
-
-              </svg>
-
-              Merge History
-
-            </button>
-
-          </div>
-
-
-
-          {/* Tab Contents: Tickets */}
-
-          {activeTab === 'tickets' && (
-
-            <div className="flex-1 flex flex-col overflow-hidden">
-
-              {/* Tab Toolbar */}
-
-              <div className="flex flex-col sm:flex-row justify-between items-center gap-4 p-6 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/30 dark:bg-slate-900/10">
+              <div className="bg-white dark:bg-[#151B25] rounded-2xl border border-slate-200 dark:border-slate-800/80 overflow-hidden shadow-sm">
 
                 <button
 
-                  onClick={() => {
+                  onClick={() => toggleAccordion('contact')}
 
-                    setEditingTicket(null);
-
-                    setIsTicketModalOpen(true);
-
-                  }}
-
-                  className="w-full sm:w-auto px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl flex items-center justify-center gap-2 transition-colors shadow-sm"
+                  className="w-full px-5 py-4 flex items-center justify-between text-left focus:outline-none"
 
                 >
 
-                  <PlusIcon className="h-4 w-4" />
+                  <div className="flex items-center gap-3">
 
-                  Create Ticket
+                    <div className="h-8 w-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white shrink-0">
+
+                      <UserIcon className="h-4 w-4" />
+
+                    </div>
+
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+
+                      Contact Information
+
+                    </span>
+
+                  </div>
+
+                  <ChevronDownIcon className={`h-4 w-4 text-slate-400 dark:text-slate-500 transition-transform duration-200 ${accordions.contact ? 'rotate-180' : ''}`} />
 
                 </button>
 
 
 
-                <div className="flex items-center gap-3 w-full sm:w-auto">
+                {accordions.contact && (
 
-                  <div className="relative flex-1 sm:w-64">
+                  <div className="px-5 pb-5 pt-1 flex flex-col gap-3 border-t border-slate-50 dark:border-slate-900/40">
 
-                    <SearchIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <DetailField icon={<UserIcon className="h-4 w-4" />} label="First Name" value={contact.firstName} />
 
-                    <input
+                    <DetailField icon={<UserIcon className="h-4 w-4" />} label="Last Name" value={contact.lastName} />
 
-                      type="text"
+                    <DetailField icon={<EmailIcon className="h-4 w-4 text-white" />} label="Email" value={contact.email} />
 
-                      placeholder="Search..."
-
-                      value={search}
-
-                      onChange={(e) => {
-
-                        setSearch(e.target.value);
-
-                        setPage(1);
-
-                      }}
-
-                      className="w-full pl-10 pr-4 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl placeholder-slate-400 text-slate-850 dark:text-slate-150 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
-
-                    />
+                    <DetailField icon={<PhoneIcon className="h-4 w-4 text-white" />} label="Contact Number" value={contact.contactNumber} />
 
                   </div>
 
-
-
-
-
-                  <div className="relative flex-shrink-0" ref={ticketImportExportRef}>
-
-                    <button
-
-                      onClick={() => setImportExportOpen((o) => !o)}
-
-                      className="p-2 border border-slate-200 dark:border-slate-700 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition-colors shrink-0"
-
-                      aria-label="Export Menu"
-
-                    >
-
-                      <MoreVertIcon className="h-5 w-5" />
-
-                    </button>
-
-
-
-                    {importExportOpen && (
-
-                      <div className="absolute right-0 top-[calc(100%+6px)] z-50 w-40 bg-white dark:bg-[#1a2235] border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
-
-                        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
-
-                        <button
-
-                          onClick={() => {
-
-                            setImportExportOpen(false);
-
-                            exportTicketsCsv();
-
-                          }}
-
-                          className="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors text-left"
-
-                        >
-
-                          <svg className="h-4 w-4 text-teal-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 8l5-5 5 5M12 3v12" />
-
-                          </svg>
-
-                          Export
-
-                        </button>
-
-                      </div>
-
-                    )}
-
-                  </div>
-
-                </div>
+                )}
 
               </div>
 
 
 
-              {/* Table section */}
+              {/* ADDRESS INFORMATION */}
 
-              <div className="flex-1 overflow-auto p-6">
+              <div className="bg-white dark:bg-[#151B25] rounded-2xl border border-slate-200 dark:border-slate-800/80 overflow-hidden shadow-sm">
 
-                <table className="w-full text-left text-xs bg-white dark:bg-[#1C232E] rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800/80 shadow-sm dark:shadow-none">
+                <button
 
-                  <thead className="bg-slate-50 dark:bg-[#242C38] text-slate-500 dark:text-slate-400 font-bold border-b border-slate-200 dark:border-slate-700 tracking-wide">
+                  onClick={() => toggleAccordion('address')}
 
-                    <tr>
+                  className="w-full px-5 py-4 flex items-center justify-between text-left focus:outline-none"
 
-                      <th className="px-4 py-3.5 w-6">
+                >
 
-                        <input
+                  <div className="flex items-center gap-3">
 
-                          type="checkbox"
+                    <div className="h-8 w-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white shrink-0">
 
-                          disabled
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
 
-                          className="h-3.5 w-3.5 rounded border-slate-300 dark:border-slate-700 text-emerald-600 focus:ring-emerald-500 cursor-not-allowed"
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
 
-                        />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
 
-                      </th>
+                      </svg>
 
-                      <TicketTableHeader title="Ticket No" />
+                    </div>
 
-                      <TicketTableHeader title="Title" />
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
 
-                      <th className="px-4 py-3 font-semibold text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap relative">
+                      Address Information
 
-                        <div className="flex items-center gap-2">
+                    </span>
 
-                          <span className="text-[11px] font-bold uppercase tracking-wider">Status</span>
+                  </div>
+
+                  <ChevronDownIcon className={`h-4 w-4 text-slate-400 dark:text-slate-500 transition-transform duration-200 ${accordions.address ? 'rotate-180' : ''}`} />
+
+                </button>
+
+
+
+                {accordions.address && (
+
+                  <div className="px-5 pb-5 pt-1 flex flex-col gap-3 border-t border-slate-50 dark:border-slate-900/40">
+
+                    <DetailField icon={<span className="text-xs font-bold font-mono">A</span>} label="Address" value={contact.address || ''} placeholder="No Address specified" />
+
+                    <DetailField icon={<span className="text-xs font-bold font-mono">C</span>} label="City" value={contact.city || ''} placeholder="No City specified" />
+
+                    <DetailField icon={<span className="text-xs font-bold font-mono">K</span>} label="Country" value={contact.country || ''} placeholder="No Country specified" />
+
+                  </div>
+
+                )}
+
+              </div>
+
+
+
+              {/* ASSIGNMENT DETAILS */}
+
+              <div className="bg-white dark:bg-[#151B25] rounded-2xl border border-slate-200 dark:border-slate-800/80 overflow-hidden shadow-sm">
+
+                <button
+
+                  onClick={() => toggleAccordion('assignment')}
+
+                  className="w-full px-5 py-4 flex items-center justify-between text-left focus:outline-none"
+
+                >
+
+                  <div className="flex items-center gap-3">
+
+                    <div className="h-8 w-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white shrink-0">
+
+                      <UserIcon className="h-4 w-4" />
+
+                    </div>
+
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+
+                      Assignment Details
+
+                    </span>
+
+                  </div>
+
+                  <ChevronDownIcon className={`h-4 w-4 text-slate-400 dark:text-slate-500 transition-transform duration-200 ${accordions.assignment ? 'rotate-180' : ''}`} />
+
+                </button>
+
+
+
+                {accordions.assignment && (
+
+                  <div className="px-5 pb-5 pt-1 flex flex-col gap-3 border-t border-slate-50 dark:border-slate-900/40">
+
+                    <DetailField icon={<UserIcon className="h-4 w-4" />} label="Assigned To" value={contact.assignedTo} placeholder="Unassigned" />
+
+                  </div>
+
+                )}
+
+              </div>
+
+
+
+            </div>
+
+          </div>
+
+
+
+          {/* RIGHT COLUMN */}
+
+          <div className="flex-1 w-full bg-white dark:bg-[#151B25] rounded-3xl border border-slate-200 dark:border-slate-800/80 shadow-sm flex flex-col overflow-hidden">
+
+            {/* Tab Navigation Headers */}
+
+            <div className="flex items-center px-6 border-b border-slate-200 dark:border-slate-800/80">
+
+              <button
+
+                className={`px-6 py-4 text-sm font-bold border-b-2 flex items-center gap-2 transition-all ${activeTab === 'tickets'
+
+                  ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400'
+
+                  : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
+
+                  }`}
+
+                onClick={() => {
+
+                  setActiveTab('tickets');
+
+                  setSearch('');
+
+                  setPage(1);
+
+                }}
+
+              >
+
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z" />
+
+                </svg>
+
+                Tickets
+
+              </button>
+
+
+
+              <button
+
+                className={`px-6 py-4 text-sm font-bold border-b-2 flex items-center gap-2 transition-all ${activeTab === 'conversation'
+
+                  ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400'
+
+                  : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
+
+                  }`}
+
+                onClick={() => setActiveTab('conversation')}
+
+              >
+
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 8.511c.073.322.073.657 0 .979L19 13.25h-5.25L12 17.5h-.75V13.25H6l-1.25-3.76c-.073-.322-.073-.657 0-.979L6 5h12l2.25 3.511z" />
+
+                </svg>
+
+                Conversation
+
+              </button>
+
+
+
+              <button
+
+                className={`px-6 py-4 text-sm font-bold border-b-2 flex items-center gap-2 transition-all ${activeTab === 'mergeHistory'
+
+                  ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400'
+
+                  : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
+
+                  }`}
+
+                onClick={() => setActiveTab('mergeHistory')}
+
+              >
+
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
+
+                </svg>
+
+                Merge History
+
+              </button>
+
+            </div>
+
+
+
+            {/* Tab Contents: Tickets */}
+
+            {activeTab === 'tickets' && (
+
+              <div className="flex-1 flex flex-col overflow-hidden">
+
+                {/* Tab Toolbar */}
+
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-4 p-6 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/30 dark:bg-slate-900/10">
+
+                  <button
+
+                    onClick={() => {
+
+                      setEditingTicket(null);
+
+                      setIsTicketModalOpen(true);
+
+                    }}
+
+                    className="w-full sm:w-auto px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl flex items-center justify-center gap-2 transition-colors shadow-sm"
+
+                  >
+
+                    <PlusIcon className="h-4 w-4" />
+
+                    Create Ticket
+
+                  </button>
+
+
+
+                  <div className="flex items-center gap-3 w-full sm:w-auto">
+
+                    <div className="relative flex-1 sm:w-64">
+
+                      <SearchIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+
+                      <input
+
+                        type="text"
+
+                        placeholder="Search..."
+
+                        value={search}
+
+                        onChange={(e) => {
+
+                          setSearch(e.target.value);
+
+                          setPage(1);
+
+                        }}
+
+                        className="w-full pl-10 pr-4 py-2 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl placeholder-slate-400 text-slate-850 dark:text-slate-150 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
+
+                      />
+
+                    </div>
+
+
+
+
+
+                    <div className="relative flex-shrink-0" ref={ticketImportExportRef}>
+
+                      <button
+
+                        onClick={() => setImportExportOpen((o) => !o)}
+
+                        className="p-2 border border-slate-200 dark:border-slate-700 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition-colors shrink-0"
+
+                        aria-label="Export Menu"
+
+                      >
+
+                        <MoreVertIcon className="h-5 w-5" />
+
+                      </button>
+
+
+
+                      {importExportOpen && (
+
+                        <div className="absolute right-0 top-[calc(100%+6px)] z-50 w-40 bg-white dark:bg-[#1a2235] border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
+
+                          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
 
                           <button
 
-                            onClick={() => setIsStatusFilterOpen(prev => !prev)}
+                            onClick={() => {
 
-                            className="focus:outline-none"
+                              setImportExportOpen(false);
+
+                              exportTicketsCsv();
+
+                            }}
+
+                            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors text-left"
 
                           >
 
-                            <svg
+                            <svg className="h-4 w-4 text-teal-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
 
-                              xmlns="http://www.w3.org/2000/svg"
-
-                              fill="none"
-
-                              viewBox="0 0 24 24"
-
-                              strokeWidth={2}
-
-                              stroke="currentColor"
-
-                              className={`w-3.5 h-3.5 cursor-pointer hover:text-slate-600 dark:hover:text-slate-350 shrink-0 ${statusFilter !== 'All' ? 'text-[#10B981]' : 'text-slate-400 dark:text-slate-500'}`}
-
-                            >
-
-                              <path
-
-                                strokeLinecap="round"
-
-                                strokeLinejoin="round"
-
-                                d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75"
-
-                              />
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 8l5-5 5 5M12 3v12" />
 
                             </svg>
+
+                            Export
 
                           </button>
 
                         </div>
 
+                      )}
 
+                    </div>
 
-                        {isStatusFilterOpen && (
+                  </div>
 
-                          <div ref={statusFilterRef} className="absolute left-0 top-[calc(100%+6px)] z-50 p-4 w-60 bg-white dark:bg-[#1a2235] border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl">
+                </div>
 
-                            <div className="relative mt-2">
 
-                              <label className="absolute -top-2 left-3 px-1 bg-white dark:bg-[#1a2235] text-[10px] text-slate-400 font-semibold select-none">
 
-                                Select Status
+                {/* Table section */}
 
-                              </label>
+                <div className="flex-1 overflow-auto p-6">
 
-                              <select
+                  <table className="w-full text-left text-xs bg-white dark:bg-[#1C232E] rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800/80 shadow-sm dark:shadow-none">
 
-                                value={tempStatusFilter}
-
-                                onChange={(e) => setTempStatusFilter(e.target.value)}
-
-                                className="w-full px-3 py-2 text-sm bg-transparent border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:border-[#10B981] focus:ring-1 focus:ring-[#10B981] text-slate-850 dark:text-slate-100"
-
-                                style={{ colorScheme: 'dark light' }}
-
-                              >
-
-                                <option value="All" className="bg-white dark:bg-[#1a2235]">All</option>
-
-                                <option value={TicketStatus.Open} className="bg-white dark:bg-[#1a2235]">Open</option>
-
-                                <option value={TicketStatus.InProgress} className="bg-white dark:bg-[#1a2235]">In Progress</option>
-
-                                <option value={TicketStatus.Closed} className="bg-white dark:bg-[#1a2235]">Closed</option>
-
-                              </select>
-
-                            </div>
-
-
-
-                            <div className="flex items-center gap-2 mt-4 justify-between">
-
-                              <button
-
-                                onClick={() => {
-
-                                  setTempStatusFilter('All');
-
-                                  setStatusFilter('All');
-
-                                  setIsStatusFilterOpen(false);
-
-                                }}
-
-                                className="px-3.5 py-1.5 bg-[#10B981] hover:bg-emerald-600 text-white rounded-full text-xs font-bold transition-colors"
-
-                              >
-
-                                Reset
-
-                              </button>
-
-                              <button
-
-                                onClick={() => {
-
-                                  setTempStatusFilter(statusFilter);
-
-                                  setIsStatusFilterOpen(false);
-
-                                }}
-
-                                className="px-3.5 py-1.5 bg-[#10B981] hover:bg-emerald-600 text-white rounded-full text-xs font-bold transition-colors"
-
-                              >
-
-                                Cancel
-
-                              </button>
-
-                              <button
-
-                                onClick={() => {
-
-                                  setStatusFilter(tempStatusFilter);
-
-                                  setIsStatusFilterOpen(false);
-
-                                }}
-
-                                className="px-3.5 py-1.5 bg-[#10B981] hover:bg-emerald-600 text-white rounded-full text-xs font-bold transition-colors"
-
-                              >
-
-                                Apply
-
-                              </button>
-
-                            </div>
-
-                          </div>
-
-                        )}
-
-                      </th>
-
-                      <TicketTableHeader title="Priority" hasFilter />
-
-                      <TicketTableHeader title="Contact Name" />
-
-                      <TicketTableHeader title="Account Name" />
-
-                      <TicketTableHeader title="Assigned to" />
-
-                      <TicketTableHeader title="Created Date" />
-
-                      <TicketTableHeader title="Updated Date" />
-
-                      <th className="px-4 py-3 text-right font-bold text-[11px] tracking-wider text-slate-500 dark:text-slate-400">Actions</th>
-
-                    </tr>
-
-                  </thead>
-
-                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80 font-medium">
-
-                    {paginatedTickets.length === 0 ? (
+                    <thead className="bg-slate-50 dark:bg-[#242C38] text-slate-500 dark:text-slate-400 font-bold border-b border-slate-200 dark:border-slate-700 tracking-wide">
 
                       <tr>
 
-                        <td colSpan={11} className="py-12 bg-transparent">
+                        <th className="px-4 py-3.5 w-6">
 
-                          <div className="flex flex-col items-center justify-center gap-5">
+                          <input
 
-                            {/* Illustration */}
+                            type="checkbox"
 
-                            <div className="relative">
+                            disabled
 
-                              {/* Decorative dots — emerald/teal palette */}
+                            className="h-3.5 w-3.5 rounded border-slate-300 dark:border-slate-700 text-emerald-600 focus:ring-emerald-500 cursor-not-allowed"
 
-                              <div className="absolute -top-4 -left-5 w-2.5 h-2.5 rounded-full bg-emerald-400/60 dark:bg-emerald-500/40" />
+                          />
 
-                              <div className="absolute -top-2 -right-6 w-2 h-2 rounded-full bg-teal-400/60 dark:bg-teal-500/40" />
+                        </th>
 
-                              <div className="absolute -bottom-3 -left-7 w-2 h-2 rounded-full bg-teal-300/70 dark:bg-teal-500/30" />
+                        <TicketTableHeader title="Ticket No" />
 
-                              <div className="absolute bottom-1 -right-5 w-2.5 h-2.5 rounded-full bg-emerald-300/70 dark:bg-emerald-500/30" />
+                        <TicketTableHeader title="Title" />
 
-                              <div className="absolute top-1/2 -left-8 w-1.5 h-1.5 rounded-full bg-emerald-200 dark:bg-emerald-700/50" />
+                        <th className="px-4 py-3 font-semibold text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap relative">
 
-                              <div className="absolute top-1/3 -right-7 w-1.5 h-1.5 rounded-full bg-teal-200 dark:bg-teal-700/50" />
+                          <div className="flex items-center gap-2">
+
+                            <span className="text-[11px] font-bold uppercase tracking-wider">Status</span>
+
+                            <button
+
+                              onClick={() => setIsStatusFilterOpen(prev => !prev)}
+
+                              className="focus:outline-none"
+
+                            >
+
+                              <svg
+
+                                xmlns="http://www.w3.org/2000/svg"
+
+                                fill="none"
+
+                                viewBox="0 0 24 24"
+
+                                strokeWidth={2}
+
+                                stroke="currentColor"
+
+                                className={`w-3.5 h-3.5 cursor-pointer hover:text-slate-600 dark:hover:text-slate-350 shrink-0 ${statusFilter !== 'All' ? 'text-[#10B981]' : 'text-slate-400 dark:text-slate-500'}`}
+
+                              >
+
+                                <path
+
+                                  strokeLinecap="round"
+
+                                  strokeLinejoin="round"
+
+                                  d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75"
+
+                                />
+
+                              </svg>
+
+                            </button>
+
+                          </div>
 
 
 
-                              {/* Browser/document card */}
+                          {isStatusFilterOpen && (
 
-                              <div className="w-24 h-20 rounded-2xl border border-emerald-100 dark:border-emerald-900/40 bg-white dark:bg-slate-800/80 flex flex-col overflow-hidden shadow-lg shadow-emerald-100/60 dark:shadow-emerald-900/20">
+                            <div ref={statusFilterRef} className="absolute left-0 top-[calc(100%+6px)] z-50 p-4 w-60 bg-white dark:bg-[#1a2235] border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl">
 
-                                {/* Gradient top bar */}
+                              <div className="relative mt-2">
 
-                                <div className="flex items-center gap-1 px-2.5 py-2 bg-gradient-to-r from-emerald-500 to-teal-500">
+                                <label className="absolute -top-2 left-3 px-1 bg-white dark:bg-[#1a2235] text-[10px] text-slate-400 font-semibold select-none">
 
-                                  <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                                  Select Status
 
-                                  <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                                </label>
 
-                                  <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                                <select
 
-                                </div>
+                                  value={tempStatusFilter}
 
-                                {/* Content lines */}
+                                  onChange={(e) => setTempStatusFilter(e.target.value)}
 
-                                <div className="flex-1 flex flex-col justify-center gap-1.5 px-2.5 py-2">
+                                  className="w-full px-3 py-2 text-sm bg-transparent border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:border-[#10B981] focus:ring-1 focus:ring-[#10B981] text-slate-850 dark:text-slate-100"
 
-                                  <div className="h-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 w-full" />
+                                  style={{ colorScheme: 'dark light' }}
 
-                                  <div className="h-1.5 rounded-full bg-teal-100 dark:bg-teal-900/30 w-4/5" />
+                                >
 
-                                  <div className="h-1.5 rounded-full bg-emerald-50 dark:bg-slate-700 w-3/5" />
+                                  <option value="All" className="bg-white dark:bg-[#1a2235]">All</option>
 
-                                </div>
+                                  <option value={TicketStatus.Open} className="bg-white dark:bg-[#1a2235]">Open</option>
+
+                                  <option value={TicketStatus.InProgress} className="bg-white dark:bg-[#1a2235]">In Progress</option>
+
+                                  <option value={TicketStatus.Closed} className="bg-white dark:bg-[#1a2235]">Closed</option>
+
+                                </select>
+
+                              </div>
+
+
+
+                              <div className="flex items-center gap-2 mt-4 justify-between">
+
+                                <button
+
+                                  onClick={() => {
+
+                                    setTempStatusFilter('All');
+
+                                    setStatusFilter('All');
+
+                                    setIsStatusFilterOpen(false);
+
+                                  }}
+
+                                  className="px-3.5 py-1.5 bg-[#10B981] hover:bg-emerald-600 text-white rounded-full text-xs font-bold transition-colors"
+
+                                >
+
+                                  Reset
+
+                                </button>
+
+                                <button
+
+                                  onClick={() => {
+
+                                    setTempStatusFilter(statusFilter);
+
+                                    setIsStatusFilterOpen(false);
+
+                                  }}
+
+                                  className="px-3.5 py-1.5 bg-[#10B981] hover:bg-emerald-600 text-white rounded-full text-xs font-bold transition-colors"
+
+                                >
+
+                                  Cancel
+
+                                </button>
+
+                                <button
+
+                                  onClick={() => {
+
+                                    setStatusFilter(tempStatusFilter);
+
+                                    setIsStatusFilterOpen(false);
+
+                                  }}
+
+                                  className="px-3.5 py-1.5 bg-[#10B981] hover:bg-emerald-600 text-white rounded-full text-xs font-bold transition-colors"
+
+                                >
+
+                                  Apply
+
+                                </button>
 
                               </div>
 
                             </div>
 
+                          )}
 
+                        </th>
 
-                            {/* Message */}
+                        <TicketTableHeader title="Priority" hasFilter />
 
-                            <p className="text-sm font-semibold text-slate-400 dark:text-slate-500 tracking-wide">
+                        <TicketTableHeader title="Contact Name" />
 
-                              No Records Found!!!
+                        <TicketTableHeader title="Account Name" />
 
-                            </p>
+                        <TicketTableHeader title="Assigned to" />
 
-                          </div>
+                        <TicketTableHeader title="Created Date" />
 
-                        </td>
+                        <TicketTableHeader title="Updated Date" />
+
+                        <th className="px-4 py-3 text-right font-bold text-[11px] tracking-wider text-slate-500 dark:text-slate-400">Actions</th>
 
                       </tr>
 
-                    ) : (
+                    </thead>
 
-                      paginatedTickets.map((ticket) => (
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80 font-medium">
 
-                        <tr key={ticket.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors bg-white dark:bg-[#1C232E]">
+                      {paginatedTickets.length === 0 ? (
 
-                          <td className="px-4 py-2.5">
+                        <tr>
 
-                            <input
+                          <td colSpan={11} className="py-12 bg-transparent">
 
-                              type="checkbox"
+                            <div className="flex flex-col items-center justify-center gap-5">
 
-                              disabled
+                              {/* Illustration */}
 
-                              className="h-3.5 w-3.5 rounded border-slate-300 dark:border-slate-700 text-emerald-600 focus:ring-emerald-500 cursor-not-allowed"
+                              <div className="relative">
 
-                            />
+                                {/* Decorative dots — emerald/teal palette */}
 
-                          </td>
+                                <div className="absolute -top-4 -left-5 w-2.5 h-2.5 rounded-full bg-emerald-400/60 dark:bg-emerald-500/40" />
 
-                          <td className="px-4 py-3 font-semibold text-emerald-600 dark:text-emerald-400">{ticket.ticketNo || '—'}</td>
+                                <div className="absolute -top-2 -right-6 w-2 h-2 rounded-full bg-teal-400/60 dark:bg-teal-500/40" />
 
-                          <td className="px-4 py-3 text-slate-900 dark:text-white font-semibold">{ticket.subject}</td>
+                                <div className="absolute -bottom-3 -left-7 w-2 h-2 rounded-full bg-teal-300/70 dark:bg-teal-500/30" />
 
-                          <td className="px-4 py-3">
+                                <div className="absolute bottom-1 -right-5 w-2.5 h-2.5 rounded-full bg-emerald-300/70 dark:bg-emerald-500/30" />
 
-                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${getStatusColor(ticket.status)}`}>
+                                <div className="absolute top-1/2 -left-8 w-1.5 h-1.5 rounded-full bg-emerald-200 dark:bg-emerald-700/50" />
 
-                              {ticket.status}
+                                <div className="absolute top-1/3 -right-7 w-1.5 h-1.5 rounded-full bg-teal-200 dark:bg-teal-700/50" />
 
-                            </span>
 
-                          </td>
 
-                          <td className="px-4 py-3">
+                                {/* Browser/document card */}
 
-                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${getPriorityColor(ticket.priority)}`}>
+                                <div className="w-24 h-20 rounded-2xl border border-emerald-100 dark:border-emerald-900/40 bg-white dark:bg-slate-800/80 flex flex-col overflow-hidden shadow-lg shadow-emerald-100/60 dark:shadow-emerald-900/20">
 
-                              {ticket.priority || 'Normal'}
+                                  {/* Gradient top bar */}
 
-                            </span>
+                                  <div className="flex items-center gap-1 px-2.5 py-2 bg-gradient-to-r from-emerald-500 to-teal-500">
 
-                          </td>
+                                    <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
 
-                          <td className="px-4 py-3 text-slate-800 dark:text-slate-200">{ticket.contactName || fullName}</td>
+                                    <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
 
-                          <td className="px-4 py-3 text-slate-400 dark:text-slate-500">{ticket.accountName || contact.accountName || '—'}</td>
+                                    <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
 
-                          <td className="px-4 py-3 text-slate-700 dark:text-slate-300">{ticket.assignedTo || 'Unassigned'}</td>
+                                  </div>
 
-                          <td className="px-4 py-3 text-slate-500 dark:text-slate-400 font-normal">
+                                  {/* Content lines */}
 
-                            {ticket.createdAt ? new Date(ticket.createdAt).toLocaleDateString() : '—'}
+                                  <div className="flex-1 flex flex-col justify-center gap-1.5 px-2.5 py-2">
 
-                          </td>
+                                    <div className="h-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 w-full" />
 
-                          <td className="px-4 py-3 text-slate-500 dark:text-slate-400 font-normal">
+                                    <div className="h-1.5 rounded-full bg-teal-100 dark:bg-teal-900/30 w-4/5" />
 
-                            {ticket.updatedAt ? new Date(ticket.updatedAt).toLocaleDateString() : '—'}
+                                    <div className="h-1.5 rounded-full bg-emerald-50 dark:bg-slate-700 w-3/5" />
 
-                          </td>
+                                  </div>
 
-                          <td className="px-4 py-3 text-right">
+                                </div>
 
-                            <div className="flex items-center justify-end gap-2.5">
+                              </div>
 
-                              <button
 
-                                onClick={() => {
 
-                                  setEditingTicket(ticket);
+                              {/* Message */}
 
-                                  setIsTicketModalOpen(true);
+                              <p className="text-sm font-semibold text-slate-400 dark:text-slate-500 tracking-wide">
 
-                                }}
+                                No Records Found!!!
 
-                                className="text-slate-400 hover:text-emerald-500 transition-colors"
-
-                              >
-
-                                <EditIcon className="h-3.5 w-3.5" />
-
-                              </button>
-
-                              <button
-
-                                onClick={() => handleDeleteTicket(ticket.id)}
-
-                                className="text-slate-400 hover:text-red-500 transition-colors font-bold text-sm"
-
-                              >
-
-                                ✕
-
-                              </button>
+                              </p>
 
                             </div>
 
@@ -2569,101 +2464,203 @@ const ContactDetails: React.FC = () => {
 
                         </tr>
 
-                      ))
+                      ) : (
 
-                    )}
+                        paginatedTickets.map((ticket) => (
 
-                  </tbody>
+                          <tr key={ticket.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors bg-white dark:bg-[#1C232E]">
 
-                </table>
+                            <td className="px-4 py-2.5">
 
-              </div>
+                              <input
 
+                                type="checkbox"
 
+                                disabled
 
-              {/* Pagination controls */}
+                                className="h-3.5 w-3.5 rounded border-slate-300 dark:border-slate-700 text-emerald-600 focus:ring-emerald-500 cursor-not-allowed"
 
-              {totalPages > 1 && (
+                              />
 
-                <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/20 dark:bg-slate-900/5 select-none">
+                            </td>
 
-                  <span className="text-xs text-slate-500 font-semibold">
+                            <td className="px-4 py-3 font-semibold text-emerald-600 dark:text-emerald-400">{ticket.ticketNo || '—'}</td>
 
-                    Page {safePage} of {totalPages}
+                            <td className="px-4 py-3 text-slate-900 dark:text-white font-semibold">{ticket.subject}</td>
 
-                  </span>
+                            <td className="px-4 py-3">
 
-                  <div className="flex items-center gap-2">
+                              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${getStatusColor(ticket.status)}`}>
 
-                    <button
+                                {ticket.status}
 
-                      disabled={safePage === 1}
+                              </span>
 
-                      onClick={() => setPage((p) => Math.max(1, p - 1))}
+                            </td>
 
-                      className="p-1.5 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:hover:bg-transparent text-slate-500 transition-all"
+                            <td className="px-4 py-3">
 
-                    >
+                              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${getPriorityColor(ticket.priority)}`}>
 
-                      <ChevronLeftIcon className="h-4 w-4" />
+                                {ticket.priority || 'Normal'}
 
-                    </button>
+                              </span>
 
-                    <button
+                            </td>
 
-                      disabled={safePage === totalPages}
+                            <td className="px-4 py-3 text-slate-800 dark:text-slate-200">{ticket.contactName || fullName}</td>
 
-                      onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                            <td className="px-4 py-3 text-slate-400 dark:text-slate-500">{ticket.accountName || contact.accountName || '—'}</td>
 
-                      className="p-1.5 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:hover:bg-transparent text-slate-500 transition-all"
+                            <td className="px-4 py-3 text-slate-700 dark:text-slate-300">{ticket.assignedTo || 'Unassigned'}</td>
 
-                    >
+                            <td className="px-4 py-3 text-slate-500 dark:text-slate-400 font-normal">
 
-                      <ChevronRightIcon className="h-4 w-4" />
+                              {ticket.createdAt ? new Date(ticket.createdAt).toLocaleDateString() : '—'}
 
-                    </button>
+                            </td>
 
-                  </div>
+                            <td className="px-4 py-3 text-slate-500 dark:text-slate-400 font-normal">
+
+                              {ticket.updatedAt ? new Date(ticket.updatedAt).toLocaleDateString() : '—'}
+
+                            </td>
+
+                            <td className="px-4 py-3 text-right">
+
+                              <div className="flex items-center justify-end gap-2.5">
+
+                                <button
+
+                                  onClick={() => {
+
+                                    setEditingTicket(ticket);
+
+                                    setIsTicketModalOpen(true);
+
+                                  }}
+
+                                  className="text-slate-400 hover:text-emerald-500 transition-colors"
+
+                                >
+
+                                  <EditIcon className="h-3.5 w-3.5" />
+
+                                </button>
+
+                                <button
+
+                                  onClick={() => handleDeleteTicket(ticket.id)}
+
+                                  className="text-slate-400 hover:text-red-500 transition-colors font-bold text-sm"
+
+                                >
+
+                                  ✕
+
+                                </button>
+
+                              </div>
+
+                            </td>
+
+                          </tr>
+
+                        ))
+
+                      )}
+
+                    </tbody>
+
+                  </table>
 
                 </div>
 
-              )}
-
-            </div>
-
-          )}
 
 
+                {/* Pagination controls */}
 
-          {/* Tab Contents: Conversation */}
+                {totalPages > 1 && (
 
-          {activeTab === 'conversation' && (
+                  <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/20 dark:bg-slate-900/5 select-none">
 
-            <div className="flex-1 flex items-center justify-center text-slate-500 py-12">
+                    <span className="text-xs text-slate-500 font-semibold">
 
-              Conversation history would appear here...
+                      Page {safePage} of {totalPages}
 
-            </div>
+                    </span>
 
-          )}
+                    <div className="flex items-center gap-2">
+
+                      <button
+
+                        disabled={safePage === 1}
+
+                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+
+                        className="p-1.5 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:hover:bg-transparent text-slate-500 transition-all"
+
+                      >
+
+                        <ChevronLeftIcon className="h-4 w-4" />
+
+                      </button>
+
+                      <button
+
+                        disabled={safePage === totalPages}
+
+                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+
+                        className="p-1.5 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:hover:bg-transparent text-slate-500 transition-all"
+
+                      >
+
+                        <ChevronRightIcon className="h-4 w-4" />
+
+                      </button>
+
+                    </div>
+
+                  </div>
+
+                )}
+
+              </div>
+
+            )}
 
 
 
-          {/* Tab Contents: Merge History */}
+            {/* Tab Contents: Conversation */}
 
-          {activeTab === 'mergeHistory' && (
+            {activeTab === 'conversation' && (
 
-            <div className="flex-1 flex items-center justify-center text-slate-500 py-12">
+              <div className="flex-1 flex items-center justify-center text-slate-500 py-12">
 
-              Merge history would appear here...
+                Conversation history would appear here...
 
-            </div>
+              </div>
 
-          )}
+            )}
+
+
+
+            {/* Tab Contents: Merge History */}
+
+            {activeTab === 'mergeHistory' && (
+
+              <div className="flex-1 flex items-center justify-center text-slate-500 py-12">
+
+                Merge history would appear here...
+
+              </div>
+
+            )}
+
+          </div>
 
         </div>
-
-      </div>
 
       </div>
 

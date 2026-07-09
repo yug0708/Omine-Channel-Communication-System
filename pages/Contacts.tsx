@@ -678,7 +678,7 @@ const Contacts: React.FC = () => {
   const [primaryMergeContactId, setPrimaryMergeContactId] = useState<string | null>(null);
 
   // Column visibility
-  const ALL_COLS = ['Last Name','Contact Number','Email','Account Name','Assigned To','Created Date','Updated Date','Actions'] as const;
+  const ALL_COLS = ['Last Name', 'Contact Number', 'Email', 'Account Name', 'Assigned To', 'Created Date', 'Updated Date', 'Actions'] as const;
   type ColKey = typeof ALL_COLS[number];
   const [visibleCols, setVisibleCols] = useState<Set<ColKey>>(new Set(ALL_COLS));
   const [colToggleOpen, setColToggleOpen] = useState(false);
@@ -1115,11 +1115,10 @@ const Contacts: React.FC = () => {
                               }
                             }}
                             aria-label="Merge selected"
-                            className={`inline-flex items-center justify-center w-8 h-8 rounded-full transition-all duration-200 ${
-                              selectedContacts.length > 2
+                            className={`inline-flex items-center justify-center w-8 h-8 rounded-full transition-all duration-200 ${selectedContacts.length > 2
                                 ? 'text-slate-400 cursor-not-allowed opacity-60'
                                 : 'text-[#10B981] hover:bg-[#10B981]/10'
-                            }`}
+                              }`}
                           >
                             <svg className="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
                               <path d="m8 6 4-4 4 4" />
@@ -1343,11 +1342,10 @@ const Contacts: React.FC = () => {
                   <div
                     key={contact.id}
                     onClick={() => navigate(`/contacts/${contact.id}`)}
-                    className={`p-4 rounded-3xl border shadow-sm backdrop-blur-2xl flex flex-col gap-3.5 cursor-pointer hover:shadow-md active:scale-[0.99] transition-all duration-150 ${
-                      isSelected
+                    className={`p-4 rounded-3xl border shadow-sm backdrop-blur-2xl flex flex-col gap-3.5 cursor-pointer hover:shadow-md active:scale-[0.99] transition-all duration-150 ${isSelected
                         ? 'bg-emerald-500/10 border-emerald-500/30'
                         : 'bg-white/85 dark:bg-slate-900/85 border-slate-200/80 dark:border-slate-800/80'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2.5 min-w-0">
@@ -1505,41 +1503,41 @@ const Contacts: React.FC = () => {
             <p className="text-[15px] text-slate-700 dark:text-slate-300">
               Select the primary contact. The other contacts will be merged into this one.
             </p>
-            
+
             <div className="space-y-4">
               {selectedContacts.map(id => {
                 const contact = contacts.find(c => c.id === id);
                 if (!contact) return null;
-                
+
                 const isPrimary = primaryMergeContactId === id;
-                
+
                 return (
-                  <div 
+                  <div
                     key={id}
                     onClick={() => setPrimaryMergeContactId(id)}
                     className={`p-5 rounded-2xl border-2 cursor-pointer flex items-center gap-4 transition-all ${isPrimary ? 'border-[#10B981] bg-[#10B981]/5' : 'border-slate-100 dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700 bg-slate-50 dark:bg-[#1a2235]'}`}
                   >
-                     {/* Radio button */}
-                     <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${isPrimary ? 'border-[#10B981]' : 'border-slate-300 dark:border-slate-600'}`}>
-                        {isPrimary && <div className="h-2.5 w-2.5 rounded-full bg-[#10B981]" />}
-                     </div>
-                     
-                     <div className="flex flex-col">
-                       <span className="text-[15px] font-bold text-slate-900 dark:text-white">
-                         {contact.firstName} {contact.lastName}
-                       </span>
-                       {contact.contactNumber && (
-                         <span className="text-[13px] font-medium text-slate-500 mt-0.5">
-                           {contact.contactNumber}
-                         </span>
-                       )}
-                     </div>
+                    {/* Radio button */}
+                    <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${isPrimary ? 'border-[#10B981]' : 'border-slate-300 dark:border-slate-600'}`}>
+                      {isPrimary && <div className="h-2.5 w-2.5 rounded-full bg-[#10B981]" />}
+                    </div>
+
+                    <div className="flex flex-col">
+                      <span className="text-[15px] font-bold text-slate-900 dark:text-white">
+                        {contact.firstName} {contact.lastName}
+                      </span>
+                      {contact.contactNumber && (
+                        <span className="text-[13px] font-medium text-slate-500 mt-0.5">
+                          {contact.contactNumber}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 );
               })}
             </div>
           </div>
-          
+
           {/* Footer */}
           <div className="flex justify-end gap-3 pt-6 border-t border-slate-100 dark:border-slate-800 mt-6">
             <button
@@ -1550,13 +1548,13 @@ const Contacts: React.FC = () => {
             </button>
             <button
               onClick={() => {
-                 const secondaryId = selectedContacts.find(id => id !== primaryMergeContactId);
-                 if (secondaryId) {
-                   setContacts(contacts.filter(c => c.id !== secondaryId));
-                   setSelectedContacts([]);
-                   setIsMergeModalOpen(false);
-                   setSuccessMessage('Contacts Merged Successfully');
-                 }
+                const secondaryId = selectedContacts.find(id => id !== primaryMergeContactId);
+                if (secondaryId) {
+                  setContacts(contacts.filter(c => c.id !== secondaryId));
+                  setSelectedContacts([]);
+                  setIsMergeModalOpen(false);
+                  setSuccessMessage('Contacts Merged Successfully');
+                }
               }}
               className="px-6 py-2.5 rounded-full text-sm font-bold text-white bg-[#10B981] hover:bg-[#059669] transition-colors shadow-sm"
             >

@@ -391,7 +391,7 @@ const Dashboard: React.FC = () => {
 
         {/* ─── Welcome Banner ─── */}
         {showWelcome && (
-          <div className="relative mb-6 overflow-hidden rounded-3xl border border-emerald-400/30 bg-gradient-to-br from-emerald-400/90 to-teal-500/90 p-5 shadow-lg shadow-emerald-400/20 backdrop-blur-xl dark:border-emerald-400/20">
+          <div className="hidden sm:block relative mb-6 overflow-hidden rounded-3xl border border-emerald-400/30 bg-gradient-to-br from-emerald-400/90 to-teal-500/90 p-5 shadow-lg shadow-emerald-400/20 backdrop-blur-xl dark:border-emerald-400/20">
             <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
             <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
             <div className="flex items-center justify-between gap-4">
@@ -418,7 +418,7 @@ const Dashboard: React.FC = () => {
         )}
 
         {/* ─── Quick Tip Bar ─── */}
-        <div className="mb-6 flex items-center justify-between gap-3 rounded-2xl border border-slate-200/80 bg-white/70 px-3 sm:px-4 py-2.5 sm:py-3 shadow-sm backdrop-blur-xl dark:border-white/[0.08] dark:bg-slate-900/50">
+        <div className="hidden sm:flex mb-6 items-center justify-between gap-3 rounded-2xl border border-slate-200/80 bg-white/70 px-3 sm:px-4 py-2.5 sm:py-3 shadow-sm backdrop-blur-xl dark:border-white/[0.08] dark:bg-slate-900/50">
           <div className="flex items-center gap-3 overflow-hidden">
             <span className="shrink-0 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white shadow-sm shadow-emerald-500/30">
               Quick Tip
