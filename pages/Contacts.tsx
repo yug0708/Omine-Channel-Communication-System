@@ -989,7 +989,7 @@ const Contacts: React.FC = () => {
             </div>
 
             {/* Import / Export dropdown */}
-            <div className="relative flex-shrink-0" ref={importExportRef}>
+            <div className="relative flex-shrink-0 hidden md:flex" ref={importExportRef}>
               <button
                 onClick={() => setImportExportOpen(o => !o)}
                 className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 w-8 h-8 flex items-center justify-center"

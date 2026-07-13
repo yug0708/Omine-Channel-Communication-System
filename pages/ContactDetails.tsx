@@ -1011,6 +1011,8 @@ const ContactDetails: React.FC = () => {
 
   const [editingTicket, setEditingTicket] = useState<Ticket | null>(null);
 
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+
 
 
   if (!contact) {
@@ -1180,6 +1182,18 @@ const ContactDetails: React.FC = () => {
       setTickets((prev) => prev.filter((t) => t.id !== ticketId));
 
     }
+
+  };
+
+
+
+  const handleDeleteContact = () => {
+
+    setContacts((prev) => prev.filter((c) => c.id !== contact.id));
+
+    setDeleteConfirmOpen(false);
+
+    navigate('/contacts');
 
   };
 
@@ -1565,13 +1579,10 @@ const ContactDetails: React.FC = () => {
           Edit contact
         </button>
         <button
-          onClick={() => {
-            setEditingTicket(null);
-            setIsTicketModalOpen(true);
-          }}
-          className="flex-1 py-3 text-xs font-extrabold text-white bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 rounded-2xl hover:shadow-lg transition-all text-center"
+          onClick={() => setDeleteConfirmOpen(true)}
+          className="flex-1 py-3 text-xs font-extrabold text-white bg-gradient-to-r from-rose-500 to-red-500 hover:from-rose-600 hover:to-red-600 rounded-2xl hover:shadow-lg transition-all text-center"
         >
-          New ticket
+          Delete
         </button>
       </div>
 
@@ -2731,6 +2742,80 @@ const ContactDetails: React.FC = () => {
         />
 
       </Modal>
+
+
+
+      {/* Delete Contact Confirmation Modal (mobile only) */}
+
+      {deleteConfirmOpen && (
+
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-end lg:items-center justify-center">
+
+          <div className="bg-white dark:bg-[#151B25] w-full max-w-sm rounded-t-3xl lg:rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800/80 p-6 flex flex-col gap-5">
+
+            {/* Icon */}
+
+            <div className="flex flex-col items-center gap-3 text-center">
+
+              <div className="h-14 w-14 rounded-full bg-rose-100 dark:bg-rose-950/30 flex items-center justify-center">
+
+                <svg className="h-7 w-7 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+
+                </svg>
+
+              </div>
+
+              <div>
+
+                <h3 className="text-base font-extrabold text-slate-900 dark:text-white">Delete Contact?</h3>
+
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+
+                  This will permanently delete <span className="font-bold text-slate-700 dark:text-slate-300">{contact.firstName} {contact.lastName}</span> and cannot be undone.
+
+                </p>
+
+              </div>
+
+            </div>
+
+            {/* Actions */}
+
+            <div className="flex gap-3">
+
+              <button
+
+                onClick={() => setDeleteConfirmOpen(false)}
+
+                className="flex-1 py-3 text-xs font-extrabold text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-all"
+
+              >
+
+                Cancel
+
+              </button>
+
+              <button
+
+                onClick={handleDeleteContact}
+
+                className="flex-1 py-3 text-xs font-extrabold text-white bg-gradient-to-r from-rose-500 to-red-500 hover:from-rose-600 hover:to-red-600 rounded-2xl hover:shadow-lg transition-all"
+
+              >
+
+                Delete
+
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      )}
 
     </div>
 

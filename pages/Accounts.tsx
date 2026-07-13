@@ -912,7 +912,7 @@ const Accounts: React.FC = () => {
             </div>
 
             {/* Import / Export dropdown */}
-            <div className="relative flex-shrink-0" ref={importExportRef}>
+            <div className="relative flex-shrink-0 hidden md:flex" ref={importExportRef}>
               <button
                 onClick={() => setImportExportOpen(o => !o)}
                 className="flex items-center justify-center w-8 h-8 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
