@@ -1,5 +1,6 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 
 import {
   DashboardIcon,
@@ -13,127 +14,290 @@ import {
   UCLogo,
 } from '../icons/Icons';
 
-// Calendar Icon
+// ── Extra Icons ───────────────────────────────────────────────────────────────
+
 const CalendarIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    className={className ?? 'h-6 w-6'}
-    viewBox="0 0 24 24"
-    fill="currentColor"
-  >
+  <svg xmlns="http://www.w3.org/2000/svg" className={className ?? 'h-5 w-5'} viewBox="0 0 24 24" fill="currentColor">
     <path d="M19 3h-1V1h-2v2H8V1H6v2H5C3.9 3 3 3.9 3 5v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H5V8h14v13z" />
     <path d="M7 10h5v5H7z" />
   </svg>
 );
 
-// Automation Icon
 const AutomationIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    className={className ?? 'h-6 w-6'}
-    viewBox="0 0 24 24"
-    fill="currentColor"
-  >
+  <svg xmlns="http://www.w3.org/2000/svg" className={className ?? 'h-5 w-5'} viewBox="0 0 24 24" fill="currentColor">
     <path d="M13 10V3L4 14h7v7l9-11h-7z" />
   </svg>
 );
 
-// Tenants Icon
 const TenantsIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    className={className ?? 'h-6 w-6'}
-    viewBox="0 0 24 24"
-    fill="currentColor"
-  >
+  <svg xmlns="http://www.w3.org/2000/svg" className={className ?? 'h-5 w-5'} viewBox="0 0 24 24" fill="currentColor">
     <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
   </svg>
 );
 
-const navLinks = [
+const ChevronLeftIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className ?? 'h-4 w-4'} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+  </svg>
+);
+
+// ── Nav groups ────────────────────────────────────────────────────────────────
+
+const mainNavLinks = [
   { to: '/dashboard', icon: DashboardIcon, label: 'Dashboard' },
-  { to: '/accounts', icon: AccountsIcon, label: 'Accounts' },
-  { to: '/contacts', icon: ContactsIcon, label: 'Contacts' },
-  { to: '/tickets', icon: InboxIcon, label: 'Inbox' },
-  { to: '/campaign', icon: CampaignIcon, label: 'Campaign' },
-  { to: '/channels', icon: ChannelIcon, label: 'Channel' },
-  { to: '/report', icon: ReportIcon, label: 'Report' },
-  { to: '/calendar', icon: CalendarIcon, label: 'Calendar' },
-  { to: '/settings', icon: SettingIcon, label: 'Setting' },
-  { to: '/automation', icon: AutomationIcon, label: 'Automation' },
-  { to: '/tenants', icon: TenantsIcon, label: 'Tenants' },
+  { to: '/accounts',  icon: AccountsIcon,  label: 'Accounts'  },
+  { to: '/contacts',  icon: ContactsIcon,  label: 'Contacts'  },
+  { to: '/tickets',   icon: InboxIcon,     label: 'Inbox'     },
+  { to: '/campaign',  icon: CampaignIcon,  label: 'Campaign'  },
+  { to: '/channels',  icon: ChannelIcon,   label: 'Channel'   },
 ];
 
-const Sidebar: React.FC<{ isOpen?: boolean; onClose?: () => void }> = ({ isOpen = false, onClose }) => {
+const toolsNavLinks = [
+  { to: '/report',     icon: ReportIcon,     label: 'Report'     },
+  { to: '/calendar',   icon: CalendarIcon,   label: 'Calendar'   },
+  { to: '/automation', icon: AutomationIcon, label: 'Automation' },
+];
+
+const adminNavLinks = [
+  { to: '/tenants',  icon: TenantsIcon, label: 'Tenants' },
+  { to: '/settings', icon: SettingIcon, label: 'Settings' },
+];
+
+// ── NavItem ───────────────────────────────────────────────────────────────────
+
+interface NavItemProps {
+  to: string;
+  icon: React.ElementType;
+  label: string;
+  isExpanded: boolean;
+  onClose?: () => void;
+}
+
+const NavItem: React.FC<NavItemProps> = ({ to, icon: Icon, label, isExpanded, onClose }) => {
+  const location = useLocation();
+  const isActive = location.pathname === to || (to !== '/' && location.pathname.startsWith(to));
+
   return (
-    <div
-      className={`fixed inset-y-0 left-0 z-40 w-[260px] bg-white dark:bg-slate-900/95 flex flex-col items-stretch py-3 border-r border-slate-200 dark:border-white/[0.08] flex-shrink-0 overflow-y-auto overflow-x-hidden backdrop-blur-sm transition-transform duration-300 ease-in-out md:translate-x-0 md:relative md:w-[72px] md:flex md:items-center ${
-        isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
-      }`}
-    >
-      {/* Sidebar Mobile Header */}
-      <div className="w-full flex items-center justify-between px-4 mb-5 md:hidden flex-shrink-0">
-        <div className="flex items-center gap-2.5">
-          <UCLogo className="h-8 w-8" />
-          <span className="font-extrabold text-sm tracking-wide text-slate-800 dark:text-white">CommuniDesk</span>
-        </div>
-        <button
-          onClick={onClose}
-          className="p-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition-colors"
-          title="Close Menu"
+    <li className="relative group/item w-full">
+      <NavLink
+        to={to}
+        onClick={onClose}
+        className={`
+          flex items-center gap-3 rounded-xl w-full transition-all duration-200
+          ${isExpanded ? 'px-3 py-2.5' : 'px-0 py-2.5 justify-center'}
+          ${isActive
+            ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25 nav-active-pill'
+            : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-800 dark:hover:text-slate-100'
+          }
+        `}
+      >
+        <Icon className={`h-5 w-5 flex-shrink-0 transition-transform duration-200 ${isActive ? '' : 'group-hover/item:scale-110'}`} />
+
+        {/* Label – only show when expanded */}
+        <span
+          className={`text-sm font-semibold tracking-wide leading-none whitespace-nowrap overflow-hidden transition-all duration-300 ${
+            isExpanded ? 'opacity-100 max-w-[160px]' : 'opacity-0 max-w-0'
+          }`}
         >
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+          {label}
+        </span>
+      </NavLink>
+
+      {/* Tooltip when collapsed */}
+      {!isExpanded && (
+        <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 z-50 opacity-0 group-hover/item:opacity-100 transition-opacity duration-150">
+          <div className="flex items-center gap-1.5">
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />
+            <span className="whitespace-nowrap rounded-lg bg-slate-900 dark:bg-slate-700 text-white text-xs font-semibold px-2.5 py-1.5 shadow-xl">
+              {label}
+            </span>
+          </div>
+        </div>
+      )}
+    </li>
+  );
+};
+
+// ── Divider label ─────────────────────────────────────────────────────────────
+
+const SectionLabel: React.FC<{ label: string; isExpanded: boolean }> = ({ label, isExpanded }) => (
+  <div className={`flex items-center gap-2 px-1 mt-3 mb-1 overflow-hidden transition-all duration-300 ${isExpanded ? 'opacity-100' : 'opacity-0 h-0 my-0'}`}>
+    <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-400 dark:text-slate-600 whitespace-nowrap">
+      {label}
+    </span>
+    <div className="flex-1 h-px bg-slate-200 dark:bg-white/[0.06]" />
+  </div>
+);
+
+// ── Sidebar ───────────────────────────────────────────────────────────────────
+
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+  isExpanded?: boolean;
+  onToggleExpand?: () => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose, isExpanded = true, onToggleExpand }) => {
+  const { currentUser } = useAuth();
+
+  const userInitial = currentUser?.firstName
+    ? currentUser.firstName.charAt(0).toUpperCase()
+    : 'U';
+  const userName = currentUser ? `${currentUser.firstName} ${currentUser.lastName}` : 'User';
+  const orgName = currentUser?.organizationName || 'My Organization';
+
+  return (
+    <>
+      {/* ── Desktop Sidebar ─────────────────────────────────────── */}
+      <aside
+        className={`
+          hidden md:flex flex-col flex-shrink-0 h-screen
+          bg-white dark:bg-slate-900/95
+          border-r border-slate-200 dark:border-white/[0.07]
+          sidebar-transition overflow-hidden relative
+          ${isExpanded ? 'sidebar-expanded' : 'sidebar-collapsed'}
+        `}
+      >
+        {/* Top: Logo + Toggle */}
+        <div className={`flex items-center flex-shrink-0 pt-5 pb-4 px-3 ${isExpanded ? 'justify-between' : 'justify-center'}`}>
+          <div className="flex items-center gap-2.5 overflow-hidden">
+            <div className="flex-shrink-0 h-9 w-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/30 pulse-glow">
+              <UCLogo className="h-5 w-5 text-white" />
+            </div>
+            <span className={`font-bold text-sm text-slate-900 dark:text-white whitespace-nowrap transition-all duration-300 ${isExpanded ? 'opacity-100 max-w-[120px]' : 'opacity-0 max-w-0'}`}>
+              CommuniDesk
+            </span>
+          </div>
+
+          {/* Toggle button */}
+          <button
+            onClick={onToggleExpand}
+            className={`flex-shrink-0 h-7 w-7 rounded-lg bg-slate-100 dark:bg-white/[0.06] hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:text-emerald-500 text-slate-400 flex items-center justify-center transition-all duration-300 ${isExpanded ? 'opacity-100' : 'opacity-0 pointer-events-none absolute'}`}
+            title="Collapse sidebar"
+          >
+            <ChevronLeftIcon className="h-3.5 w-3.5" />
+          </button>
+        </div>
+
+        {/* Expand button when collapsed */}
+        {!isExpanded && (
+          <button
+            onClick={onToggleExpand}
+            className="mx-auto mb-2 h-7 w-7 rounded-lg bg-slate-100 dark:bg-white/[0.06] hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:text-emerald-500 text-slate-400 flex items-center justify-center transition-all"
+            title="Expand sidebar"
+          >
+            <svg className="h-3.5 w-3.5 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        )}
+
+        {/* Nav */}
+        <nav className="flex-1 overflow-y-auto overflow-x-hidden hide-scrollbar px-2">
+          {/* Main */}
+          <SectionLabel label="Main" isExpanded={isExpanded} />
+          <ul className="flex flex-col gap-0.5">
+            {mainNavLinks.map(link => (
+              <NavItem key={link.to} {...link} isExpanded={isExpanded} />
+            ))}
+          </ul>
+
+          {/* Tools */}
+          {isExpanded && <div className="mt-2 mb-1 h-px bg-slate-100 dark:bg-white/[0.05]" />}
+          <SectionLabel label="Tools" isExpanded={isExpanded} />
+          <ul className="flex flex-col gap-0.5">
+            {toolsNavLinks.map(link => (
+              <NavItem key={link.to} {...link} isExpanded={isExpanded} />
+            ))}
+          </ul>
+
+          {/* Admin */}
+          {isExpanded && <div className="mt-2 mb-1 h-px bg-slate-100 dark:bg-white/[0.05]" />}
+          <SectionLabel label="Admin" isExpanded={isExpanded} />
+          <ul className="flex flex-col gap-0.5">
+            {adminNavLinks.map(link => (
+              <NavItem key={link.to} {...link} isExpanded={isExpanded} />
+            ))}
+          </ul>
+        </nav>
+
+        {/* Bottom: User info */}
+        <div className={`flex-shrink-0 border-t border-slate-100 dark:border-white/[0.06] p-3 transition-all duration-300 ${isExpanded ? '' : 'flex justify-center'}`}>
+          <div className={`flex items-center gap-2.5 overflow-hidden rounded-xl p-2 hover:bg-slate-50 dark:hover:bg-white/[0.04] transition-colors cursor-pointer group ${isExpanded ? '' : 'justify-center'}`}>
+            <div className="flex-shrink-0 h-8 w-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center text-white font-bold text-sm shadow-md">
+              {userInitial}
+            </div>
+            <div className={`flex flex-col min-w-0 transition-all duration-300 ${isExpanded ? 'opacity-100 max-w-[160px]' : 'opacity-0 max-w-0'}`}>
+              <span className="text-xs font-semibold text-slate-800 dark:text-white truncate leading-tight">{userName}</span>
+              <span className="text-[10px] text-slate-400 dark:text-slate-500 truncate leading-tight">{orgName}</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      {/* ── Mobile Drawer ────────────────────────────────────────── */}
+      <div
+        className={`fixed inset-y-0 left-0 z-40 w-[260px] bg-white dark:bg-slate-900/98 flex flex-col border-r border-slate-200 dark:border-white/[0.08] overflow-y-auto overflow-x-hidden backdrop-blur-sm transition-transform duration-300 ease-in-out md:hidden ${
+          isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
+        }`}
+      >
+        {/* Mobile header */}
+        <div className="flex items-center justify-between px-4 py-4 border-b border-slate-100 dark:border-white/[0.06]">
+          <div className="flex items-center gap-2.5">
+            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/30">
+              <UCLogo className="h-5 w-5 text-white" />
+            </div>
+            <span className="font-bold text-sm text-slate-900 dark:text-white">CommuniDesk</span>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 transition-colors"
+          >
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Mobile Nav */}
+        <nav className="flex-1 overflow-y-auto hide-scrollbar px-3 pt-3">
+          <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-400 mb-2 px-1">Main</p>
+          <ul className="flex flex-col gap-0.5 mb-4">
+            {mainNavLinks.map(link => (
+              <NavItem key={link.to} {...link} isExpanded={true} onClose={onClose} />
+            ))}
+          </ul>
+          <div className="h-px bg-slate-100 dark:bg-white/[0.05] mb-3" />
+          <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-400 mb-2 px-1">Tools</p>
+          <ul className="flex flex-col gap-0.5 mb-4">
+            {toolsNavLinks.map(link => (
+              <NavItem key={link.to} {...link} isExpanded={true} onClose={onClose} />
+            ))}
+          </ul>
+          <div className="h-px bg-slate-100 dark:bg-white/[0.05] mb-3" />
+          <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-400 mb-2 px-1">Admin</p>
+          <ul className="flex flex-col gap-0.5">
+            {adminNavLinks.map(link => (
+              <NavItem key={link.to} {...link} isExpanded={true} onClose={onClose} />
+            ))}
+          </ul>
+        </nav>
+
+        {/* Mobile user */}
+        <div className="flex-shrink-0 border-t border-slate-100 dark:border-white/[0.06] p-3">
+          <div className="flex items-center gap-2.5 rounded-xl p-2 bg-slate-50 dark:bg-white/[0.04]">
+            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center text-white font-bold text-sm shadow-md flex-shrink-0">
+              {userInitial}
+            </div>
+            <div className="flex flex-col min-w-0">
+              <span className="text-xs font-semibold text-slate-800 dark:text-white truncate">{userName}</span>
+              <span className="text-[10px] text-slate-400 truncate">{orgName}</span>
+            </div>
+          </div>
+        </div>
       </div>
-
-      {/* Logo for Desktop */}
-      <div className="hidden md:block mb-4 flex-shrink-0 p-1.5">
-        <UCLogo className="h-9 w-9" />
-      </div>
-
-      {/* Navigation */}
-      <nav className="flex-1 w-full">
-        <ul className="flex flex-col items-stretch md:items-center gap-1.5 px-3 md:px-1">
-          {navLinks.map(({ to, icon: Icon, label }) => (
-            <li key={to} className="w-full">
-              <NavLink
-                to={to}
-                onClick={onClose}
-                className={({ isActive }) =>
-                  `flex flex-row md:flex-col items-center justify-start md:justify-center gap-3 md:gap-1 py-3 md:py-2 px-4 md:px-1 rounded-xl w-full transition-all duration-200 group ${
-                    isActive
-                      ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
-                      : 'text-slate-500 dark:text-slate-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:text-emerald-500 dark:hover:text-emerald-400'
-                  }`
-                }
-              >
-                {({ isActive }) => (
-                  <>
-                    <Icon
-                      className={`h-5 w-5 flex-shrink-0 transition-transform duration-200 ${
-                        isActive ? '' : 'group-hover:scale-110'
-                      }`}
-                    />
-
-                    <span
-                      className={`text-sm md:text-[9px] font-bold tracking-wide leading-none text-left md:text-center truncate w-full px-0.5 ${
-                        isActive
-                          ? 'text-white'
-                          : 'text-slate-500 dark:text-slate-400 group-hover:text-emerald-500 dark:group-hover:text-emerald-400'
-                      }`}
-                    >
-                      {label}
-                    </span>
-                  </>
-                )}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-      </nav>
-    </div>
+    </>
   );
 };
 

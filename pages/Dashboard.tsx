@@ -379,7 +379,7 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="relative min-h-screen w-full">
+    <div className="relative min-h-screen w-full page-enter">
       {/* Background orbs */}
       <div className="pointer-events-none fixed inset-0 z-0 bg-gradient-to-br from-slate-100 via-emerald-50/30 to-teal-100/20 dark:from-slate-950 dark:via-slate-950 dark:to-slate-950" aria-hidden />
       <div className="pointer-events-none fixed inset-0 z-0 dashboard-mesh dashboard-grid-bg opacity-60 dark:opacity-70" aria-hidden />
@@ -391,27 +391,24 @@ const Dashboard: React.FC = () => {
 
         {/* ─── Welcome Banner ─── */}
         {showWelcome && (
-          <div className="hidden sm:block relative mb-6 overflow-hidden rounded-3xl border border-emerald-400/30 bg-gradient-to-br from-emerald-400/90 to-teal-500/90 p-5 shadow-lg shadow-emerald-400/20 backdrop-blur-xl dark:border-emerald-400/20">
-            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
-            <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+          <div className="hidden sm:block relative mb-5 overflow-hidden rounded-2xl border border-emerald-500/25 bg-gradient-to-r from-emerald-500/10 via-teal-500/8 to-emerald-500/5 dark:from-emerald-500/15 dark:via-teal-500/10 dark:to-emerald-500/8 p-4 backdrop-blur-xl animate-fade-in-up">
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
+            <div className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-emerald-500/10 blur-2xl" />
             <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-teal-950/10 ring-1 ring-teal-950/20 shadow-lg">
-                  <span className="text-xl">👋</span>
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/20 border border-emerald-500/30">
+                  <span className="text-lg">👋</span>
                 </div>
                 <div>
-                  <h3 className="text-teal-950 font-extrabold text-lg leading-tight">Welcome to Your Dashboard!</h3>
-                  <p className="text-teal-900/80 text-sm mt-0.5 leading-relaxed hidden sm:block">
+                  <h3 className="text-slate-900 dark:text-white font-bold text-base leading-tight">Welcome to Your Dashboard!</h3>
+                  <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5 leading-relaxed">
                     Real-time overview of your communication performance — calls, messages, tickets & more.
-                  </p>
-                  <p className="text-teal-900/80 text-xs mt-0.5 leading-normal block sm:hidden">
-                    Overview of calls, messages & tickets.
                   </p>
                 </div>
               </div>
               <button onClick={() => setShowWelcome(false)}
-                className="flex-shrink-0 rounded-2xl border border-teal-950/25 bg-teal-950/10 px-5 py-2 text-xs font-bold text-teal-950 backdrop-blur-sm transition-all hover:bg-teal-950/25 hover:shadow-lg">
-                Got it
+                className="flex-shrink-0 rounded-xl border border-slate-200 dark:border-white/[0.1] bg-white dark:bg-slate-800 px-4 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 transition-all hover:border-emerald-500/40 hover:text-emerald-600 dark:hover:text-emerald-400">
+                Dismiss
               </button>
             </div>
           </div>
@@ -433,32 +430,32 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* ─── Page Title + Filter ─── */}
-        <div className="mb-6 flex items-start justify-between gap-4">
+        <div className="mb-4 flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs sm:text-sm font-semibold uppercase tracking-widest text-emerald-600 dark:text-emerald-400 mb-1">Analytics</p>
-            <h1 className="text-2xl sm:text-[32px] font-black tracking-tight text-slate-900 dark:text-white leading-tight">Overview</h1>
-            <p className="mt-1 flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400">
+            <p className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400 mb-1">Analytics</p>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">Overview</h1>
+            <p className="mt-1 flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
               Tracking metrics
               <span className="h-1 w-1 rounded-full bg-slate-300 dark:bg-slate-600 hidden sm:inline" />
-              <span className="font-bold text-slate-700 dark:text-slate-300 hidden sm:inline">{selectedFilter}</span>
+              <span className="font-semibold text-slate-600 dark:text-slate-300 hidden sm:inline">{selectedFilter}</span>
             </p>
           </div>
           <div className="relative w-fit flex-shrink-0 mt-1" ref={filterRef}>
             <button onClick={() => setIsFilterOpen(!isFilterOpen)}
-              className="flex items-center gap-1.5 sm:gap-2 rounded-2xl border border-slate-200/90 bg-white/90 px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-bold text-slate-700 shadow-sm backdrop-blur-sm transition-all hover:bg-white hover:shadow-md dark:border-white/[0.1] dark:bg-slate-900/80 dark:text-white dark:hover:bg-slate-800">
+              className="flex items-center gap-1.5 sm:gap-2 rounded-xl border border-slate-200/90 bg-white/90 px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-slate-700 shadow-sm backdrop-blur-sm transition-all hover:bg-white hover:border-emerald-500/40 hover:shadow-md dark:border-white/[0.1] dark:bg-slate-900/80 dark:text-white dark:hover:bg-slate-800">
               <FilterIcon className="h-4 w-4 text-emerald-500" />
               <span>{selectedFilter}</span>
-              <svg className={`h-4 w-4 transition-transform duration-200 ${isFilterOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className={`h-3.5 w-3.5 text-slate-400 transition-transform duration-200 ${isFilterOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
             {isFilterOpen && (
-              <div className="absolute top-[calc(100%+8px)] right-0 z-20 w-52 overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 shadow-2xl backdrop-blur-xl dark:border-white/[0.08] dark:bg-slate-900/95">
+              <div className="animate-fade-in-up absolute top-[calc(100%+8px)] right-0 z-20 w-52 overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 shadow-2xl backdrop-blur-xl dark:border-white/[0.08] dark:bg-slate-900/95">
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
                 <div className="py-2">
                   {filterOptions.map(opt => (
                     <button key={opt} onClick={() => { setSelectedFilter(opt); setIsFilterOpen(false); }}
-                      className={`flex w-full items-center justify-between px-5 py-2.5 text-sm transition-colors ${selectedFilter === opt ? 'bg-emerald-50 font-bold text-emerald-600 dark:bg-emerald-950/20 dark:text-emerald-400' : 'font-medium text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800/50'}`}>
+                      className={`flex w-full items-center justify-between px-4 py-2 text-sm transition-colors ${selectedFilter === opt ? 'bg-emerald-50 font-semibold text-emerald-600 dark:bg-emerald-950/20 dark:text-emerald-400' : 'font-medium text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800/50'}`}>
                       {opt}
                       {selectedFilter === opt && <div className="h-2 w-2 rounded-full bg-emerald-500" />}
                     </button>
@@ -469,12 +466,31 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
+        {/* ─── Quick Actions Bar ─── */}
+        <div className="mb-5 flex items-center gap-2 flex-wrap">
+          {[
+            { label: 'New Ticket',   icon: <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>, color: 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20 hover:bg-emerald-100 dark:hover:bg-emerald-500/20' },
+            { label: 'New Contact',  icon: <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>, color: 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20 hover:bg-blue-100 dark:hover:bg-blue-500/20' },
+            { label: 'New Account',  icon: <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>, color: 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-500/10 border-purple-200 dark:border-purple-500/20 hover:bg-purple-100 dark:hover:bg-purple-500/20' },
+            { label: 'Export Data',  icon: <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>, color: 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20 hover:bg-amber-100 dark:hover:bg-amber-500/20' },
+          ].map(action => (
+            <button
+              key={action.label}
+              onClick={() => navigate(action.label === 'New Ticket' ? '/tickets' : action.label === 'New Contact' ? '/contacts' : action.label === 'New Account' ? '/accounts' : '#')}
+              className={`btn-ripple inline-flex items-center gap-2 rounded-xl border px-3.5 py-2 text-xs font-semibold transition-all duration-200 active:scale-95 ${action.color}`}
+            >
+              {action.icon}
+              {action.label}
+            </button>
+          ))}
+        </div>
+
         {/* ─── Call Stats Grid ─── */}
         <div className="mb-5 sm:mb-6 grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <CallStatCard title="Incoming Calls" value={callStats.incoming.value} description="Calls received from customers" duration={callStats.incoming.duration} icon={IncomingCallIcon} colorTheme="purple" />
-          <CallStatCard title="Outgoing Calls" value={callStats.outgoing.value} description="Calls made to customers" duration={callStats.outgoing.duration} icon={OutgoingCallIcon} colorTheme="green" />
-          <CallStatCard title="No Answer" value={callStats.noAnswer.value} description="Calls that were not answered" duration={callStats.noAnswer.duration} icon={NoAnswerIcon} colorTheme="red" />
-          <CallStatCard title="Total Calls" value={callStats.total.value} description="Sum of all call activities" duration={callStats.total.duration} icon={TotalCallsIcon} colorTheme="cyan" />
+          <div className="stagger-item"><CallStatCard title="Incoming Calls" value={callStats.incoming.value} description="Calls received from customers" duration={callStats.incoming.duration} icon={IncomingCallIcon} colorTheme="purple" /></div>
+          <div className="stagger-item"><CallStatCard title="Outgoing Calls" value={callStats.outgoing.value} description="Calls made to customers" duration={callStats.outgoing.duration} icon={OutgoingCallIcon} colorTheme="green" /></div>
+          <div className="stagger-item"><CallStatCard title="No Answer" value={callStats.noAnswer.value} description="Calls that were not answered" duration={callStats.noAnswer.duration} icon={NoAnswerIcon} colorTheme="red" /></div>
+          <div className="stagger-item"><CallStatCard title="Total Calls" value={callStats.total.value} description="Sum of all call activities" duration={callStats.total.duration} icon={TotalCallsIcon} colorTheme="cyan" /></div>
         </div>
 
         {/* ─── Call Traffic + Ticket Donut ─── */}

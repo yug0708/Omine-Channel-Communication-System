@@ -13,7 +13,7 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['"Public Sans Variable"', 'ui-sans-serif', 'system-ui', 'sans-serif', '"Apple Color Emoji"', '"Segoe UI Emoji"', '"Segoe UI Symbol"', '"Noto Color Emoji"'],
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif', '"Apple Color Emoji"', '"Segoe UI Emoji"', '"Segoe UI Symbol"', '"Noto Color Emoji"'],
           },
           colors: {
             'dark-bg': '#0B1120',
@@ -45,13 +45,35 @@
       }
     }
   </script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    @keyframes slide-in-right {
-      from {
-        transform: translateX(100%);
-        opacity: 0;
-      }
+    * { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; }
 
+    /* ── Page entry animation ─────────────────────── */
+    @keyframes page-fade-up {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .page-enter { animation: page-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+
+    /* ── Stagger children ─────────────────────────── */
+    @keyframes stagger-in {
+      from { opacity: 0; transform: translateY(14px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .stagger-item { animation: stagger-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .stagger-item:nth-child(1) { animation-delay: 0.05s; }
+    .stagger-item:nth-child(2) { animation-delay: 0.10s; }
+    .stagger-item:nth-child(3) { animation-delay: 0.15s; }
+    .stagger-item:nth-child(4) { animation-delay: 0.20s; }
+    .stagger-item:nth-child(5) { animation-delay: 0.25s; }
+    .stagger-item:nth-child(6) { animation-delay: 0.30s; }
+
+    /* ── Slide in from right ──────────────────────── */
+    @keyframes slide-in-right {
       to {
         transform: translateX(0);
         opacity: 1;
