@@ -40,7 +40,7 @@ const Layout: React.FC = () => {
           onToggleSidebar={() => setIsSidebarExpanded(prev => !prev)}
         />
 
-        <main className="flex-1 overflow-x-hidden overflow-y-auto p-3 sm:p-4 md:p-6 page-enter">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto hide-scrollbar p-3 sm:p-4 md:p-6 page-enter">
           <Outlet />
         </main>
       </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useData } from '../hooks/useData';
 import { useAuth } from '../hooks/useAuth';
 import { Contact, Account } from '../types';
@@ -652,6 +652,7 @@ const Contacts: React.FC = () => {
   const { contacts, setContacts } = useData();
   const { currentUser } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const currentUserName = currentUser
     ? `${currentUser.firstName} ${currentUser.lastName}`.trim()
@@ -701,6 +702,13 @@ const Contacts: React.FC = () => {
   // Success & Error toast states
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (location.state?.openCreateModal) {
+      handleOpenModal();
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, location.pathname, navigate]);
 
   useEffect(() => {
     if (!successMessage) return;

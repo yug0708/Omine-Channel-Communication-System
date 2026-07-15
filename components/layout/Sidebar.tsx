@@ -78,13 +78,16 @@ const NavItem: React.FC<NavItemProps> = ({ to, icon: Icon, label, isExpanded, on
   const isActive = location.pathname === to || (to !== '/' && location.pathname.startsWith(to));
 
   return (
-    <li className="relative group/item w-full">
+    <li className={`relative group/item ${isExpanded ? 'w-full' : 'flex justify-center w-full'}`}>
       <NavLink
         to={to}
         onClick={onClose}
         className={`
-          flex items-center gap-3 rounded-xl w-full transition-all duration-200
-          ${isExpanded ? 'px-3 py-2.5' : 'px-0 py-2.5 justify-center'}
+          flex items-center rounded-xl transition-all duration-200
+          ${isExpanded
+            ? 'w-full px-3 py-2.5 gap-3'
+            : 'h-10 w-10 justify-center p-0 gap-0'
+          }
           ${isActive
             ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25 nav-active-pill'
             : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-800 dark:hover:text-slate-100'
@@ -121,7 +124,7 @@ const NavItem: React.FC<NavItemProps> = ({ to, icon: Icon, label, isExpanded, on
 // ── Divider label ─────────────────────────────────────────────────────────────
 
 const SectionLabel: React.FC<{ label: string; isExpanded: boolean }> = ({ label, isExpanded }) => (
-  <div className={`flex items-center gap-2 px-1 mt-3 mb-1 overflow-hidden transition-all duration-300 ${isExpanded ? 'opacity-100' : 'opacity-0 h-0 my-0'}`}>
+  <div className={`flex items-center gap-2 px-1 overflow-hidden transition-all duration-300 ${isExpanded ? 'opacity-100 mt-3 mb-1' : 'opacity-0 h-0 mt-0 mb-0'}`}>
     <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-400 dark:text-slate-600 whitespace-nowrap">
       {label}
     </span>
@@ -155,13 +158,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose, isExpanded =
           hidden md:flex flex-col flex-shrink-0 h-screen
           bg-white dark:bg-slate-900/95
           border-r border-slate-200 dark:border-white/[0.07]
-          sidebar-transition overflow-hidden relative
-          ${isExpanded ? 'sidebar-expanded' : 'sidebar-collapsed'}
+          transition-all duration-300 ease-in-out overflow-hidden relative
+          ${isExpanded ? 'w-64' : 'w-16'}
         `}
       >
         {/* Top: Logo + Toggle */}
-        <div className={`flex items-center flex-shrink-0 pt-5 pb-4 px-3 ${isExpanded ? 'justify-between' : 'justify-center'}`}>
-          <div className="flex items-center gap-2.5 overflow-hidden">
+        <div className={`flex items-center flex-shrink-0 px-3 ${isExpanded ? 'pt-5 pb-4 justify-between' : 'pt-4 pb-3 justify-center'}`}>
+          <div className={`flex items-center overflow-hidden ${isExpanded ? 'gap-2.5' : 'gap-0'}`}>
             <div className="flex-shrink-0 h-9 w-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/30 pulse-glow">
               <UCLogo className="h-5 w-5 text-white" />
             </div>
@@ -169,35 +172,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose, isExpanded =
               CommuniDesk
             </span>
           </div>
-
-          {/* Toggle button */}
-          <button
-            onClick={onToggleExpand}
-            className={`flex-shrink-0 h-7 w-7 rounded-lg bg-slate-100 dark:bg-white/[0.06] hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:text-emerald-500 text-slate-400 flex items-center justify-center transition-all duration-300 ${isExpanded ? 'opacity-100' : 'opacity-0 pointer-events-none absolute'}`}
-            title="Collapse sidebar"
-          >
-            <ChevronLeftIcon className="h-3.5 w-3.5" />
-          </button>
         </div>
 
-        {/* Expand button when collapsed */}
-        {!isExpanded && (
-          <button
-            onClick={onToggleExpand}
-            className="mx-auto mb-2 h-7 w-7 rounded-lg bg-slate-100 dark:bg-white/[0.06] hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:text-emerald-500 text-slate-400 flex items-center justify-center transition-all"
-            title="Expand sidebar"
-          >
-            <svg className="h-3.5 w-3.5 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-        )}
+
 
         {/* Nav */}
-        <nav className="flex-1 overflow-y-auto overflow-x-hidden hide-scrollbar px-2">
+        <nav className={`flex-1 overflow-y-auto overflow-x-hidden hide-scrollbar ${isExpanded ? 'px-2' : 'px-0'}`}>
           {/* Main */}
           <SectionLabel label="Main" isExpanded={isExpanded} />
-          <ul className="flex flex-col gap-0.5">
+          <ul className={`flex flex-col ${isExpanded ? 'gap-0.5' : 'gap-1 items-center py-1'}`}>
             {mainNavLinks.map(link => (
               <NavItem key={link.to} {...link} isExpanded={isExpanded} />
             ))}
@@ -206,7 +189,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose, isExpanded =
           {/* Tools */}
           {isExpanded && <div className="mt-2 mb-1 h-px bg-slate-100 dark:bg-white/[0.05]" />}
           <SectionLabel label="Tools" isExpanded={isExpanded} />
-          <ul className="flex flex-col gap-0.5">
+          <ul className={`flex flex-col ${isExpanded ? 'gap-0.5' : 'gap-1 items-center py-1'}`}>
             {toolsNavLinks.map(link => (
               <NavItem key={link.to} {...link} isExpanded={isExpanded} />
             ))}
@@ -215,7 +198,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose, isExpanded =
           {/* Admin */}
           {isExpanded && <div className="mt-2 mb-1 h-px bg-slate-100 dark:bg-white/[0.05]" />}
           <SectionLabel label="Admin" isExpanded={isExpanded} />
-          <ul className="flex flex-col gap-0.5">
+          <ul className={`flex flex-col ${isExpanded ? 'gap-0.5' : 'gap-1 items-center py-1'}`}>
             {adminNavLinks.map(link => (
               <NavItem key={link.to} {...link} isExpanded={isExpanded} />
             ))}
@@ -223,8 +206,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose, isExpanded =
         </nav>
 
         {/* Bottom: User info */}
-        <div className={`flex-shrink-0 border-t border-slate-100 dark:border-white/[0.06] p-3 transition-all duration-300 ${isExpanded ? '' : 'flex justify-center'}`}>
-          <div className={`flex items-center gap-2.5 overflow-hidden rounded-xl p-2 hover:bg-slate-50 dark:hover:bg-white/[0.04] transition-colors cursor-pointer group ${isExpanded ? '' : 'justify-center'}`}>
+        <div className="flex-shrink-0 border-t border-slate-100 dark:border-white/[0.06] p-3 transition-all duration-300">
+          <div className={`flex items-center overflow-hidden rounded-xl transition-all duration-300 cursor-pointer group ${isExpanded ? 'gap-2.5 p-2 hover:bg-slate-50 dark:hover:bg-white/[0.04]' : 'gap-0 p-0 justify-center h-10 w-10 hover:bg-slate-50 dark:hover:bg-white/[0.04] mx-auto'}`}>
             <div className="flex-shrink-0 h-8 w-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center text-white font-bold text-sm shadow-md">
               {userInitial}
             </div>

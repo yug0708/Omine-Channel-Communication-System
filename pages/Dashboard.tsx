@@ -476,7 +476,10 @@ const Dashboard: React.FC = () => {
           ].map(action => (
             <button
               key={action.label}
-              onClick={() => navigate(action.label === 'New Ticket' ? '/tickets' : action.label === 'New Contact' ? '/contacts' : action.label === 'New Account' ? '/accounts' : '#')}
+              onClick={() => navigate(
+                action.label === 'New Ticket' ? '/tickets' : action.label === 'New Contact' ? '/contacts' : action.label === 'New Account' ? '/accounts' : '#',
+                { state: { openCreateModal: true } }
+              )}
               className={`btn-ripple inline-flex items-center gap-2 rounded-xl border px-3.5 py-2 text-xs font-semibold transition-all duration-200 active:scale-95 ${action.color}`}
             >
               {action.icon}

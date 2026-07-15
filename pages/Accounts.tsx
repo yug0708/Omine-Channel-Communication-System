@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useData } from '../hooks/useData';
 import { useAuth } from '../hooks/useAuth';
 import { Account } from '../types';
@@ -568,6 +568,7 @@ const Accounts: React.FC = () => {
   const { accounts, setAccounts } = useData();
   const { currentUser } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const currentUserName = currentUser
     ? `${currentUser.firstName} ${currentUser.lastName}`.trim()
     : '';
@@ -614,6 +615,13 @@ const Accounts: React.FC = () => {
   // Success & Error toast states
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (location.state?.openCreateModal) {
+      handleOpenModal();
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, location.pathname, navigate]);
 
   useEffect(() => {
     if (!successMessage) return;
