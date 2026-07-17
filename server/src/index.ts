@@ -3,6 +3,12 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import {
+  initWhatsApp,
+  destroyWhatsApp,
+  getWhatsAppStatus,
+  registerListener
+} from './whatsappService.js';
 
 dotenv.config();
 
@@ -56,6 +62,47 @@ app.use(express.json());
 // Health check
 app.get('/api/health', (_req: Request, res: Response): void => {
   res.json({ status: 'ok', message: 'Backend server is running!' });
+});
+
+// WhatsApp endpoints
+app.post('/api/whatsapp/connect', async (_req: Request, res: Response): Promise<void> => {
+  try {
+    initWhatsApp().catch(err => console.error('Error initializing WhatsApp:', err));
+    res.json({ success: true, message: 'WhatsApp connection initiated' });
+  } catch (err) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/api/whatsapp/disconnect', async (_req: Request, res: Response): Promise<void> => {
+  try {
+    await destroyWhatsApp();
+    res.json({ success: true, message: 'WhatsApp connection destroyed' });
+  } catch (err) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.get('/api/whatsapp/status', (_req: Request, res: Response): void => {
+  res.json(getWhatsAppStatus());
+});
+
+app.get('/api/whatsapp/sse', (req: Request, res: Response): void => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+
+  // Immediately send current state
+  const { status, qr } = getWhatsAppStatus();
+  res.write(`data: ${JSON.stringify({ status, qr })}\n\n`);
+
+  const unsubscribe = registerListener((newStatus, newQr) => {
+    res.write(`data: ${JSON.stringify({ status: newStatus, qr: newQr })}\n\n`);
+  });
+
+  req.on('close', () => {
+    unsubscribe();
+  });
 });
 
 // Root — friendly landing page

@@ -11,6 +11,14 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 5173,
       host: '0.0.0.0',
+      watch: {
+        ignored: [
+          '**/server/.wwebjs_auth/**',
+          '**/.wwebjs_auth/**',
+          '**/server/.wwebjs_cache/**',
+          '**/.wwebjs_cache/**'
+        ]
+      },
       proxy: {
         '/api': {
           target: 'http://localhost:5000',

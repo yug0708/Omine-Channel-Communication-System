@@ -771,123 +771,90 @@ const Accounts: React.FC = () => {
       <div className="bg-white dark:bg-[#151B25] shadow-sm rounded-2xl border border-slate-200 dark:border-slate-800/80 flex flex-col flex-1 overflow-hidden">
 
         {/* Toolbar */}
-        <div className="p-3 sm:p-4 flex items-center justify-between md:justify-end gap-2.5 border-b border-slate-200 dark:border-slate-800/80">
-          {/* Search bar expanding to fill space */}
-          <div className="relative flex-1 md:max-w-xs">
-            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              placeholder="Search accounts…"
-              className="pl-9 pr-4 py-1.5 bg-transparent border border-slate-300 dark:border-slate-700 rounded-full text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 w-full transition"
-            />
-          </div>
+        <div className="p-3 sm:p-4 flex items-center justify-between gap-2.5 border-b border-slate-200 dark:border-slate-800/80">
+          {/* New Account Button */}
+          <button
+            onClick={() => handleOpenModal()}
+            className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white p-2 sm:px-4 sm:py-2 rounded-full text-sm font-bold shadow-md shadow-emerald-500/10 flex items-center justify-center transition-all duration-200 flex-shrink-0"
+            title="New Account"
+          >
+            <PlusIcon className="h-4 w-4" />
+            <span className="hidden sm:inline ml-1.5">New Account</span>
+          </button>
 
-          {/* Action controls grouped on the right */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-            {/* New Account Button */}
-            <button
-              onClick={() => handleOpenModal()}
-              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white p-2 sm:px-4 sm:py-2 rounded-full text-sm font-bold shadow-md shadow-emerald-500/10 flex items-center justify-center transition-all duration-200"
-              title="New Account"
-            >
-              <PlusIcon className="h-4 w-4" />
-              <span className="hidden sm:inline ml-1.5">New Account</span>
-            </button>
+          {/* Search bar and Action controls on the right */}
+          <div className="flex items-center gap-2.5 flex-1 justify-end">
+            {/* Search bar expanding to fill space */}
+            <div className="relative flex-1 md:max-w-xs">
+              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                placeholder="Search accounts…"
+                className="pl-9 pr-4 py-1.5 bg-transparent border border-slate-300 dark:border-slate-700 rounded-full text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 w-full transition"
+              />
+            </div>
 
-            {/* Column toggle button */}
-            <div className="relative flex-shrink-0 hidden md:block" ref={colToggleRef}>
-              <button
-                onClick={() => setColToggleOpen(o => !o)}
-                className="flex items-center justify-center w-8 h-8 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
-                aria-label="Toggle columns"
-              >
-                <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                  <rect x="2" y="3" width="5" height="18" rx="1" />
-                  <rect x="9.5" y="3" width="5" height="18" rx="1" />
-                  <rect x="17" y="3" width="5" height="18" rx="1" />
-                </svg>
-              </button>
-
-              {colToggleOpen && (
-                <div
-                  className="absolute right-0 top-[calc(100%+6px)] z-50 bg-white dark:bg-[#1e2a3a] rounded-xl overflow-hidden"
-                  style={{ width: 220, boxShadow: '0 4px 24px rgba(0,0,0,0.13)', border: '1px solid #e5e7eb' }}
+            {/* Action controls grouped on the right */}
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {/* Column toggle button */}
+              <div className="relative flex-shrink-0 hidden md:block" ref={colToggleRef}>
+                <button
+                  onClick={() => setColToggleOpen(o => !o)}
+                  className="flex items-center justify-center w-8 h-8 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+                  aria-label="Toggle columns"
                 >
-                  {/* Search */}
-                  <div className="px-3 pt-3 pb-2">
-                    <div className="relative">
-                      <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z" />
-                      </svg>
-                      <input
-                        type="text"
-                        value={colSearch}
-                        onChange={e => setColSearch(e.target.value)}
-                        placeholder="Search"
-                        className="w-full pl-7 pr-3 py-1.5 text-sm rounded-md focus:outline-none focus:border-emerald-500"
-                        style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', color: '#374151' }}
-                      />
+                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                    <rect x="2" y="3" width="5" height="18" rx="1" />
+                    <rect x="9.5" y="3" width="5" height="18" rx="1" />
+                    <rect x="17" y="3" width="5" height="18" rx="1" />
+                  </svg>
+                </button>
+
+                {colToggleOpen && (
+                  <div
+                    className="absolute right-0 top-[calc(100%+6px)] z-50 bg-white dark:bg-[#1e2a3a] rounded-xl overflow-hidden"
+                    style={{ width: 220, boxShadow: '0 4px 24px rgba(0,0,0,0.13)', border: '1px solid #e5e7eb' }}
+                  >
+                    {/* Search */}
+                    <div className="px-3 pt-3 pb-2">
+                      <div className="relative">
+                        <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z" />
+                        </svg>
+                        <input
+                          type="text"
+                          value={colSearch}
+                          onChange={e => setColSearch(e.target.value)}
+                          placeholder="Search"
+                          className="w-full pl-7 pr-3 py-1.5 text-sm rounded-md focus:outline-none focus:border-emerald-500"
+                          style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', color: '#374151' }}
+                        />
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Account Name — always locked */}
-                  <div className="flex items-center gap-2.5 px-3 py-[7px]" style={{ opacity: 0.55 }}>
-                    <span className="flex items-center justify-center h-5 w-5 rounded" style={{ background: '#10B981', flexShrink: 0 }}>
-                      <svg className="h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                      </svg>
-                    </span>
-                    <span className="text-sm text-slate-700 dark:text-slate-200">Account Name</span>
-                  </div>
+                    {/* Account Name — always locked */}
+                    <div className="flex items-center gap-2.5 px-3 py-[7px]" style={{ opacity: 0.55 }}>
+                      <span className="flex items-center justify-center h-5 w-5 rounded" style={{ background: '#10B981', flexShrink: 0 }}>
+                        <svg className="h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </span>
+                      <span className="text-sm text-slate-700 dark:text-slate-200">Account Name</span>
+                    </div>
 
-                  {/* Scrollable columns list */}
-                  <div style={{ maxHeight: 220, overflowY: 'auto' }}>
-                    {ALL_COLS.filter(c => c.toLowerCase().includes(colSearch.toLowerCase())).map(col => {
-                      const checked = visibleCols.has(col);
-                      return (
-                        <label key={col} className="flex items-center gap-2.5 px-3 py-[7px] cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/60">
-                          <span
-                            className="flex items-center justify-center h-5 w-5 rounded flex-shrink-0 transition-colors"
-                            style={{ background: checked ? '#10B981' : '#fff', border: checked ? 'none' : '2px solid #d1d5db' }}
-                          >
-                            {checked && (
-                              <svg className="h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                              </svg>
-                            )}
-                          </span>
-                          <input
-                            type="checkbox"
-                            checked={checked}
-                            onChange={() => {
-                              setVisibleCols(prev => {
-                                const next = new Set(prev);
-                                next.has(col) ? next.delete(col) : next.add(col);
-                                return next;
-                              });
-                            }}
-                            className="sr-only"
-                          />
-                          <span className="text-sm text-slate-700 dark:text-slate-200">{col}</span>
-                        </label>
-                      );
-                    })}
-                  </div>
-
-                  {/* Footer: Show/Hide All + Reset */}
-                  <div className="flex items-center justify-between px-3 py-[7px]" style={{ borderTop: '1px solid #f1f1f1' }}>
-                    <label className="flex items-center gap-2.5 cursor-pointer">
-                      {(() => {
-                        const allChecked = visibleCols.size === ALL_COLS.length;
+                    {/* Scrollable columns list */}
+                    <div style={{ maxHeight: 220, overflowY: 'auto' }}>
+                      {ALL_COLS.filter(c => c.toLowerCase().includes(colSearch.toLowerCase())).map(col => {
+                        const checked = visibleCols.has(col);
                         return (
-                          <>
+                          <label key={col} className="flex items-center gap-2.5 px-3 py-[7px] cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/60">
                             <span
                               className="flex items-center justify-center h-5 w-5 rounded flex-shrink-0 transition-colors"
-                              style={{ background: allChecked ? '#10B981' : '#fff', border: allChecked ? 'none' : '2px solid #d1d5db' }}
+                              style={{ background: checked ? '#10B981' : '#fff', border: checked ? 'none' : '2px solid #d1d5db' }}
                             >
-                              {allChecked && (
+                              {checked && (
                                 <svg className="h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                                 </svg>
@@ -895,67 +862,103 @@ const Accounts: React.FC = () => {
                             </span>
                             <input
                               type="checkbox"
-                              checked={allChecked}
+                              checked={checked}
                               onChange={() => {
-                                if (allChecked) setVisibleCols(new Set());
-                                else setVisibleCols(new Set(ALL_COLS));
+                                setVisibleCols(prev => {
+                                  const next = new Set(prev);
+                                  next.has(col) ? next.delete(col) : next.add(col);
+                                  return next;
+                                });
                               }}
                               className="sr-only"
                             />
-                            <span className="text-sm text-slate-700 dark:text-slate-200">Show/Hide All</span>
-                          </>
+                            <span className="text-sm text-slate-700 dark:text-slate-200">{col}</span>
+                          </label>
                         );
-                      })()}
-                    </label>
+                      })}
+                    </div>
+
+                    {/* Footer: Show/Hide All + Reset */}
+                    <div className="flex items-center justify-between px-3 py-[7px]" style={{ borderTop: '1px solid #f1f1f1' }}>
+                      <label className="flex items-center gap-2.5 cursor-pointer">
+                        {(() => {
+                          const allChecked = visibleCols.size === ALL_COLS.length;
+                          return (
+                            <>
+                              <span
+                                className="flex items-center justify-center h-5 w-5 rounded flex-shrink-0 transition-colors"
+                                style={{ background: allChecked ? '#10B981' : '#fff', border: allChecked ? 'none' : '2px solid #d1d5db' }}
+                              >
+                                {allChecked && (
+                                  <svg className="h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                  </svg>
+                                )}
+                              </span>
+                              <input
+                                type="checkbox"
+                                checked={allChecked}
+                                onChange={() => {
+                                  if (allChecked) setVisibleCols(new Set());
+                                  else setVisibleCols(new Set(ALL_COLS));
+                                }}
+                                className="sr-only"
+                              />
+                              <span className="text-sm text-slate-700 dark:text-slate-200">Show/Hide All</span>
+                            </>
+                          );
+                        })()}
+                      </label>
+                      <button
+                        onClick={() => setVisibleCols(new Set(ALL_COLS))}
+                        className="text-sm font-semibold transition-colors"
+                        style={{ color: '#10B981' }}
+                      >
+                        Reset
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Import / Export dropdown */}
+              <div className="relative flex-shrink-0 hidden md:flex" ref={importExportRef}>
+                <button
+                  onClick={() => setImportExportOpen(o => !o)}
+                  className="flex items-center justify-center w-8 h-8 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+                  aria-label="Import / Export"
+                >
+                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z" />
+                  </svg>
+                </button>
+
+                {importExportOpen && (
+                  <div className="absolute right-0 top-[calc(100%+6px)] z-50 w-40 bg-white dark:bg-[#1a2235] border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
+                    <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
+                    {/* Import */}
                     <button
-                      onClick={() => setVisibleCols(new Set(ALL_COLS))}
-                      className="text-sm font-semibold transition-colors"
-                      style={{ color: '#10B981' }}
+                      onClick={() => { setImportExportOpen(false); setIsImportOpen(true); }}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors"
                     >
-                      Reset
+                      <svg className="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" />
+                      </svg>
+                      Import
+                    </button>
+                    {/* Export */}
+                    <button
+                      onClick={() => { setImportExportOpen(false); exportAccountsCsv(); }}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors"
+                    >
+                      <svg className="h-4 w-4 text-teal-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 8l5-5 5 5M12 3v12" />
+                      </svg>
+                      Export
                     </button>
                   </div>
-                </div>
-              )}
-            </div>
-
-            {/* Import / Export dropdown */}
-            <div className="relative flex-shrink-0 hidden md:flex" ref={importExportRef}>
-              <button
-                onClick={() => setImportExportOpen(o => !o)}
-                className="flex items-center justify-center w-8 h-8 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
-                aria-label="Import / Export"
-              >
-                <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M10 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z" />
-                </svg>
-              </button>
-
-              {importExportOpen && (
-                <div className="absolute right-0 top-[calc(100%+6px)] z-50 w-40 bg-white dark:bg-[#1a2235] border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
-                  <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
-                  {/* Import */}
-                  <button
-                    onClick={() => { setImportExportOpen(false); setIsImportOpen(true); }}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors"
-                  >
-                    <svg className="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" />
-                    </svg>
-                    Import
-                  </button>
-                  {/* Export */}
-                  <button
-                    onClick={() => { setImportExportOpen(false); exportAccountsCsv(); }}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors"
-                  >
-                    <svg className="h-4 w-4 text-teal-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 8l5-5 5 5M12 3v12" />
-                    </svg>
-                    Export
-                  </button>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
         </div>

@@ -41,15 +41,22 @@ const ChevronLeftIcon: React.FC<{ className?: string }> = ({ className }) => (
   </svg>
 );
 
+const TicketsIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className ?? 'h-5 w-5'} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M22 10V6a2 2 0 00-2-2H4a2 2 0 00-2 2v4c1.1 0 2 .9 2 2s-.9 2-2 2v4a2 2 0 002 2h16a2 2 0 002-2v-4c-1.1 0-2-.9-2-2s.9-2 2-2zm-9 7.5h-2v-2h2v2zm0-4.5h-2v-2h2v2zm0-4.5h-2v-2h2v2z" />
+  </svg>
+);
+
 // ── Nav groups ────────────────────────────────────────────────────────────────
 
 const mainNavLinks = [
   { to: '/dashboard', icon: DashboardIcon, label: 'Dashboard' },
   { to: '/accounts',  icon: AccountsIcon,  label: 'Accounts'  },
   { to: '/contacts',  icon: ContactsIcon,  label: 'Contacts'  },
-  { to: '/tickets',   icon: InboxIcon,     label: 'Inbox'     },
+  { to: '/inbox',     icon: InboxIcon,     label: 'Inbox'     },
   { to: '/campaign',  icon: CampaignIcon,  label: 'Campaign'  },
   { to: '/channels',  icon: ChannelIcon,   label: 'Channel'   },
+  { to: '/tickets',   icon: TicketsIcon,   label: 'Tickets'   },
 ];
 
 const toolsNavLinks = [
