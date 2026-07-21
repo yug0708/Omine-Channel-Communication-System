@@ -1,7 +1,7 @@
 {
   "name": "communidesk---unified-comms-hub",
   "private": true,
-  "version": "1.1.42",
+  "version": "1.1.43",
   "type": "module",
   "scripts": {
     "dev:frontend": "vite",
@@ -26,7 +26,8 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.9.5",
-    "recharts": "^3.3.0"
+    "recharts": "^3.3.0",
+    "whatsapp-web.js": "^1.34.7"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.4.1",
