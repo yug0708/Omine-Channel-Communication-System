@@ -171,7 +171,9 @@ const Channels: React.FC = () => {
   const handleMetaConnect = () => {
     const appId = '1501306521375669';
     const configId = '2369838823546957';
-    const redirectUri = encodeURIComponent('https://strained-suspect-nephew.ngrok-free.dev/api/whatsapp/callback');
+    // Dynamically build redirect URI from current deployment origin (works on Vercel & local dev)
+    const callbackBase = window.location.origin;
+    const redirectUri = encodeURIComponent(`${callbackBase}/api/whatsapp/callback`);
     const extras = encodeURIComponent(JSON.stringify({
       setup: {},
       featureType: 'whatsapp_business_app_onboarding',

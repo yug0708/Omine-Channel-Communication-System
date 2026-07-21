@@ -156,7 +156,7 @@ app.post('/api/whatsapp/exchange-code', async (req: Request, res: Response): Pro
   const { code } = req.body;
   const appId = process.env.WHATSAPP_APP_ID || '1501306521375669';
   const appSecret = process.env.WHATSAPP_APP_SECRET || 'b5aeb3f15a7babc5ee9bff096488bf8d';
-  const redirectUri = 'https://strained-suspect-nephew.ngrok-free.dev/api/whatsapp/callback';
+  const redirectUri = process.env.WHATSAPP_REDIRECT_URI || `https://omine-channel-communication-system-opal.vercel.app/api/whatsapp/callback`;
 
   try {
     // 1. Exchange OAuth code for short-lived token
