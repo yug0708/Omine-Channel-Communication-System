@@ -3,16 +3,19 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import {
-  initWhatsApp,
-  destroyWhatsApp,
-  getWhatsAppStatus,
-  registerListener,
-  setWhatsAppStatusManual
-} from './whatsappService.js';
 
 import fs from 'fs';
 dotenv.config();
+
+// Lazy-load whatsappService to avoid Puppeteer crash on Vercel serverless startup
+type WhatsAppServiceModule = typeof import('./whatsappService.js');
+let _whatsappService: WhatsAppServiceModule | null = null;
+async function getWAService(): Promise<WhatsAppServiceModule> {
+  if (!_whatsappService) {
+    _whatsappService = await import('./whatsappService.js');
+  }
+  return _whatsappService;
+}
 
 // ─── App Setup ────────────────────────────────────────────────────────────────
 
@@ -69,6 +72,7 @@ app.get('/api/health', (_req: Request, res: Response): void => {
 // WhatsApp endpoints
 app.post('/api/whatsapp/connect', async (_req: Request, res: Response): Promise<void> => {
   try {
+    const { initWhatsApp } = await getWAService();
     initWhatsApp().catch(err => console.error('Error initializing WhatsApp:', err));
     res.json({ success: true, message: 'WhatsApp connection initiated' });
   } catch (err) {
@@ -78,6 +82,7 @@ app.post('/api/whatsapp/connect', async (_req: Request, res: Response): Promise<
 
 app.post('/api/whatsapp/disconnect', async (_req: Request, res: Response): Promise<void> => {
   try {
+    const { destroyWhatsApp } = await getWAService();
     await destroyWhatsApp();
     res.json({ success: true, message: 'WhatsApp connection destroyed' });
   } catch (err) {
@@ -85,19 +90,29 @@ app.post('/api/whatsapp/disconnect', async (_req: Request, res: Response): Promi
   }
 });
 
-app.get('/api/whatsapp/status', (_req: Request, res: Response): void => {
-  res.json(getWhatsAppStatus());
-});
-
-app.post('/api/whatsapp/set-status', (req: Request, res: Response): void => {
-  const { status } = req.body;
-  if (status) {
-    setWhatsAppStatusManual(status);
+app.get('/api/whatsapp/status', async (_req: Request, res: Response): Promise<void> => {
+  try {
+    const { getWhatsAppStatus } = await getWAService();
+    res.json(getWhatsAppStatus());
+  } catch {
+    res.json({ status: 'disconnected', qr: '' });
   }
-  res.json({ success: true });
 });
 
-app.get('/api/whatsapp/sse', (req: Request, res: Response): void => {
+app.post('/api/whatsapp/set-status', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { setWhatsAppStatusManual } = await getWAService();
+    const { status } = req.body;
+    if (status) {
+      setWhatsAppStatusManual(status);
+    }
+    res.json({ success: true });
+  } catch {
+    res.json({ success: false });
+  }
+});
+
+app.get('/api/whatsapp/sse', async (req: Request, res: Response): Promise<void> => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
@@ -108,22 +123,29 @@ app.get('/api/whatsapp/sse', (req: Request, res: Response): void => {
   // Send keepalive immediately
   res.write(':keepalive\n\n');
 
-  // Immediately send current state
-  const { status, qr } = getWhatsAppStatus();
-  res.write(`data: ${JSON.stringify({ status, qr })}\n\n`);
+  try {
+    const { getWhatsAppStatus, registerListener } = await getWAService();
+    // Immediately send current state
+    const { status, qr } = getWhatsAppStatus();
+    res.write(`data: ${JSON.stringify({ status, qr })}\n\n`);
 
-  const unsubscribe = registerListener((newStatus, newQr) => {
-    res.write(`data: ${JSON.stringify({ status: newStatus, qr: newQr })}\n\n`);
-  });
+    const unsubscribe = registerListener((newStatus, newQr) => {
+      res.write(`data: ${JSON.stringify({ status: newStatus, qr: newQr })}\n\n`);
+    });
 
-  const heartbeat = setInterval(() => {
-    res.write(':keepalive\n\n');
-  }, 15000);
+    const heartbeat = setInterval(() => {
+      res.write(':keepalive\n\n');
+    }, 15000);
 
-  req.on('close', () => {
-    clearInterval(heartbeat);
-    unsubscribe();
-  });
+    req.on('close', () => {
+      clearInterval(heartbeat);
+      unsubscribe();
+    });
+  } catch {
+    // If whatsapp service unavailable, send disconnected and close
+    res.write(`data: ${JSON.stringify({ status: 'disconnected', qr: '' })}\n\n`);
+    res.end();
+  }
 });
 
 // ── Meta OAuth callback endpoint for Embedded Signup ─────────────────────────
