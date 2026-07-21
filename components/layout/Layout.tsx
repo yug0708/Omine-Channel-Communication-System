@@ -6,7 +6,7 @@ import Header from './Header';
 
 const Layout: React.FC = () => {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const location = useLocation();
 
   // Close mobile sidebar on route change

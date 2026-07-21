@@ -2,6 +2,7 @@
 import React from 'react';
 import { HashRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { DataProvider } from './hooks/useData';
+import { ChannelProvider } from './context/ChannelContext';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import { ThemeProvider } from './hooks/useTheme';
 import { ToastProvider } from './context/ToastContext';
@@ -61,13 +62,15 @@ function App() {
   return (
     <ThemeProvider>
       <DataProvider>
-        <AuthProvider>
-          <ToastProvider>
-            <HashRouter>
-              <AppRoutes />
-            </HashRouter>
-          </ToastProvider>
-        </AuthProvider>
+        <ChannelProvider>
+          <AuthProvider>
+            <ToastProvider>
+              <HashRouter>
+                <AppRoutes />
+              </HashRouter>
+            </ToastProvider>
+          </AuthProvider>
+        </ChannelProvider>
       </DataProvider>
     </ThemeProvider>
   );

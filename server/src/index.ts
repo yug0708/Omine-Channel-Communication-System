@@ -7,9 +7,11 @@ import {
   initWhatsApp,
   destroyWhatsApp,
   getWhatsAppStatus,
-  registerListener
+  registerListener,
+  setWhatsAppStatusManual
 } from './whatsappService.js';
 
+import fs from 'fs';
 dotenv.config();
 
 // ─── App Setup ────────────────────────────────────────────────────────────────
@@ -87,10 +89,24 @@ app.get('/api/whatsapp/status', (_req: Request, res: Response): void => {
   res.json(getWhatsAppStatus());
 });
 
+app.post('/api/whatsapp/set-status', (req: Request, res: Response): void => {
+  const { status } = req.body;
+  if (status) {
+    setWhatsAppStatusManual(status);
+  }
+  res.json({ success: true });
+});
+
 app.get('/api/whatsapp/sse', (req: Request, res: Response): void => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no');
+
+  res.flushHeaders?.();
+
+  // Send keepalive immediately
+  res.write(':keepalive\n\n');
 
   // Immediately send current state
   const { status, qr } = getWhatsAppStatus();
@@ -100,9 +116,299 @@ app.get('/api/whatsapp/sse', (req: Request, res: Response): void => {
     res.write(`data: ${JSON.stringify({ status: newStatus, qr: newQr })}\n\n`);
   });
 
+  const heartbeat = setInterval(() => {
+    res.write(':keepalive\n\n');
+  }, 15000);
+
   req.on('close', () => {
+    clearInterval(heartbeat);
     unsubscribe();
   });
+});
+
+// ── Meta OAuth callback endpoint for Embedded Signup ─────────────────────────
+
+app.get('/api/whatsapp/callback', (req: Request, res: Response): void => {
+  const code = req.query.code || '';
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Connecting...</title>
+      </head>
+      <body style="font-family: sans-serif; text-align: center; padding-top: 50px; background: #F8FAFC; color: #334155;">
+        <h2>Connecting to Omine Channel...</h2>
+        <p>Please wait while we link your WhatsApp Business Account.</p>
+        <script>
+          if (window.opener) {
+            window.opener.postMessage({ type: 'META_ONBOARDING_SUCCESS', code: "${code}" }, '*');
+          }
+          setTimeout(function() {
+            window.close();
+          }, 1000);
+        </script>
+      </body>
+    </html>
+  `);
+});
+
+app.post('/api/whatsapp/exchange-code', async (req: Request, res: Response): Promise<void> => {
+  const { code } = req.body;
+  const appId = process.env.WHATSAPP_APP_ID || '1501306521375669';
+  const appSecret = process.env.WHATSAPP_APP_SECRET || 'b5aeb3f15a7babc5ee9bff096488bf8d';
+  const redirectUri = 'https://strained-suspect-nephew.ngrok-free.dev/api/whatsapp/callback';
+
+  try {
+    // 1. Exchange OAuth code for short-lived token
+    const tokenUrl = `https://graph.facebook.com/v20.0/oauth/access_token?client_id=${appId}&redirect_uri=${encodeURIComponent(redirectUri)}&client_secret=${appSecret}&code=${code}`;
+    const tokenResponse = await fetch(tokenUrl);
+    const tokenData: any = await tokenResponse.json();
+    
+    if (tokenData.error) {
+      console.error('Meta Token Exchange Error:', tokenData.error);
+      res.status(400).json({ success: false, error: tokenData.error.message });
+      return;
+    }
+    const shortLivedToken = tokenData.access_token;
+
+    // 2. Exchange short-lived token for long-lived permanent token
+    const longLivedUrl = `https://graph.facebook.com/v20.0/oauth/access_token?grant_type=fb_exchange_token&client_id=${appId}&client_secret=${appSecret}&fb_exchange_token=${shortLivedToken}`;
+    const longLivedResponse = await fetch(longLivedUrl);
+    const longLivedData: any = await longLivedResponse.json();
+    
+    if (longLivedData.error) {
+      console.error('Meta Long Lived Token Error:', longLivedData.error);
+      res.status(400).json({ success: false, error: longLivedData.error.message });
+      return;
+    }
+    const permanentAccessToken = longLivedData.access_token;
+
+    // 3. Get WABA ID (via debug_token since standard /me edges require BSP permissions)
+    const debugUrl = `https://graph.facebook.com/debug_token?input_token=${permanentAccessToken}&access_token=${appId}|${appSecret}`;
+    const debugResponse = await fetch(debugUrl);
+    const debugData: any = await debugResponse.json();
+
+    if (debugData.error) {
+      console.error('Meta Get WABA Error (Debug Token):', debugData.error);
+      res.status(400).json({ success: false, error: debugData.error.message });
+      return;
+    }
+
+    const wabaScope = debugData.data?.granular_scopes?.find(
+      (s: any) => s.scope === 'whatsapp_business_management'
+    );
+    const wabaId = wabaScope?.target_ids?.[0];
+
+    if (!wabaId) {
+      res.status(400).json({ success: false, error: 'No WhatsApp Business Account (WABA) permission found in scopes.' });
+      return;
+    }
+
+    // 4. Get Phone Number ID
+    const phoneUrl = `https://graph.facebook.com/v20.0/${wabaId}/phone_numbers?access_token=${permanentAccessToken}`;
+    const phoneResponse = await fetch(phoneUrl);
+    const phoneData: any = await phoneResponse.json();
+    
+    if (phoneData.error) {
+      console.error('Meta Get Phone ID Error:', phoneData.error);
+      res.status(400).json({ success: false, error: phoneData.error.message });
+      return;
+    }
+    const phoneNumberId = phoneData.data?.[0]?.id;
+
+    if (!phoneNumberId) {
+      res.status(400).json({ success: false, error: 'No phone numbers registered in WABA.' });
+      return;
+    }
+
+    // 5. Update process environment and write to both .env files
+    process.env.WHATSAPP_ACCESS_TOKEN = permanentAccessToken;
+    process.env.WHATSAPP_WABA_ID = wabaId;
+    process.env.WHATSAPP_PHONE_NUMBER_ID = phoneNumberId;
+
+    // Persist to .env files
+    const dbUrl = process.env.DATABASE_URL || '';
+    const envContent = 
+      `DATABASE_URL="${dbUrl}"\n\n` +
+      `WHATSAPP_ACCESS_TOKEN="${permanentAccessToken}"\n` +
+      `WHATSAPP_PHONE_NUMBER_ID="${phoneNumberId}"\n` +
+      `WHATSAPP_WABA_ID="${wabaId}"\n\n` +
+      `WHATSAPP_APP_ID="${appId}"\n` +
+      `WHATSAPP_APP_SECRET="${appSecret}"\n`;
+    
+    try {
+      fs.writeFileSync('.env', envContent);
+      fs.writeFileSync('server/.env', envContent);
+    } catch (writeErr) {
+      console.error('Failed to write credentials to .env files:', writeErr);
+    }
+
+    // 6. Subscribe WABA App to receive incoming messages via webhook
+    const subscribeUrl = `https://graph.facebook.com/v20.0/${wabaId}/subscribed_apps`;
+    await fetch(subscribeUrl, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${permanentAccessToken}`
+      }
+    });
+
+    console.log('✅ Automated WhatsApp credentials successfully retrieved and updated in .env files.');
+    
+    res.json({ success: true });
+  } catch (err: any) {
+    console.error('Unhandled error inside exchange-code:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ── Webhook registration verification for Meta ────────────────────────────────
+
+app.get('/api/whatsapp/webhook', (req: Request, res: Response): void => {
+  const mode = req.query['hub.mode'];
+  const token = req.query['hub.verify_token'];
+  const challenge = req.query['hub.challenge'];
+
+  try {
+    fs.appendFileSync(
+      'webhook.log',
+      `[${new Date().toISOString()}] Webhook GET query params:\n${JSON.stringify(req.query, null, 2)}\n\n`
+    );
+  } catch (err) {
+    console.error('Failed to write GET request to webhook.log:', err);
+  }
+
+  if (mode === 'subscribe' && token === 'omine_token_123') {
+    res.send(challenge);
+  } else {
+    res.sendStatus(403);
+  }
+});
+
+// ── Incoming Webhook messages from Meta ───────────────────────────────────────
+
+const sseClients = new Set<Response>();
+
+app.post('/api/whatsapp/webhook', (req: Request, res: Response): void => {
+  const body = req.body;
+
+  // Log payload to file for local debugging
+  try {
+    fs.appendFileSync(
+      'webhook.log',
+      `[${new Date().toISOString()}] Webhook POST payload:\n${JSON.stringify(body, null, 2)}\n\n`
+    );
+  } catch (err) {
+    console.error('Failed to write to webhook.log:', err);
+  }
+  
+  if (body.object === 'whatsapp_business_account') {
+    try {
+      if (
+        body.entry &&
+        body.entry[0].changes &&
+        body.entry[0].changes[0].value.messages
+      ) {
+        const message = body.entry[0].changes[0].value.messages[0];
+        const contact = body.entry[0].changes[0].value.contacts[0];
+
+        const incoming = {
+          id: message.id,
+          from: message.from,
+          fromName: contact.profile.name || message.from,
+          body: message.text.body,
+          timestamp: parseInt(message.timestamp, 10),
+        };
+
+        console.log(`Webhook received WhatsApp message from ${incoming.fromName}: ${incoming.body}`);
+
+        // Broadcast message to SSE browser streams
+        for (const client of sseClients) {
+          client.write(`data: ${JSON.stringify(incoming)}\n\n`);
+        }
+      }
+    } catch (err) {
+      console.error('Error parsing incoming webhook body:', err);
+    }
+    res.sendStatus(200);
+  } else {
+    res.sendStatus(404);
+  }
+});
+
+// ── SSE Browser stream for messages ───────────────────────────────────────────
+
+app.get('/api/whatsapp/messages/sse', (req: Request, res: Response): void => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no');
+
+  res.flushHeaders?.();
+
+  // Send keepalive immediately
+  res.write(':keepalive\n\n');
+
+  sseClients.add(res);
+
+  const heartbeat = setInterval(() => {
+    res.write(':keepalive\n\n');
+  }, 15000);
+
+  req.on('close', () => {
+    clearInterval(heartbeat);
+    sseClients.delete(res);
+  });
+});
+
+// ── Send Outbound WhatsApp message via Meta Cloud API ──────────────────────────
+
+app.post('/api/whatsapp/messages/send', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { to, message } = req.body;
+    const token = process.env.WHATSAPP_ACCESS_TOKEN;
+    const phoneId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+
+    if (!to || !message) {
+      res.status(400).json({ error: 'to and message fields are required' });
+      return;
+    }
+
+    if (!token || !phoneId) {
+      res.status(500).json({ error: 'WhatsApp credentials are not configured on server' });
+      return;
+    }
+
+    // Clean recipient number (remove non-digits or @c.us if passed)
+    const cleanNumber = to.replace(/\D/g, '');
+
+    const response = await fetch(`https://graph.facebook.com/v20.0/${phoneId}/messages`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        recipient_type: 'individual',
+        to: cleanNumber,
+        type: 'text',
+        text: { body: message },
+      }),
+    });
+
+    const data = await response.json() as any;
+
+    if (!response.ok) {
+      console.error('Error response from Meta API:', data);
+      res.status(response.status).json({ error: data.error?.message || 'Meta API error' });
+      return;
+    }
+
+    res.json({ success: true, data });
+  } catch (err: any) {
+    console.error('Error sending WhatsApp message:', err);
+    res.status(500).json({ error: err.message || 'Internal server error' });
+  }
 });
 
 // Root — friendly landing page

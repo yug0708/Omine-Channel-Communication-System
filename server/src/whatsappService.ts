@@ -37,6 +37,12 @@ export function getWhatsAppStatus() {
   };
 }
 
+export function setWhatsAppStatusManual(status: WhatsAppStatus) {
+  currentStatus = status;
+  latestQr = '';
+  broadcast();
+}
+
 export async function initWhatsApp() {
   if (client) {
     return;

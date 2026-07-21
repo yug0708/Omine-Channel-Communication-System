@@ -1,217 +1,304 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useData } from '../hooks/useData';
-import { Contact, Channel } from '../types';
-import Button from '../components/ui/Button';
+import { useChannel, ChannelName, ChatConversation, Message } from '../context/ChannelContext';
+import { useToast } from '../context/ToastContext';
 
-interface Message {
-  id: string;
-  text: string;
-  sender: 'me' | 'them';
-  timestamp: string; // e.g. "10:12 AM"
-  read: boolean;
-}
+const DEMO_CONVERSATIONS: Partial<Record<ChannelName, ChatConversation[]>> = {
+  WhatsApp: [
+    {
+      id: 'wa-demo-1',
+      contactId: 'c1',
+      contactName: 'Dixit Panchal',
+      contactNumber: '919876540001',
+      channel: 'WhatsApp',
+      status: 'Open',
+      lastMessage: 'Thank you for using Wow...',
+      timeLabel: '6 min ago',
+      unreadCount: 0,
+      messages: [
+        { id: 'wa-d1-1', text: 'Hello, is anyone available?', sender: 'them', timestamp: '10:05 AM', read: true },
+        { id: 'wa-d1-2', text: 'Yes, Dixit! How can we assist you today?', sender: 'me', timestamp: '10:06 AM', read: true },
+        { id: 'wa-d1-3', text: 'I wanted to check the status of my order.', sender: 'them', timestamp: '10:07 AM', read: true },
+        { id: 'wa-d1-4', text: 'Thank you for using Wow. Let me check that for you right now.', sender: 'me', timestamp: '10:08 AM', read: true },
+      ],
+    },
+    {
+      id: 'wa-demo-2',
+      contactId: 'c2',
+      contactName: 'Pooja Sharma',
+      contactNumber: '919876540002',
+      channel: 'WhatsApp',
+      status: 'Open',
+      lastMessage: 'You: Customer Support',
+      timeLabel: '1 hr ago',
+      unreadCount: 0,
+      messages: [
+        { id: 'wa-d2-1', text: 'Hi! Need help with installation.', sender: 'them', timestamp: '9:12 AM', read: true },
+        { id: 'wa-d2-2', text: 'Sure! I will connect you with our Customer Support agent.', sender: 'me', timestamp: '9:15 AM', read: true },
+      ],
+    },
+  ],
+  Instagram: [
+    {
+      id: 'ig-demo-1',
+      contactId: 'ig-c1',
+      contactName: 'Yug Shah',
+      channel: 'Instagram',
+      status: 'Open',
+      lastMessage: 'You: Sent a Media',
+      timeLabel: '2 hrs ago',
+      unreadCount: 0,
+      messages: [
+        { id: 'ig-d1-1', text: 'Check this new catalog 🔥', sender: 'them', timestamp: '8:10 AM', read: true },
+        { id: 'ig-d1-2', text: 'Sent a Media', sender: 'me', timestamp: '8:12 AM', read: true },
+      ],
+    },
+  ],
+  Google: [
+    {
+      id: 'g-demo-1',
+      contactId: 'g-c1',
+      contactName: 'Alex Thompson',
+      channel: 'Google',
+      status: 'Open',
+      lastMessage: 'Your review response',
+      timeLabel: '1 day ago',
+      unreadCount: 0,
+      messages: [
+        { id: 'g-d1-1', text: 'Great service! Very satisfied with my experience.', sender: 'them', timestamp: 'Yesterday', read: true },
+        { id: 'g-d1-2', text: 'Thank you, Alex! We really appreciate your kind words.', sender: 'me', timestamp: 'Yesterday', read: true },
+      ],
+    },
+  ],
+  'Live Chat': [
+    {
+      id: 'lc-demo-1',
+      contactId: 'lc-c1',
+      contactName: 'Website Visitor',
+      channel: 'Live Chat',
+      status: 'Open',
+      lastMessage: 'How do I reset my password?',
+      timeLabel: '5 min ago',
+      unreadCount: 1,
+      messages: [
+        { id: 'lc-d1-1', text: 'Hi there! How do I reset my password?', sender: 'them', timestamp: '3:10 PM', read: false },
+      ],
+    },
+  ],
+};
 
-interface ChatConversation {
-  id: string;
-  contactId: string;
-  contactName: string;
-  channel: 'WhatsApp' | 'Instagram' | 'Google' | 'Live Chat';
-  status: 'Open' | 'Closed' | 'Pending';
-  lastMessage: string;
-  timeLabel: string;
-  unreadCount: number;
-  messages: Message[];
-}
+const CHANNEL_META: Partial<Record<ChannelName, { label: string; color: string; bg: string; badge: React.ReactNode }>> = {
+  WhatsApp: {
+    label: 'WhatsApp',
+    color: 'text-green-500',
+    bg: 'bg-green-500',
+    badge: <div className="h-4 w-4 bg-[#25D366] text-white rounded-full flex items-center justify-center text-[8px] font-bold">W</div>,
+  },
+  Instagram: {
+    label: 'Instagram',
+    color: 'text-pink-500',
+    bg: 'bg-gradient-to-tr from-yellow-400 to-purple-600',
+    badge: <div className="h-4 w-4 rounded-full bg-gradient-to-tr from-yellow-400 to-purple-600 text-white flex items-center justify-center text-[8px] font-bold">I</div>,
+  },
+  Google: {
+    label: 'Google',
+    color: 'text-blue-500',
+    bg: 'bg-blue-500',
+    badge: <div className="h-4 w-4 bg-blue-500 text-white rounded-full flex items-center justify-center text-[8px] font-bold">G</div>,
+  },
+  'Live Chat': {
+    label: 'Live Chat',
+    color: 'text-indigo-500',
+    bg: 'bg-indigo-500',
+    badge: <div className="h-4 w-4 bg-indigo-500 text-white rounded-full flex items-center justify-center text-[8px] font-bold">L</div>,
+  },
+};
 
-const INITIAL_CONVERSATIONS: ChatConversation[] = [
-  {
-    id: '1',
-    contactId: 'c1',
-    contactName: 'Dixit Panchal',
-    channel: 'WhatsApp',
-    status: 'Open',
-    lastMessage: 'You: Thank you for using Wow...',
-    timeLabel: '6 minutes',
-    unreadCount: 0,
-    messages: [
-      { id: '1-1', text: 'Hello, is anyone available?', sender: 'them', timestamp: '10:05 AM', read: true },
-      { id: '1-2', text: 'Yes, Dixit! How can we assist you today?', sender: 'me', timestamp: '10:06 AM', read: true },
-      { id: '1-3', text: 'I wanted to check the status of my order.', sender: 'them', timestamp: '10:07 AM', read: true },
-      { id: '1-4', text: 'Thank you for using Wow. Let me check that for you right now.', sender: 'me', timestamp: '10:08 AM', read: true }
-    ]
-  },
-  {
-    id: '2',
-    contactId: 'c2',
-    contactName: 'Pooja',
-    channel: 'WhatsApp',
-    status: 'Open',
-    lastMessage: 'You: Customer Support',
-    timeLabel: 'an hour',
-    unreadCount: 0,
-    messages: [
-      { id: '2-1', text: 'Hi! Need help with installation.', sender: 'them', timestamp: '9:12 AM', read: true },
-      { id: '2-2', text: 'Sure! I will connect you with our Customer Support agent.', sender: 'me', timestamp: '9:15 AM', read: true }
-    ]
-  },
-  {
-    id: '3',
-    contactId: 'c3',
-    contactName: 'NABEL Nathan',
-    channel: 'WhatsApp',
-    status: 'Open',
-    lastMessage: 'Thank you for customer suppo...',
-    timeLabel: '2 hours',
-    unreadCount: 2,
-    messages: [
-      { id: '3-1', text: 'Hi, I received my package. Thank you for customer support!', sender: 'them', timestamp: '8:45 AM', read: false }
-    ]
-  },
-  {
-    id: '4',
-    contactId: 'c4',
-    contactName: 'Yug Shah',
-    channel: 'Instagram',
-    status: 'Open',
-    lastMessage: 'You: Sent a Media',
-    timeLabel: '2 hours',
-    unreadCount: 0,
-    messages: [
-      { id: '4-1', text: 'Check this new catalog.', sender: 'them', timestamp: '8:10 AM', read: true },
-      { id: '4-2', text: 'Sent a Media', sender: 'me', timestamp: '8:12 AM', read: true }
-    ]
-  },
-  {
-    id: '5',
-    contactId: 'c5',
-    contactName: 'React Developer',
-    channel: 'WhatsApp',
-    status: 'Open',
-    lastMessage: 'Test new',
-    timeLabel: '21 hours',
-    unreadCount: 0,
-    messages: [
-      { id: '5-1', text: 'Test new message flow for beta testing.', sender: 'them', timestamp: 'Yesterday', read: true }
-    ]
-  },
-  {
-    id: '6',
-    contactId: 'c6',
-    contactName: 'Harsh',
-    channel: 'WhatsApp',
-    status: 'Open',
-    lastMessage: '...',
-    timeLabel: '21 hours',
-    unreadCount: 0,
-    messages: [
-      { id: '6-1', text: 'Waiting for update...', sender: 'them', timestamp: 'Yesterday', read: true }
-    ]
-  }
+const AVATAR_COLORS = [
+  'bg-blue-500',
+  'bg-emerald-500',
+  'bg-indigo-500',
+  'bg-purple-500',
+  'bg-orange-500',
+  'bg-pink-500',
 ];
 
+function avatarColor(name: string) {
+  return AVATAR_COLORS[name.charCodeAt(0) % AVATAR_COLORS.length];
+}
+
+function initials(name: string) {
+  return name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase();
+}
+
 const Inbox: React.FC = () => {
+  const navigate = useNavigate();
+  const { showToast } = useToast();
   const { contacts } = useData();
-  const [conversations, setConversations] = useState<ChatConversation[]>(INITIAL_CONVERSATIONS);
+  const {
+    connectedChannels,
+    isChannelConnected,
+    conversations,
+    setConversations,
+    addOrUpdateConversationFromIncoming,
+  } = useChannel();
+
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'all' | 'unread' | 'read'>('all');
+  const [channelFilter, setChannelFilter] = useState<ChannelName | 'All'>('All');
   const [newMessageText, setNewMessageText] = useState('');
   const [toContactId, setToContactId] = useState('');
+  const [newChatChannel, setNewChatChannel] = useState<ChannelName | ''>('');
+  const [isSending, setIsSending] = useState(false);
+  const [showNewChatRow, setShowNewChatRow] = useState(false);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  const selectedChat = conversations.find(c => c.id === selectedChatId);
+  // Seed demo conversations when a channel first connects
+  useEffect(() => {
+    connectedChannels.forEach(({ id: ch }) => {
+      const hasAny = conversations.some((c) => c.channel === ch);
+      if (!hasAny && DEMO_CONVERSATIONS[ch]) {
+        setConversations((prev) => [...DEMO_CONVERSATIONS[ch], ...prev]);
+      }
+    });
+  }, [connectedChannels]);
 
-  // Auto scroll to bottom of chat
+
+
+  // Auto-scroll
+  const selectedChat = conversations.find((c) => c.id === selectedChatId);
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [selectedChat?.messages]);
+  }, [selectedChat?.messages.length]);
 
-  // Handle sending a message
-  const handleSendMessage = (e?: React.FormEvent) => {
+  // Mark as read on open
+  useEffect(() => {
+    if (!selectedChatId) return;
+    setConversations((prev) =>
+      prev.map((c) =>
+        c.id === selectedChatId
+          ? { ...c, unreadCount: 0, messages: c.messages.map((m) => ({ ...m, read: true })) }
+          : c
+      )
+    );
+  }, [selectedChatId, setConversations]);
+
+  // Send message via Meta Cloud API
+  const handleSendMessage = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!newMessageText.trim() || !selectedChatId) return;
 
-    const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const timeString = new Date().toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+    const msgText = newMessageText;
+    setNewMessageText('');
 
-    setConversations(prev =>
-      prev.map(chat => {
-        if (chat.id === selectedChatId) {
-          const newMsg: Message = {
-            id: `${chat.id}-${chat.messages.length + 1}`,
-            text: newMessageText,
-            sender: 'me',
-            timestamp: timeString,
-            read: true
-          };
-          return {
-            ...chat,
-            lastMessage: `You: ${newMessageText}`,
-            timeLabel: 'Just now',
-            messages: [...chat.messages, newMsg]
-          };
-        }
-        return chat;
+    // Optimistic UI update
+    setConversations((prev) =>
+      prev.map((chat) => {
+        if (chat.id !== selectedChatId) return chat;
+        const newMsg: Message = {
+          id: `${chat.id}-${Date.now()}`,
+          text: msgText,
+          sender: 'me',
+          timestamp: timeString,
+          read: true,
+        };
+        return {
+          ...chat,
+          lastMessage: `You: ${msgText}`,
+          timeLabel: 'Just now',
+          messages: [...chat.messages, newMsg],
+        };
       })
     );
-    setNewMessageText('');
+
+    // If WhatsApp conversation — send via real Meta Cloud API
+    if (selectedChat?.channel === 'WhatsApp' && selectedChat.contactNumber) {
+      try {
+        setIsSending(true);
+        const res = await fetch('/api/whatsapp/messages/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ to: selectedChat.contactNumber, message: msgText }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'Failed to send message over WhatsApp');
+        }
+      } catch (err: any) {
+        console.error('Error sending WhatsApp message:', err);
+        showToast(err.message || 'Failed to send message over WhatsApp', 'error');
+      } finally {
+        setIsSending(false);
+      }
+    }
   };
 
-  // Filter conversations
-  const filteredConversations = conversations.filter(chat => {
-    // Search query
-    const matchesSearch = chat.contactName.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          chat.lastMessage.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    if (!matchesSearch) return false;
+  // Create new conversation
+  const handleCreateNewChat = useCallback(() => {
+    if (!toContactId || !newChatChannel) return;
+    const contact = contacts.find((c) => c.id === toContactId);
+    if (!contact) return;
 
-    // Filter tab
+    const existing = conversations.find(
+      (c) => c.contactId === toContactId && c.channel === newChatChannel
+    );
+    if (existing) {
+      setSelectedChatId(existing.id);
+      setShowNewChatRow(false);
+      return;
+    }
+
+    const newConv: ChatConversation = {
+      id: `custom-${Date.now()}`,
+      contactId: contact.id,
+      contactName: `${contact.firstName} ${contact.lastName}`,
+      contactNumber: contact.contactNumber
+        ? contact.contactNumber.replace(/\D/g, '')
+        : undefined,
+      channel: newChatChannel as ChannelName,
+      status: 'Open',
+      lastMessage: 'New conversation',
+      timeLabel: 'Just now',
+      unreadCount: 0,
+      messages: [],
+    };
+    setConversations((prev) => [newConv, ...prev]);
+    setSelectedChatId(newConv.id);
+    setShowNewChatRow(false);
+    setToContactId('');
+    setNewChatChannel('');
+  }, [toContactId, newChatChannel, contacts, conversations, setConversations]);
+
+  // Filtering conversations
+  const visibleConversations = conversations.filter((chat) => {
+    if (!isChannelConnected(chat.channel)) return false;
+    if (channelFilter !== 'All' && chat.channel !== channelFilter) return false;
+    
+    const q = searchQuery.toLowerCase();
+    if (q && !chat.contactName.toLowerCase().includes(q) && !chat.lastMessage.toLowerCase().includes(q)) return false;
+    
     if (activeTab === 'unread') return chat.unreadCount > 0;
     if (activeTab === 'read') return chat.unreadCount === 0;
     return true;
   });
 
-  const allCount = conversations.length;
-  const unreadCount = conversations.filter(c => c.unreadCount > 0).length;
-  const readCount = conversations.filter(c => c.unreadCount === 0).length;
+  const allCount = conversations.filter((c) => isChannelConnected(c.channel)).length;
+  const unreadCount = conversations.filter((c) => isChannelConnected(c.channel) && c.unreadCount > 0).length;
+  const readCount = conversations.filter((c) => isChannelConnected(c.channel) && c.unreadCount === 0).length;
 
-  const handleSelectContactForNewChat = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const contactId = e.target.value;
-    setToContactId(contactId);
-    if (!contactId) return;
-
-    const matchedContact = contacts.find(c => c.id === contactId);
-    if (!matchedContact) return;
-
-    // Check if conversation already exists
-    const existing = conversations.find(c => c.contactId === contactId);
-    if (existing) {
-      setSelectedChatId(existing.id);
-    } else {
-      // Create new mock conversation
-      const newChat: ChatConversation = {
-        id: `custom-${Date.now()}`,
-        contactId: matchedContact.id,
-        contactName: `${matchedContact.firstName} ${matchedContact.lastName}`,
-        channel: 'WhatsApp',
-        status: 'Open',
-        lastMessage: 'Start a new conversation',
-        timeLabel: 'Just now',
-        unreadCount: 0,
-        messages: []
-      };
-      setConversations(prev => [newChat, ...prev]);
-      setSelectedChatId(newChat.id);
-    }
-  };
+  const noChannelsConnected = connectedChannels.length === 0;
 
   return (
     <div className="flex h-[calc(100vh-80px)] -m-6 bg-slate-50 dark:bg-slate-900 overflow-hidden font-sans">
-      
-      {/* ── LEFT SIDEBAR: Chats list ────────────────────────────────────────── */}
+
+      {/* ── LEFT SIDEBAR ──────────────────────────────────────────────────── */}
       <div className="w-[360px] flex-shrink-0 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col">
-        
-        {/* Header section */}
+
+        {/* Header */}
         <div className="p-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="p-1.5 rounded-lg bg-emerald-50 text-[#10B981] dark:bg-emerald-500/10">
@@ -220,20 +307,19 @@ const Inbox: React.FC = () => {
               </svg>
             </div>
             <h1 className="text-xl font-bold text-slate-800 dark:text-white">Inbox</h1>
+            {unreadCount > 0 && (
+              <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-[#10B981] text-white font-bold">
+                {unreadCount}
+              </span>
+            )}
           </div>
-          
+
           <div className="flex items-center gap-1.5">
-            <button title="Users Group" className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition">
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-            </button>
-            <button title="Filter Channel" className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition">
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-              </svg>
-            </button>
-            <button title="New Chat" className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+            <button
+              title="New Conversation"
+              onClick={() => setShowNewChatRow((v) => !v)}
+              className={`p-2 rounded-lg transition ${showNewChatRow ? 'bg-emerald-50 text-[#10B981]' : 'text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-700'}`}
+            >
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
               </svg>
@@ -241,15 +327,54 @@ const Inbox: React.FC = () => {
           </div>
         </div>
 
-        {/* Dropdown for All Channel Types */}
+        {/* New Chat row */}
+        {showNewChatRow && !noChannelsConnected && (
+          <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-700 bg-emerald-50/40 dark:bg-emerald-500/5 space-y-2">
+            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">New conversation</p>
+            <select
+              value={toContactId}
+              onChange={(e) => setToContactId(e.target.value)}
+              className="w-full px-3 py-1.5 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-700 dark:text-slate-200 focus:ring-1 focus:ring-emerald-500"
+            >
+              <option value="">Select contact...</option>
+              {contacts.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.firstName} {c.lastName} ({c.contactNumber})
+                </option>
+              ))}
+            </select>
+            <select
+              value={newChatChannel}
+              onChange={(e) => setNewChatChannel(e.target.value as ChannelName)}
+              className="w-full px-3 py-1.5 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-700 dark:text-slate-200 focus:ring-1 focus:ring-emerald-500"
+            >
+              <option value="">Select channel...</option>
+              {connectedChannels.map((ch) => (
+                <option key={ch.id} value={ch.id}>{ch.id}</option>
+              ))}
+            </select>
+            <button
+              onClick={handleCreateNewChat}
+              disabled={!toContactId || !newChatChannel}
+              className="w-full py-1.5 rounded-lg text-sm font-semibold bg-[#10B981] text-white disabled:opacity-40 hover:bg-emerald-600 transition"
+            >
+              Start Conversation
+            </button>
+          </div>
+        )}
+
+        {/* Channel filter dropdown */}
         <div className="px-4 py-2 border-b border-slate-100 dark:border-slate-700/50">
           <div className="relative">
-            <select className="w-full pl-3 pr-8 py-1.5 text-sm bg-slate-50 hover:bg-slate-100 dark:bg-slate-700 dark:hover:bg-slate-600 border-none rounded-lg text-slate-600 dark:text-slate-300 font-medium focus:ring-1 focus:ring-emerald-500 cursor-pointer appearance-none">
-              <option>All Channels</option>
-              <option>WhatsApp</option>
-              <option>Instagram</option>
-              <option>Google</option>
-              <option>Live Chat</option>
+            <select
+              value={channelFilter}
+              onChange={(e) => setChannelFilter(e.target.value as ChannelName | 'All')}
+              className="w-full pl-3 pr-8 py-1.5 text-sm bg-slate-50 hover:bg-slate-100 dark:bg-slate-700 dark:hover:bg-slate-600 border-none rounded-lg text-slate-600 dark:text-slate-300 font-medium focus:ring-1 focus:ring-emerald-500 cursor-pointer appearance-none"
+            >
+              <option value="All">All Channels</option>
+              {connectedChannels.map((ch) => (
+                <option key={ch.id} value={ch.id}>{ch.id}</option>
+              ))}
             </select>
             <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -264,7 +389,7 @@ const Inbox: React.FC = () => {
           <div className="relative">
             <input
               type="text"
-              placeholder="Search Contacts..."
+              placeholder="Search conversations..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-9 pr-4 py-2 text-sm bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#10B981] dark:text-white"
@@ -277,126 +402,100 @@ const Inbox: React.FC = () => {
           </div>
         </div>
 
-        {/* Status Pills */}
+        {/* Tab Pills */}
         <div className="px-4 py-2 flex items-center justify-between gap-1.5 border-b border-slate-100 dark:border-slate-700/50">
-          <button
-            onClick={() => setActiveTab('all')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
-              activeTab === 'all'
-                ? 'bg-emerald-50 text-[#10B981] dark:bg-emerald-500/10'
-                : 'text-slate-500 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-700'
-            }`}
-          >
-            <span>All</span>
-            <span className={`px-1.5 py-0.5 rounded-full text-[10px] ${
-              activeTab === 'all' ? 'bg-[#10B981] text-white' : 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
-            }`}>
-              {allCount}
-            </span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('unread')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
-              activeTab === 'unread'
-                ? 'bg-emerald-50 text-[#10B981] dark:bg-emerald-500/10'
-                : 'text-slate-500 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-700'
-            }`}
-          >
-            <span>Unread</span>
-            <span className={`px-1.5 py-0.5 rounded-full text-[10px] ${
-              activeTab === 'unread' && unreadCount > 0 ? 'bg-[#10B981] text-white' : 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
-            }`}>
-              {unreadCount}
-            </span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('read')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
-              activeTab === 'read'
-                ? 'bg-emerald-50 text-[#10B981] dark:bg-emerald-500/10'
-                : 'text-slate-500 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-700'
-            }`}
-          >
-            <span>Read</span>
-            <span className={`px-1.5 py-0.5 rounded-full text-[10px] ${
-              activeTab === 'read' ? 'bg-[#10B981] text-white' : 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
-            }`}>
-              {readCount}
-            </span>
-          </button>
+          {(['all', 'unread', 'read'] as const).map((tab) => {
+            const count = tab === 'all' ? allCount : tab === 'unread' ? unreadCount : readCount;
+            const isActive = activeTab === tab;
+            return (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all capitalize ${
+                  isActive
+                    ? 'bg-emerald-50 text-[#10B981] dark:bg-emerald-500/10'
+                    : 'text-slate-500 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-700'
+                }`}
+              >
+                <span>{tab}</span>
+                <span className={`px-1.5 py-0.5 rounded-full text-[10px] ${
+                  isActive && count > 0 ? 'bg-[#10B981] text-white' : 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
+                }`}>
+                  {count}
+                </span>
+              </button>
+            );
+          })}
         </div>
+
+        {/* Connected channel pills */}
+        {connectedChannels.length > 0 && (
+          <div className="px-4 pt-2 pb-1 flex flex-wrap gap-1">
+            {connectedChannels.map((ch) => (
+              <span
+                key={ch.id}
+                className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20"
+              >
+                ✓ {ch.id}
+              </span>
+            ))}
+          </div>
+        )}
 
         {/* Conversation List */}
         <div className="flex-1 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-700/50">
-          {filteredConversations.length > 0 ? (
-            filteredConversations.map((chat) => {
+          {noChannelsConnected ? (
+            <div className="p-8 text-center flex flex-col items-center gap-4">
+              <div className="h-14 w-14 rounded-2xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+                <svg className="h-7 w-7 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">No channels connected</p>
+                <p className="text-xs text-slate-400 mt-1">Connect a channel to see conversations here.</p>
+              </div>
+              <button
+                onClick={() => navigate('/channels')}
+                className="px-4 py-2 text-xs font-bold bg-[#10B981] text-white rounded-lg hover:bg-emerald-600 transition"
+              >
+                → Go to Channels
+              </button>
+            </div>
+          ) : visibleConversations.length > 0 ? (
+            visibleConversations.map((chat) => {
               const isSelected = chat.id === selectedChatId;
-              const initials = chat.contactName
-                .split(' ')
-                .map(n => n[0])
-                .join('')
-                .slice(0, 2)
-                .toUpperCase();
-
-              // Different colors for avatar circles
-              const avatarColors = [
-                'bg-blue-500 text-white',
-                'bg-emerald-500 text-white',
-                'bg-indigo-500 text-white',
-                'bg-purple-500 text-white',
-                'bg-orange-500 text-white',
-                'bg-pink-500 text-white'
-              ];
-              const colorHash = chat.contactName.charCodeAt(0) % avatarColors.length;
-              const avatarColorClass = avatarColors[colorHash];
+              const meta = CHANNEL_META[chat.channel];
+              const color = avatarColor(chat.contactName);
 
               return (
                 <div
                   key={chat.id}
                   onClick={() => setSelectedChatId(chat.id)}
                   className={`p-4 flex items-start gap-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-750 transition ${
-                    isSelected ? 'bg-slate-50 dark:bg-slate-750 border-l-4 border-[#10B981]' : ''
+                    isSelected ? 'bg-emerald-50/50 dark:bg-emerald-500/5 border-l-4 border-[#10B981]' : ''
                   }`}
                 >
-                  {/* Avatar wrapper */}
                   <div className="relative flex-shrink-0">
-                    <div className={`h-11 w-11 rounded-full flex items-center justify-center font-bold text-sm shadow-sm ${avatarColorClass}`}>
-                      {initials}
+                    <div className={`h-11 w-11 rounded-full flex items-center justify-center font-bold text-sm shadow-sm text-white ${color}`}>
+                      {initials(chat.contactName)}
                     </div>
-                    {/* Small Channel logo badge */}
                     <div className="absolute -bottom-1 -right-1 bg-white dark:bg-slate-800 p-0.5 rounded-full shadow-sm border border-slate-100 dark:border-slate-700">
-                      {chat.channel === 'WhatsApp' ? (
-                        <div className="h-4 w-4 bg-[#10B981] text-white rounded-full flex items-center justify-center text-[8px] font-bold">W</div>
-                      ) : chat.channel === 'Instagram' ? (
-                        <div className="h-4 w-4 bg-gradient-to-tr from-yellow-500 to-purple-600 text-white rounded-full flex items-center justify-center text-[8px] font-bold">I</div>
-                      ) : (
-                        <div className="h-4 w-4 bg-slate-500 text-white rounded-full flex items-center justify-center text-[8px] font-bold">C</div>
-                      )}
+                      {meta.badge}
                     </div>
                   </div>
 
-                  {/* Message Info */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] text-slate-400 dark:text-slate-500">
-                          @{chat.channel}
-                        </span>
-                        <h2 className="text-sm font-semibold text-slate-800 dark:text-white truncate">
-                          {chat.contactName}
-                        </h2>
+                    <div className="flex items-center justify-between mb-0.5">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <span className="text-[10px] text-slate-400 dark:text-slate-500 shrink-0">@{chat.channel}</span>
+                        <h2 className="text-sm font-semibold text-slate-800 dark:text-white truncate">{chat.contactName}</h2>
                       </div>
-                      <span className="text-xs text-slate-400 flex-shrink-0">
-                        {chat.timeLabel}
-                      </span>
+                      <span className="text-xs text-slate-400 flex-shrink-0 ml-1">{chat.timeLabel}</span>
                     </div>
 
                     <div className="flex items-center justify-between gap-1.5">
-                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate flex-1">
-                        {chat.lastMessage}
-                      </p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate flex-1">{chat.lastMessage}</p>
                       <div className="flex items-center gap-1.5 flex-shrink-0">
                         {chat.status === 'Open' && (
                           <span className="px-1.5 py-0.5 text-[10px] font-bold bg-emerald-50 text-[#10B981] dark:bg-emerald-500/10 rounded">
@@ -415,77 +514,49 @@ const Inbox: React.FC = () => {
               );
             })
           ) : (
-            <div className="p-8 text-center text-slate-400">
+            <div className="p-8 text-center text-slate-400 text-sm">
               No conversations found.
             </div>
           )}
         </div>
       </div>
 
-      {/* ── RIGHT PANEL: Conversation Details ──────────────────────────────── */}
+      {/* ── RIGHT PANEL ───────────────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col bg-slate-50 dark:bg-slate-900">
-        
-        {/* Top Destination Selector / Header */}
-        <div className="px-6 py-4 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
-          <div className="flex items-center gap-3 w-1/2">
-            <span className="text-sm font-bold text-slate-500 dark:text-slate-400 flex-shrink-0">To:</span>
-            <div className="relative w-full">
-              <select
-                value={toContactId}
-                onChange={handleSelectContactForNewChat}
-                className="w-full max-w-sm pl-3 pr-8 py-1.5 text-sm bg-slate-50 hover:bg-slate-100 dark:bg-slate-700 dark:hover:bg-slate-600 border-none rounded-lg text-slate-600 dark:text-slate-300 font-medium focus:ring-1 focus:ring-[#10B981] cursor-pointer appearance-none"
-              >
-                <option value="">Search contacts</option>
-                {contacts.map(c => (
-                  <option key={c.id} value={c.id}>
-                    {`${c.firstName} ${c.lastName}`} ({c.contactNumber})
-                  </option>
-                ))}
-              </select>
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {selectedChat ? (
-          /* ACTIVE CONVERSATION */
           <div className="flex-1 flex flex-col overflow-hidden">
-            {/* Active chat header */}
+
+            {/* Chat header */}
             <div className="px-6 py-3 bg-white dark:bg-slate-800 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="h-9 w-9 bg-emerald-500 text-white rounded-full flex items-center justify-center font-bold text-xs">
-                  {selectedChat.contactName.slice(0, 2).toUpperCase()}
+                <div className={`h-9 w-9 text-white rounded-full flex items-center justify-center font-bold text-xs ${avatarColor(selectedChat.contactName)}`}>
+                  {initials(selectedChat.contactName)}
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-slate-800 dark:text-white">
-                    {selectedChat.contactName}
-                  </h3>
+                  <h3 className="text-sm font-bold text-slate-800 dark:text-white">{selectedChat.contactName}</h3>
                   <div className="flex items-center gap-1.5">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-                    <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">Online • {selectedChat.channel}</span>
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">
+                      Online • {selectedChat.channel}
+                    </span>
+                    {selectedChat.contactNumber && (
+                      <span className="text-[10px] text-slate-300 dark:text-slate-650 font-semibold">
+                        • {selectedChat.contactNumber}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
-                <button className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition">
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                  </svg>
-                </button>
-                <button className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition">
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                  </svg>
-                </button>
+                <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full text-white ${CHANNEL_META[selectedChat.channel].bg}`}>
+                  {selectedChat.channel}
+                </span>
               </div>
             </div>
 
-            {/* Message Feed */}
+            {/* Message feed */}
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               {selectedChat.messages.length > 0 ? (
                 selectedChat.messages.map((msg) => {
@@ -493,8 +564,8 @@ const Inbox: React.FC = () => {
                   return (
                     <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                       <div className={`max-w-[70%] rounded-2xl px-4 py-2.5 shadow-sm ${
-                        isMe 
-                          ? 'bg-[#10B981] text-white rounded-tr-none' 
+                        isMe
+                          ? 'bg-[#10B981] text-white rounded-tr-none'
                           : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-tl-none border border-slate-100 dark:border-slate-700'
                       }`}>
                         <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.text}</p>
@@ -520,17 +591,14 @@ const Inbox: React.FC = () => {
               <div ref={chatEndRef} />
             </div>
 
-            {/* Chat Input Bar */}
-            <form onSubmit={handleSendMessage} className="p-4 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 flex items-center gap-3">
-              <button type="button" className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition">
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                </svg>
-              </button>
-              
+            {/* Input bar */}
+            <form
+              onSubmit={handleSendMessage}
+              className="p-4 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 flex items-center gap-3"
+            >
               <input
                 type="text"
-                placeholder="Type a message..."
+                placeholder={`Type a message via ${selectedChat.channel}...`}
                 value={newMessageText}
                 onChange={(e) => setNewMessageText(e.target.value)}
                 className="flex-1 px-4 py-2 text-sm bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#10B981] dark:text-white"
@@ -538,23 +606,30 @@ const Inbox: React.FC = () => {
 
               <button
                 type="submit"
-                disabled={!newMessageText.trim()}
+                disabled={!newMessageText.trim() || isSending}
                 className={`p-2.5 rounded-xl transition ${
-                  newMessageText.trim()
+                  newMessageText.trim() && !isSending
                     ? 'bg-[#10B981] text-white shadow-md hover:bg-emerald-600'
                     : 'bg-slate-100 text-slate-300 dark:bg-slate-700 dark:text-slate-650 cursor-not-allowed'
                 }`}
               >
-                <svg className="h-5 w-5 transform rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                </svg>
+                {isSending ? (
+                  <svg className="h-5 w-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                  </svg>
+                ) : (
+                  <svg className="h-5 w-5 transform rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                  </svg>
+                )}
               </button>
             </form>
           </div>
+
         ) : (
-          /* EMPTY STATE */
+          /* Empty state */
           <div className="flex-1 flex flex-col items-center justify-center p-8 text-center max-w-2xl mx-auto">
-            {/* Beautiful dynamic chat icon illustration */}
             <div className="relative mb-6 flex items-center justify-center">
               <div className="absolute h-28 w-28 bg-emerald-50 dark:bg-emerald-500/10 rounded-full animate-ping scale-75 opacity-20"></div>
               <div className="relative h-20 w-20 bg-emerald-50 dark:bg-emerald-500/10 text-[#10B981] rounded-2xl flex items-center justify-center shadow-sm">
@@ -564,28 +639,30 @@ const Inbox: React.FC = () => {
               </div>
             </div>
 
-            <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-2">
-              No conversation selected
-            </h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mb-8 max-w-sm">
-              Please select a conversation to start messaging
-            </p>
-
-            {/* Info callout block */}
-            <div className="w-full max-w-md p-4 rounded-xl bg-emerald-50/50 dark:bg-emerald-500/5 border border-emerald-100/50 dark:border-emerald-500/10 flex items-start gap-3 text-left">
-              <div className="p-1 rounded bg-[#10B981] text-white mt-0.5">
-                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <p className="text-xs text-slate-600 dark:text-slate-350 leading-relaxed font-medium">
-                Looking for a specific contact or message? Use the search field in the sidebar to filter instantly.
-              </p>
-            </div>
+            {noChannelsConnected ? (
+              <>
+                <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-2">No channels connected</h2>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 max-w-sm">
+                  Connect at least one channel to start receiving and sending messages in your Inbox.
+                </p>
+                <button
+                  onClick={() => navigate('/channels')}
+                  className="px-6 py-2.5 rounded-xl font-bold text-sm bg-[#10B981] text-white hover:bg-emerald-600 transition shadow-md hover:shadow-lg"
+                >
+                  Connect a Channel →
+                </button>
+              </>
+            ) : (
+              <>
+                <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-2">No conversation selected</h2>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mb-8 max-w-sm">
+                  Select a conversation from the sidebar, or start a new one using the <strong>+</strong> button.
+                </p>
+              </>
+            )}
           </div>
         )}
       </div>
-
     </div>
   );
 };
