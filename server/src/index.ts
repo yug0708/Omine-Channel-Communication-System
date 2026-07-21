@@ -3,9 +3,34 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import pkg from 'pg';
 
 import fs from 'fs';
 dotenv.config();
+
+// ─── PostgreSQL client ────────────────────────────────────────────────────────
+
+const { Pool } = pkg;
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
+});
+
+// Ensure the incoming messages table exists on first use
+async function ensureMessagesTable() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS wa_incoming_messages (
+      id SERIAL PRIMARY KEY,
+      message_id TEXT UNIQUE,
+      "from" TEXT NOT NULL,
+      from_name TEXT,
+      body TEXT,
+      timestamp BIGINT,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `);
+}
+ensureMessagesTable().catch(err => console.error('Failed to ensure wa_incoming_messages table:', err));
 
 // Lazy-load whatsappService to avoid Puppeteer crash on Vercel serverless startup
 type WhatsAppServiceModule = typeof import('./whatsappService.js');
@@ -308,9 +333,7 @@ app.get('/api/whatsapp/webhook', (req: Request, res: Response): void => {
 
 // ── Incoming Webhook messages from Meta ───────────────────────────────────────
 
-const sseClients = new Set<Response>();
-
-app.post('/api/whatsapp/webhook', (req: Request, res: Response): void => {
+app.post('/api/whatsapp/webhook', async (req: Request, res: Response): Promise<void> => {
   const body = req.body;
 
   // Log payload to file for local debugging
@@ -331,21 +354,29 @@ app.post('/api/whatsapp/webhook', (req: Request, res: Response): void => {
         body.entry[0].changes[0].value.messages
       ) {
         const message = body.entry[0].changes[0].value.messages[0];
-        const contact = body.entry[0].changes[0].value.contacts[0];
+        const contact = body.entry[0].changes[0].value.contacts?.[0];
 
         const incoming = {
           id: message.id,
           from: message.from,
-          fromName: contact.profile.name || message.from,
-          body: message.text.body,
+          fromName: contact?.profile?.name || message.from,
+          body: message.text?.body || '',
           timestamp: parseInt(message.timestamp, 10),
         };
 
         console.log(`Webhook received WhatsApp message from ${incoming.fromName}: ${incoming.body}`);
 
-        // Broadcast message to SSE browser streams
-        for (const client of sseClients) {
-          client.write(`data: ${JSON.stringify(incoming)}\n\n`);
+        // Persist message to database so frontend polling works on Vercel
+        try {
+          await ensureMessagesTable();
+          await pool.query(
+            `INSERT INTO wa_incoming_messages (message_id, "from", from_name, body, timestamp)
+             VALUES ($1, $2, $3, $4, $5)
+             ON CONFLICT (message_id) DO NOTHING`,
+            [incoming.id, incoming.from, incoming.fromName, incoming.body, incoming.timestamp]
+          );
+        } catch (dbErr) {
+          console.error('Failed to save incoming message to DB:', dbErr);
         }
       }
     } catch (err) {
@@ -357,29 +388,24 @@ app.post('/api/whatsapp/webhook', (req: Request, res: Response): void => {
   }
 });
 
-// ── SSE Browser stream for messages ───────────────────────────────────────────
+// ── Poll endpoint: frontend fetches new messages since a given timestamp ───────
 
-app.get('/api/whatsapp/messages/sse', (req: Request, res: Response): void => {
-  res.setHeader('Content-Type', 'text/event-stream');
-  res.setHeader('Cache-Control', 'no-cache');
-  res.setHeader('Connection', 'keep-alive');
-  res.setHeader('X-Accel-Buffering', 'no');
-
-  res.flushHeaders?.();
-
-  // Send keepalive immediately
-  res.write(':keepalive\n\n');
-
-  sseClients.add(res);
-
-  const heartbeat = setInterval(() => {
-    res.write(':keepalive\n\n');
-  }, 15000);
-
-  req.on('close', () => {
-    clearInterval(heartbeat);
-    sseClients.delete(res);
-  });
+app.get('/api/whatsapp/messages/poll', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const since = parseInt((req.query.since as string) || '0', 10);
+    const result = await pool.query(
+      `SELECT message_id AS id, "from", from_name AS "fromName", body, timestamp
+       FROM wa_incoming_messages
+       WHERE timestamp > $1
+       ORDER BY timestamp ASC
+       LIMIT 100`,
+      [since]
+    );
+    res.json({ messages: result.rows });
+  } catch (err: any) {
+    console.error('Error polling messages:', err);
+    res.status(500).json({ messages: [], error: err.message });
+  }
 });
 
 // ── Send Outbound WhatsApp message via Meta Cloud API ──────────────────────────

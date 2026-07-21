@@ -150,41 +150,47 @@ export const ChannelProvider: React.FC<{ children: ReactNode }> = ({ children })
     [setConversations]
   );
 
-  // WhatsApp SSE incoming messages from Webhook (Global App-wide Listener)
+  // WhatsApp message polling (replaces SSE - works on Vercel serverless)
   const incomingHandlerRef = useRef(addOrUpdateConversationFromIncoming);
   useEffect(() => {
     incomingHandlerRef.current = addOrUpdateConversationFromIncoming;
   }, [addOrUpdateConversationFromIncoming]);
 
   const isWhatsAppConnected = isChannelConnected('WhatsApp');
+  const lastTimestampRef = useRef<number>(Math.floor(Date.now() / 1000) - 60); // start from 60s ago
+
   useEffect(() => {
     if (!isWhatsAppConnected) return;
 
-    let eventSource: EventSource;
-    try {
-      eventSource = new EventSource('/api/whatsapp/messages/sse');
-      eventSource.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          incomingHandlerRef.current(
-            data.from,
-            data.fromName,
-            data.body,
-            data.timestamp
-          );
-        } catch (err) {
-          console.error('Error parsing incoming message SSE:', err);
+    let active = true;
+
+    const poll = async () => {
+      if (!active) return;
+      try {
+        const res = await fetch(`/api/whatsapp/messages/poll?since=${lastTimestampRef.current}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.messages && data.messages.length > 0) {
+            for (const msg of data.messages) {
+              incomingHandlerRef.current(msg.from, msg.fromName, msg.body, msg.timestamp);
+              if (msg.timestamp > lastTimestampRef.current) {
+                lastTimestampRef.current = msg.timestamp;
+              }
+            }
+          }
         }
-      };
-      eventSource.onerror = (err) => {
-        console.warn('SSE stream connection dropped. EventSource will automatically attempt to reconnect.', err);
-      };
-    } catch (e) {
-      // Server not running or error
-    }
+      } catch (err) {
+        // Server not reachable - silently skip
+      }
+    };
+
+    // Poll immediately, then every 3 seconds
+    poll();
+    const interval = setInterval(poll, 3000);
 
     return () => {
-      try { eventSource?.close(); } catch (e) {}
+      active = false;
+      clearInterval(interval);
     };
   }, [isWhatsAppConnected]);
 
