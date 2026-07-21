@@ -94,6 +94,37 @@ app.get('/api/health', (_req: Request, res: Response): void => {
   res.json({ status: 'ok', message: 'Backend server is running!' });
 });
 
+// Debug endpoint — diagnose environment and DB
+app.get('/api/debug', async (_req: Request, res: Response): Promise<void> => {
+  const info: Record<string, any> = {
+    env: {
+      DATABASE_URL: process.env.DATABASE_URL ? '✅ SET' : '❌ MISSING',
+      WHATSAPP_ACCESS_TOKEN: process.env.WHATSAPP_ACCESS_TOKEN ? '✅ SET' : '❌ MISSING',
+      WHATSAPP_PHONE_NUMBER_ID: process.env.WHATSAPP_PHONE_NUMBER_ID || '❌ MISSING',
+      WHATSAPP_WABA_ID: process.env.WHATSAPP_WABA_ID || '❌ MISSING',
+      WHATSAPP_APP_ID: process.env.WHATSAPP_APP_ID || '❌ MISSING',
+      WHATSAPP_REDIRECT_URI: process.env.WHATSAPP_REDIRECT_URI || '(using default Vercel URL)',
+    },
+    db: { status: 'unknown', messageCount: 0, recentMessages: [] },
+  };
+
+  try {
+    await ensureMessagesTable();
+    const countResult = await pool.query('SELECT COUNT(*) FROM wa_incoming_messages');
+    const recentResult = await pool.query(
+      'SELECT message_id, "from", from_name, body, timestamp FROM wa_incoming_messages ORDER BY created_at DESC LIMIT 5'
+    );
+    info.db.status = '✅ Connected';
+    info.db.messageCount = parseInt(countResult.rows[0].count, 10);
+    info.db.recentMessages = recentResult.rows;
+  } catch (err: any) {
+    info.db.status = `❌ DB Error: ${err.message}`;
+  }
+
+  res.json(info);
+});
+
+
 // WhatsApp endpoints
 app.post('/api/whatsapp/connect', async (_req: Request, res: Response): Promise<void> => {
   try {
