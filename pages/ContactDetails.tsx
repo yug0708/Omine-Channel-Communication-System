@@ -851,7 +851,7 @@ const ContactDetails: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const { contacts, setContacts, tickets, setTickets } = useData();
+  const { contacts, setContacts, tickets, setTickets, saveContact, deleteContact } = useData();
 
   const { showToast } = useToast();
 
@@ -1081,26 +1081,14 @@ const ContactDetails: React.FC = () => {
 
 
 
-  const handleSaveContact = (contactData: Partial<Contact>) => {
-
-    const now = new Date().toISOString();
-
-    setContacts((prev) =>
-
-      prev.map((c) =>
-
-        c.id === contact.id
-
-          ? { ...c, ...contactData, updatedAt: now }
-
-          : c
-
-      )
-
-    );
-
+  const handleSaveContact = async (contactData: Partial<Contact>) => {
+    try {
+      await saveContact({ ...contact, ...contactData });
+      showToast('Contact updated successfully', 'success');
+    } catch (err) {
+      showToast('Failed to update contact', 'error');
+    }
     setIsContactEditModalOpen(false);
-
   };
 
 
@@ -1187,14 +1175,15 @@ const ContactDetails: React.FC = () => {
 
 
 
-  const handleDeleteContact = () => {
-
-    setContacts((prev) => prev.filter((c) => c.id !== contact.id));
-
+  const handleDeleteContact = async () => {
+    try {
+      await deleteContact(contact.id);
+      showToast('Contact deleted successfully', 'success');
+    } catch (err) {
+      showToast('Failed to delete contact', 'error');
+    }
     setDeleteConfirmOpen(false);
-
     navigate('/contacts');
-
   };
 
 

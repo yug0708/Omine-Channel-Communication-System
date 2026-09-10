@@ -565,7 +565,7 @@ const downloadSampleCsv = () => {
 };
 
 const Accounts: React.FC = () => {
-  const { accounts, setAccounts } = useData();
+  const { accounts, setAccounts, saveAccount, deleteAccount, deleteAccountsBatch } = useData();
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -673,26 +673,14 @@ const Accounts: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  const handleSaveAccount = (
+  const handleSaveAccount = async (
     data: AccountFormData & Partial<Pick<Account, 'id' | 'createdAt' | 'updatedAt'>>
   ) => {
-    const now = new Date().toISOString();
-    if (data.id) {
-      // Update existing
-      setAccounts(accounts.map((a) =>
-        a.id === data.id ? { ...a, ...data, updatedAt: now } : a
-      ));
-      setSuccessMessage('Account Updated Successfully');
-    } else {
-      // Create new
-      const newAccount: Account = {
-        ...data,
-        id: `acc${Date.now()}`,
-        createdAt: now,
-        updatedAt: now,
-      };
-      setAccounts([newAccount, ...accounts]);
-      setSuccessMessage('Account Created Successfully');
+    try {
+      await saveAccount(data);
+      setSuccessMessage(data.id ? 'Account Updated Successfully' : 'Account Created Successfully');
+    } catch (err) {
+      setErrorMessage('Failed to save account');
     }
     handleCloseModal();
   };
@@ -720,13 +708,23 @@ const Accounts: React.FC = () => {
     setDeleteConfirm({ ids: [...selectedAccounts], count: selectedAccounts.length });
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (!deleteConfirm) return;
     const count = deleteConfirm.count;
-    setAccounts(accounts.filter((a) => !deleteConfirm.ids.includes(a.id)));
-    setSelectedAccounts((prev) => prev.filter((s) => !deleteConfirm.ids.includes(s)));
-    setDeleteConfirm(null);
-    setSuccessMessage(`Record${count > 1 ? 's' : ''} Deleted Successfully`);
+    const ids = deleteConfirm.ids;
+    try {
+      if (ids.length === 1) {
+        await deleteAccount(ids[0]);
+      } else {
+        await deleteAccountsBatch(ids);
+      }
+      setSelectedAccounts((prev) => prev.filter((s) => !ids.includes(s)));
+      setSuccessMessage(`Record${count > 1 ? 's' : ''} Deleted Successfully`);
+    } catch (err) {
+      setErrorMessage('Failed to delete records');
+    } finally {
+      setDeleteConfirm(null);
+    }
   };
 
   const exportAccountsCsv = () => {

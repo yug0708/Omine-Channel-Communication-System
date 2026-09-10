@@ -91,6 +91,45 @@ export async function initDb(): Promise<void> {
           timestamp BIGINT,
           created_at TIMESTAMPTZ DEFAULT NOW()
         );
+
+        CREATE TABLE IF NOT EXISTS accounts (
+          id VARCHAR(64) PRIMARY KEY,
+          tenant_id VARCHAR(64) NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+          name VARCHAR(255) NOT NULL,
+          website VARCHAR(255) DEFAULT '',
+          email VARCHAR(255) DEFAULT '',
+          phone VARCHAR(50) DEFAULT '',
+          address TEXT DEFAULT '',
+          cr_number VARCHAR(100) DEFAULT '',
+          assigned_to VARCHAR(100) DEFAULT '',
+          country VARCHAR(100) DEFAULT '',
+          city VARCHAR(100) DEFAULT '',
+          pincode VARCHAR(50) DEFAULT '',
+          created_at TIMESTAMPTZ DEFAULT NOW(),
+          updated_at TIMESTAMPTZ DEFAULT NOW()
+        );
+        CREATE INDEX IF NOT EXISTS idx_accounts_tenant_id ON accounts (tenant_id);
+
+        CREATE TABLE IF NOT EXISTS contacts (
+          id VARCHAR(64) PRIMARY KEY,
+          tenant_id VARCHAR(64) NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+          first_name VARCHAR(100) NOT NULL,
+          last_name VARCHAR(100) DEFAULT '',
+          email VARCHAR(255) DEFAULT '',
+          contact_number VARCHAR(50) DEFAULT '',
+          address TEXT DEFAULT '',
+          city VARCHAR(100) DEFAULT '',
+          national_id VARCHAR(100) DEFAULT '',
+          country VARCHAR(100) DEFAULT '',
+          account_name VARCHAR(255) DEFAULT '',
+          assigned_to VARCHAR(100) DEFAULT '',
+          lifecycle VARCHAR(50) DEFAULT 'NA',
+          labels TEXT DEFAULT '',
+          avatar_url TEXT DEFAULT '',
+          created_at TIMESTAMPTZ DEFAULT NOW(),
+          updated_at TIMESTAMPTZ DEFAULT NOW()
+        );
+        CREATE INDEX IF NOT EXISTS idx_contacts_tenant_id ON contacts (tenant_id);
       `;
     }
 
@@ -125,6 +164,43 @@ export async function initDb(): Promise<void> {
         ]
       );
       console.log(`✅ Seeded default admin tenant: ${DEFAULT_ADMIN.email}`);
+    }
+
+    // 3. Ensure default seed accounts exist for default_tenant
+    const defaultAccCheck = await client.query(
+      'SELECT COUNT(*) FROM accounts WHERE tenant_id = $1',
+      [DEFAULT_ADMIN.id]
+    );
+    if (parseInt(defaultAccCheck.rows[0].count, 10) === 0) {
+      await client.query(`
+        INSERT INTO accounts (id, tenant_id, name, website, email, phone, address, cr_number, assigned_to, country, city, pincode)
+        VALUES
+        ('acc1', 'default_tenant', 'Tet', 'tet.com', 'contact@tet.com', '+1 123 456 7890', '123 Innovation Drive, Techville, USA', 'CR-12345', 'Elon Musk', 'USA', 'Techville', '94016'),
+        ('acc2', 'default_tenant', 'Test', 'test.com', 'info@test.com', '+1 987 654 3210', '456 Test Avenue, Sampleton, Canada', 'CR-67890', 'Elon Musk', 'Canada', 'Sampleton', 'M5V 2T6'),
+        ('acc3', 'default_tenant', 'Innovate Corp', 'innovate.com', 'contact@innovate.com', '+1 234 567 8901', '789 Future St, Vision City, USA', 'CR-11223', 'Jeff Bezos', 'USA', 'Vision City', '94025'),
+        ('acc4', 'default_tenant', 'HealthWell Inc.', 'healthwell.com', 'support@healthwell.com', '+44 20 7946 0958', '10 Health Rd, London, UK', 'CR-44556', 'Susan Wojcicki', 'UK', 'London', 'SW1A 0AA')
+        ON CONFLICT (id) DO NOTHING
+      `);
+      console.log('✅ Seeded default demo accounts for default_tenant');
+    }
+
+    // 4. Ensure default seed contacts exist for default_tenant
+    const defaultConCheck = await client.query(
+      'SELECT COUNT(*) FROM contacts WHERE tenant_id = $1',
+      [DEFAULT_ADMIN.id]
+    );
+    if (parseInt(defaultConCheck.rows[0].count, 10) === 0) {
+      await client.query(`
+        INSERT INTO contacts (id, tenant_id, first_name, last_name, email, contact_number, address, city, national_id, country, account_name, assigned_to, lifecycle, labels)
+        VALUES
+        ('con1', 'default_tenant', 'Siddhant', 'Patel', '', '', '', '', '', '', '', 'Unassigned', 'NA', ''),
+        ('con2', 'default_tenant', '', '', '', '91 8490888043', '', '', '', '', '', 'Unassigned', 'NA', ''),
+        ('con3', 'default_tenant', 'PATEL', 'HARSH', '', '', '', '', '', '', '', 'Unassigned', 'NA', ''),
+        ('con4', 'default_tenant', 'Yug', 'Shah', '', '', '', '', '', '', '', 'Unassigned', 'NA', ''),
+        ('con5', 'default_tenant', 'Demo Service', 'Service', '', '', '', '', '', '', '', 'Unassigned', 'NA', '')
+        ON CONFLICT (id) DO NOTHING
+      `);
+      console.log('✅ Seeded default demo contacts for default_tenant');
     }
 
     console.log('✅ Database initialized successfully: all tables and indices verified.');

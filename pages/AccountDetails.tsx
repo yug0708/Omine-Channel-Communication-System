@@ -473,7 +473,7 @@ const AccountEditForm: React.FC<{
 const AccountDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { accounts, setAccounts, contacts, setContacts, tickets, setTickets } = useData();
+  const { accounts, setAccounts, contacts, setContacts, tickets, setTickets, saveAccount, saveContact, deleteContact } = useData();
   const { currentUser } = useAuth();
 
   const currentUserName = currentUser
@@ -566,45 +566,31 @@ const AccountDetails: React.FC = () => {
     setIsContactModalOpen(false);
   };
 
-  const handleSaveContact = (contactData: ContactFormData & { id?: string }) => {
-    const now = new Date().toISOString();
-    if (contactData.id) {
-      // Edit mode
-      setContacts((prev) =>
-        prev.map((c) =>
-          c.id === contactData.id
-            ? { ...c, ...contactData, accountName: account.name, updatedAt: now }
-            : c
-        )
-      );
-    } else {
-      // Create mode
-      const newContact: Contact = {
-        ...contactData,
-        id: `con${Date.now()}`,
-        accountName: account.name,
-        createdAt: now,
-        updatedAt: now,
-      };
-      setContacts((prev) => [...prev, newContact]);
+  const handleSaveContact = async (contactData: ContactFormData & { id?: string }) => {
+    try {
+      await saveContact({ ...contactData, accountName: account.name });
+    } catch (err) {
+      console.error('Failed to save contact:', err);
     }
     handleCloseContactModal();
   };
 
-  const handleDeleteContact = (contactId: string) => {
+  const handleDeleteContact = async (contactId: string) => {
     if (window.confirm('Are you sure you want to delete this contact?')) {
-      setContacts((prev) => prev.filter((c) => c.id !== contactId));
+      try {
+        await deleteContact(contactId);
+      } catch (err) {
+        console.error('Failed to delete contact:', err);
+      }
     }
   };
 
-  const handleSaveAccount = (updatedData: AccountFormData) => {
-    setAccounts((prev) =>
-      prev.map((a) =>
-        a.id === account.id
-          ? { ...a, ...updatedData, updatedAt: new Date().toISOString() }
-          : a
-      )
-    );
+  const handleSaveAccount = async (updatedData: AccountFormData) => {
+    try {
+      await saveAccount({ ...account, ...updatedData });
+    } catch (err) {
+      console.error('Failed to save account:', err);
+    }
     setIsEditModalOpen(false);
   };
 

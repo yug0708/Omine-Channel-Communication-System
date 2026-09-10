@@ -30,6 +30,14 @@ const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_fallback_key';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+declare global {
+  namespace Express {
+    interface Request {
+      tenantId?: string;
+    }
+  }
+}
+
 interface Tenant {
   id: string;
   organizationName: string;
@@ -67,18 +75,29 @@ app.get('/api/debug', async (_req: Request, res: Response): Promise<void> => {
       WHATSAPP_APP_ID: process.env.WHATSAPP_APP_ID || '❌ MISSING',
       WHATSAPP_REDIRECT_URI: process.env.WHATSAPP_REDIRECT_URI || '(using default Vercel URL)',
     },
-    db: { status: 'unknown', tenantCount: 0, messageCount: 0, recentMessages: [] },
+    db: {
+      status: 'unknown',
+      tenantCount: 0,
+      accountCount: 0,
+      contactCount: 0,
+      messageCount: 0,
+      recentMessages: [],
+    },
   };
 
   try {
     const countResult = await pool.query('SELECT COUNT(*) FROM wa_incoming_messages');
     const tenantResult = await pool.query('SELECT COUNT(*) FROM tenants');
+    const accountResult = await pool.query('SELECT COUNT(*) FROM accounts');
+    const contactResult = await pool.query('SELECT COUNT(*) FROM contacts');
     const recentResult = await pool.query(
       'SELECT message_id, "from", from_name, body, timestamp FROM wa_incoming_messages ORDER BY created_at DESC LIMIT 5'
     );
     info.db.status = '✅ Connected';
     info.db.messageCount = parseInt(countResult.rows[0].count, 10);
     info.db.tenantCount = parseInt(tenantResult.rows[0].count, 10);
+    info.db.accountCount = parseInt(accountResult.rows[0].count, 10);
+    info.db.contactCount = parseInt(contactResult.rows[0].count, 10);
     info.db.recentMessages = recentResult.rows;
   } catch (err: any) {
     info.db.status = `❌ DB Error: ${err.message}`;
@@ -621,6 +640,487 @@ app.post('/api/auth/login', async (req: Request, res: Response): Promise<void> =
     const err = error as Error;
     console.error('Login error:', err);
     res.status(500).json({ error: err.message || 'Database error occurred during login' });
+  }
+});
+
+// ─── Tenant Isolation Middleware & Mappers ───────────────────────────────────
+
+function mapAccountRow(row: any) {
+  return {
+    id: row.id,
+    name: row.name || '',
+    website: row.website || '',
+    email: row.email || '',
+    phone: row.phone || '',
+    address: row.address || '',
+    crNumber: row.cr_number || '',
+    assignedTo: row.assigned_to || '',
+    country: row.country || '',
+    city: row.city || '',
+    pincode: row.pincode || '',
+    createdAt: row.created_at ? new Date(row.created_at).toISOString() : new Date().toISOString(),
+    updatedAt: row.updated_at ? new Date(row.updated_at).toISOString() : new Date().toISOString(),
+  };
+}
+
+function mapContactRow(row: any) {
+  return {
+    id: row.id,
+    firstName: row.first_name || '',
+    lastName: row.last_name || '',
+    email: row.email || '',
+    contactNumber: row.contact_number || '',
+    address: row.address || '',
+    city: row.city || '',
+    nationalId: row.national_id || '',
+    country: row.country || '',
+    accountName: row.account_name || '',
+    assignedTo: row.assigned_to || '',
+    lifecycle: row.lifecycle || 'NA',
+    labels: row.labels || '',
+    avatarUrl: row.avatar_url || '',
+    createdAt: row.created_at ? new Date(row.created_at).toISOString() : new Date().toISOString(),
+    updatedAt: row.updated_at ? new Date(row.updated_at).toISOString() : new Date().toISOString(),
+  };
+}
+
+const authenticateTenant = (req: Request, res: Response, next: NextFunction): void => {
+  try {
+    const authHeader = req.headers.authorization;
+    let tenantId: string | null = null;
+
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.split(' ')[1];
+      try {
+        const decoded = jwt.verify(token, JWT_SECRET) as { userId?: string; id?: string };
+        tenantId = decoded.userId || decoded.id || null;
+      } catch {
+        if (token.startsWith('fake_local_token_') && req.headers['x-tenant-id']) {
+          tenantId = String(req.headers['x-tenant-id']).trim();
+        }
+      }
+    }
+
+    if (!tenantId && req.headers['x-tenant-id']) {
+      tenantId = String(req.headers['x-tenant-id']).trim();
+    }
+
+    if (!tenantId) {
+      res.status(401).json({ error: 'Unauthorized: Missing or invalid authentication token' });
+      return;
+    }
+
+    req.tenantId = tenantId;
+    next();
+  } catch (error: any) {
+    res.status(401).json({ error: 'Unauthorized: Authentication failure' });
+  }
+};
+
+// ─── Accounts CRUD Endpoints (Multi-Tenant) ───────────────────────────────────
+
+// GET /api/accounts - List all accounts for current tenant
+app.get('/api/accounts', authenticateTenant, async (req: Request, res: Response): Promise<void> => {
+  try {
+    await initDb();
+    const result = await pool.query(
+      'SELECT * FROM accounts WHERE tenant_id = $1 ORDER BY created_at DESC',
+      [req.tenantId]
+    );
+    res.json(result.rows.map(mapAccountRow));
+  } catch (error: any) {
+    console.error('Error fetching accounts:', error);
+    res.status(500).json({ error: error.message || 'Failed to fetch accounts' });
+  }
+});
+
+// POST /api/accounts - Create or upsert account for current tenant
+app.post('/api/accounts', authenticateTenant, async (req: Request, res: Response): Promise<void> => {
+  try {
+    await initDb();
+    const {
+      id,
+      name,
+      website,
+      email,
+      phone,
+      address,
+      crNumber,
+      assignedTo,
+      country,
+      city,
+      pincode,
+    } = req.body;
+
+    if (!name || !name.trim()) {
+      res.status(400).json({ error: 'Account name is required' });
+      return;
+    }
+
+    const accountId = id?.trim() || `acc${Date.now()}`;
+    const result = await pool.query(
+      `INSERT INTO accounts (
+        id, tenant_id, name, website, email, phone, address,
+        cr_number, assigned_to, country, city, pincode, created_at, updated_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW(), NOW())
+      ON CONFLICT (id) DO UPDATE SET
+        name = EXCLUDED.name,
+        website = EXCLUDED.website,
+        email = EXCLUDED.email,
+        phone = EXCLUDED.phone,
+        address = EXCLUDED.address,
+        cr_number = EXCLUDED.cr_number,
+        assigned_to = EXCLUDED.assigned_to,
+        country = EXCLUDED.country,
+        city = EXCLUDED.city,
+        pincode = EXCLUDED.pincode,
+        updated_at = NOW()
+      WHERE accounts.tenant_id = $2
+      RETURNING *`,
+      [
+        accountId,
+        req.tenantId,
+        name.trim(),
+        website?.trim() || '',
+        email?.trim() || '',
+        phone?.trim() || '',
+        address?.trim() || '',
+        crNumber?.trim() || '',
+        assignedTo?.trim() || '',
+        country?.trim() || '',
+        city?.trim() || '',
+        pincode?.trim() || '',
+      ]
+    );
+
+    if (result.rows.length === 0) {
+      res.status(403).json({ error: 'Forbidden: Cannot overwrite an account belonging to another tenant' });
+      return;
+    }
+
+    res.status(201).json(mapAccountRow(result.rows[0]));
+  } catch (error: any) {
+    console.error('Error creating account:', error);
+    res.status(500).json({ error: error.message || 'Failed to create account' });
+  }
+});
+
+// PUT /api/accounts/:id - Edit / Update account for current tenant
+app.put('/api/accounts/:id', authenticateTenant, async (req: Request, res: Response): Promise<void> => {
+  try {
+    await initDb();
+    const { id } = req.params;
+    const {
+      name,
+      website,
+      email,
+      phone,
+      address,
+      crNumber,
+      assignedTo,
+      country,
+      city,
+      pincode,
+    } = req.body;
+
+    const result = await pool.query(
+      `UPDATE accounts SET
+        name = COALESCE($3, name),
+        website = COALESCE($4, website),
+        email = COALESCE($5, email),
+        phone = COALESCE($6, phone),
+        address = COALESCE($7, address),
+        cr_number = COALESCE($8, cr_number),
+        assigned_to = COALESCE($9, assigned_to),
+        country = COALESCE($10, country),
+        city = COALESCE($11, city),
+        pincode = COALESCE($12, pincode),
+        updated_at = NOW()
+      WHERE id = $1 AND tenant_id = $2
+      RETURNING *`,
+      [
+        id,
+        req.tenantId,
+        name !== undefined ? name.trim() : null,
+        website !== undefined ? website.trim() : null,
+        email !== undefined ? email.trim() : null,
+        phone !== undefined ? phone.trim() : null,
+        address !== undefined ? address.trim() : null,
+        crNumber !== undefined ? crNumber.trim() : null,
+        assignedTo !== undefined ? assignedTo.trim() : null,
+        country !== undefined ? country.trim() : null,
+        city !== undefined ? city.trim() : null,
+        pincode !== undefined ? pincode.trim() : null,
+      ]
+    );
+
+    if (result.rows.length === 0) {
+      res.status(404).json({ error: 'Account not found or unauthorized' });
+      return;
+    }
+
+    res.json(mapAccountRow(result.rows[0]));
+  } catch (error: any) {
+    console.error('Error updating account:', error);
+    res.status(500).json({ error: error.message || 'Failed to update account' });
+  }
+});
+
+// POST /api/accounts/delete-batch - Batch delete accounts for current tenant
+app.post('/api/accounts/delete-batch', authenticateTenant, async (req: Request, res: Response): Promise<void> => {
+  try {
+    await initDb();
+    const { ids } = req.body;
+    if (!Array.isArray(ids) || ids.length === 0) {
+      res.status(400).json({ error: 'Array of ids is required for batch delete' });
+      return;
+    }
+
+    const result = await pool.query(
+      'DELETE FROM accounts WHERE id = ANY($1) AND tenant_id = $2 RETURNING id',
+      [ids, req.tenantId]
+    );
+
+    res.json({
+      success: true,
+      message: `Deleted ${result.rows.length} accounts`,
+      deletedIds: result.rows.map((r) => r.id),
+    });
+  } catch (error: any) {
+    console.error('Error batch deleting accounts:', error);
+    res.status(500).json({ error: error.message || 'Failed to delete accounts' });
+  }
+});
+
+// DELETE /api/accounts/:id - Delete single account for current tenant
+app.delete('/api/accounts/:id', authenticateTenant, async (req: Request, res: Response): Promise<void> => {
+  try {
+    await initDb();
+    const { id } = req.params;
+    const result = await pool.query(
+      'DELETE FROM accounts WHERE id = $1 AND tenant_id = $2 RETURNING id',
+      [id, req.tenantId]
+    );
+
+    if (result.rows.length === 0) {
+      res.status(404).json({ error: 'Account not found or unauthorized' });
+      return;
+    }
+
+    res.json({ success: true, message: 'Account deleted successfully', id });
+  } catch (error: any) {
+    console.error('Error deleting account:', error);
+    res.status(500).json({ error: error.message || 'Failed to delete account' });
+  }
+});
+
+// ─── Contacts CRUD Endpoints (Multi-Tenant) ───────────────────────────────────
+
+// GET /api/contacts - List all contacts for current tenant
+app.get('/api/contacts', authenticateTenant, async (req: Request, res: Response): Promise<void> => {
+  try {
+    await initDb();
+    const result = await pool.query(
+      'SELECT * FROM contacts WHERE tenant_id = $1 ORDER BY created_at DESC',
+      [req.tenantId]
+    );
+    res.json(result.rows.map(mapContactRow));
+  } catch (error: any) {
+    console.error('Error fetching contacts:', error);
+    res.status(500).json({ error: error.message || 'Failed to fetch contacts' });
+  }
+});
+
+// POST /api/contacts - Create or upsert contact for current tenant
+app.post('/api/contacts', authenticateTenant, async (req: Request, res: Response): Promise<void> => {
+  try {
+    await initDb();
+    const {
+      id,
+      firstName,
+      lastName,
+      email,
+      contactNumber,
+      address,
+      city,
+      nationalId,
+      country,
+      accountName,
+      assignedTo,
+      lifecycle,
+      labels,
+      avatarUrl,
+    } = req.body;
+
+    const contactId = id?.trim() || `con${Date.now()}`;
+    const result = await pool.query(
+      `INSERT INTO contacts (
+        id, tenant_id, first_name, last_name, email, contact_number, address,
+        city, national_id, country, account_name, assigned_to, lifecycle, labels, avatar_url, created_at, updated_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, NOW(), NOW())
+      ON CONFLICT (id) DO UPDATE SET
+        first_name = EXCLUDED.first_name,
+        last_name = EXCLUDED.last_name,
+        email = EXCLUDED.email,
+        contact_number = EXCLUDED.contact_number,
+        address = EXCLUDED.address,
+        city = EXCLUDED.city,
+        national_id = EXCLUDED.national_id,
+        country = EXCLUDED.country,
+        account_name = EXCLUDED.account_name,
+        assigned_to = EXCLUDED.assigned_to,
+        lifecycle = EXCLUDED.lifecycle,
+        labels = EXCLUDED.labels,
+        avatar_url = EXCLUDED.avatar_url,
+        updated_at = NOW()
+      WHERE contacts.tenant_id = $2
+      RETURNING *`,
+      [
+        contactId,
+        req.tenantId,
+        firstName?.trim() || '',
+        lastName?.trim() || '',
+        email?.trim() || '',
+        contactNumber?.trim() || '',
+        address?.trim() || '',
+        city?.trim() || '',
+        nationalId?.trim() || '',
+        country?.trim() || '',
+        accountName?.trim() || '',
+        assignedTo?.trim() || 'Unassigned',
+        lifecycle?.trim() || 'NA',
+        labels?.trim() || '',
+        avatarUrl?.trim() || '',
+      ]
+    );
+
+    if (result.rows.length === 0) {
+      res.status(403).json({ error: 'Forbidden: Cannot overwrite a contact belonging to another tenant' });
+      return;
+    }
+
+    res.status(201).json(mapContactRow(result.rows[0]));
+  } catch (error: any) {
+    console.error('Error creating contact:', error);
+    res.status(500).json({ error: error.message || 'Failed to create contact' });
+  }
+});
+
+// PUT /api/contacts/:id - Edit / Update contact for current tenant
+app.put('/api/contacts/:id', authenticateTenant, async (req: Request, res: Response): Promise<void> => {
+  try {
+    await initDb();
+    const { id } = req.params;
+    const {
+      firstName,
+      lastName,
+      email,
+      contactNumber,
+      address,
+      city,
+      nationalId,
+      country,
+      accountName,
+      assignedTo,
+      lifecycle,
+      labels,
+      avatarUrl,
+    } = req.body;
+
+    const result = await pool.query(
+      `UPDATE contacts SET
+        first_name = COALESCE($3, first_name),
+        last_name = COALESCE($4, last_name),
+        email = COALESCE($5, email),
+        contact_number = COALESCE($6, contact_number),
+        address = COALESCE($7, address),
+        city = COALESCE($8, city),
+        national_id = COALESCE($9, national_id),
+        country = COALESCE($10, country),
+        account_name = COALESCE($11, account_name),
+        assigned_to = COALESCE($12, assigned_to),
+        lifecycle = COALESCE($13, lifecycle),
+        labels = COALESCE($14, labels),
+        avatar_url = COALESCE($15, avatar_url),
+        updated_at = NOW()
+      WHERE id = $1 AND tenant_id = $2
+      RETURNING *`,
+      [
+        id,
+        req.tenantId,
+        firstName !== undefined ? firstName.trim() : null,
+        lastName !== undefined ? lastName.trim() : null,
+        email !== undefined ? email.trim() : null,
+        contactNumber !== undefined ? contactNumber.trim() : null,
+        address !== undefined ? address.trim() : null,
+        city !== undefined ? city.trim() : null,
+        nationalId !== undefined ? nationalId.trim() : null,
+        country !== undefined ? country.trim() : null,
+        accountName !== undefined ? accountName.trim() : null,
+        assignedTo !== undefined ? assignedTo.trim() : null,
+        lifecycle !== undefined ? lifecycle.trim() : null,
+        labels !== undefined ? labels.trim() : null,
+        avatarUrl !== undefined ? avatarUrl.trim() : null,
+      ]
+    );
+
+    if (result.rows.length === 0) {
+      res.status(404).json({ error: 'Contact not found or unauthorized' });
+      return;
+    }
+
+    res.json(mapContactRow(result.rows[0]));
+  } catch (error: any) {
+    console.error('Error updating contact:', error);
+    res.status(500).json({ error: error.message || 'Failed to update contact' });
+  }
+});
+
+// POST /api/contacts/delete-batch - Batch delete contacts for current tenant
+app.post('/api/contacts/delete-batch', authenticateTenant, async (req: Request, res: Response): Promise<void> => {
+  try {
+    await initDb();
+    const { ids } = req.body;
+    if (!Array.isArray(ids) || ids.length === 0) {
+      res.status(400).json({ error: 'Array of ids is required for batch delete' });
+      return;
+    }
+
+    const result = await pool.query(
+      'DELETE FROM contacts WHERE id = ANY($1) AND tenant_id = $2 RETURNING id',
+      [ids, req.tenantId]
+    );
+
+    res.json({
+      success: true,
+      message: `Deleted ${result.rows.length} contacts`,
+      deletedIds: result.rows.map((r) => r.id),
+    });
+  } catch (error: any) {
+    console.error('Error batch deleting contacts:', error);
+    res.status(500).json({ error: error.message || 'Failed to delete contacts' });
+  }
+});
+
+// DELETE /api/contacts/:id - Delete single contact for current tenant
+app.delete('/api/contacts/:id', authenticateTenant, async (req: Request, res: Response): Promise<void> => {
+  try {
+    await initDb();
+    const { id } = req.params;
+    const result = await pool.query(
+      'DELETE FROM contacts WHERE id = $1 AND tenant_id = $2 RETURNING id',
+      [id, req.tenantId]
+    );
+
+    if (result.rows.length === 0) {
+      res.status(404).json({ error: 'Contact not found or unauthorized' });
+      return;
+    }
+
+    res.json({ success: true, message: 'Contact deleted successfully', id });
+  } catch (error: any) {
+    console.error('Error deleting contact:', error);
+    res.status(500).json({ error: error.message || 'Failed to delete contact' });
   }
 });
 

@@ -703,7 +703,7 @@ const downloadSampleCsv = () => {
 };
 
 const Contacts: React.FC = () => {
-  const { contacts, setContacts } = useData();
+  const { contacts, setContacts, saveContact, deleteContact, deleteContactsBatch } = useData();
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -786,35 +786,25 @@ const Contacts: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  const handleSaveContact = (contactData: any) => {
-    const now = new Date().toISOString();
-
-    if (contactData.id) {
-      setContacts(
-        contacts.map((c) =>
-          c.id === contactData.id
-            ? { ...contactData, updatedAt: now }
-            : c
-        )
-      );
-    } else {
-      const newContact = {
-        ...contactData,
-        id: `con${Date.now()}`,
-        createdAt: now,
-        updatedAt: now
-      };
-
-      setContacts([newContact, ...contacts]);
+  const handleSaveContact = async (contactData: any) => {
+    try {
+      await saveContact(contactData);
+      setSuccessMessage(contactData.id ? 'Contact Updated Successfully' : 'Contact Created Successfully');
+    } catch (err) {
+      setErrorMessage('Failed to save contact');
     }
-    setSuccessMessage('Contact Saved Successfully');
-
     handleCloseModal();
   };
 
-  const handleDeleteContact = (id: string) => {
+  const handleDeleteContact = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this contact?')) {
-      setContacts(contacts.filter((c) => c.id !== id));
+      try {
+        await deleteContact(id);
+        setSelectedContacts((prev) => prev.filter((i) => i !== id));
+        setSuccessMessage('Contact Deleted Successfully');
+      } catch (err) {
+        setErrorMessage('Failed to delete contact');
+      }
     }
   };
 
@@ -847,12 +837,16 @@ const Contacts: React.FC = () => {
     );
   };
 
-  const handleDeleteSelected = () => {
+  const handleDeleteSelected = async () => {
     if (!selectedContacts.length) return;
     if (window.confirm(`Are you sure you want to delete ${selectedContacts.length} contacts?`)) {
-      setContacts(contacts.filter((c) => !selectedContacts.includes(c.id)));
-      setSelectedContacts([]);
-      setSuccessMessage('Contacts Deleted Successfully');
+      try {
+        await deleteContactsBatch(selectedContacts);
+        setSelectedContacts([]);
+        setSuccessMessage('Contacts Deleted Successfully');
+      } catch (err) {
+        setErrorMessage('Failed to delete contacts');
+      }
     }
   };
 
