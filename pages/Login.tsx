@@ -35,11 +35,11 @@ const Login: React.FC = () => {
     setError('');
     setIsLoading(true);
     try {
-      await auth.login(STATIC_EMAIL, STATIC_PASSWORD);
+      await auth.login(email.trim(), password);
       showToast('Login successful', 'success');
       navigate(from, { replace: true });
-    } catch {
-      setError('Invalid email or password. Please try again.');
+    } catch (err: any) {
+      setError(err?.message || 'Invalid email or password. Please try again.');
     } finally {
       setIsLoading(false);
     }

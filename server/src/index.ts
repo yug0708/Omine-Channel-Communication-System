@@ -3,34 +3,14 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import pkg from 'pg';
-
 import fs from 'fs';
+import { pool, initDb } from './db/index.js';
+
 dotenv.config();
 
-// ─── PostgreSQL client ────────────────────────────────────────────────────────
+// Ensure all database tables exist and admin user is seeded
+initDb().catch(err => console.error('Database initialization notice:', err.message));
 
-const { Pool } = pkg;
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
-});
-
-// Ensure the incoming messages table exists on first use
-async function ensureMessagesTable() {
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS wa_incoming_messages (
-      id SERIAL PRIMARY KEY,
-      message_id TEXT UNIQUE,
-      "from" TEXT NOT NULL,
-      from_name TEXT,
-      body TEXT,
-      timestamp BIGINT,
-      created_at TIMESTAMPTZ DEFAULT NOW()
-    )
-  `);
-}
-ensureMessagesTable().catch(err => console.error('Failed to ensure wa_incoming_messages table:', err));
 
 // Lazy-load whatsappService to avoid Puppeteer crash on Vercel serverless startup
 type WhatsAppServiceModule = typeof import('./whatsappService.js');
@@ -64,24 +44,6 @@ interface Tenant {
   password: string;
 }
 
-// ─── In-memory store (no database required) ───────────────────────────────────
-
-const tenants: Tenant[] = [
-  {
-    id: 'default_tenant',
-    organizationName: 'Default Org',
-    crNumber: '',
-    website: '',
-    businessIndustry: '',
-    companySize: '',
-    firstName: 'Default',
-    lastName: 'User',
-    email: 'yugshah82@gmail.com',
-    phone: null,
-    password: bcrypt.hashSync('Variance@2025', 10),
-  },
-];
-
 // ─── Middleware ───────────────────────────────────────────────────────────────
 
 app.use(cors());
@@ -105,17 +67,18 @@ app.get('/api/debug', async (_req: Request, res: Response): Promise<void> => {
       WHATSAPP_APP_ID: process.env.WHATSAPP_APP_ID || '❌ MISSING',
       WHATSAPP_REDIRECT_URI: process.env.WHATSAPP_REDIRECT_URI || '(using default Vercel URL)',
     },
-    db: { status: 'unknown', messageCount: 0, recentMessages: [] },
+    db: { status: 'unknown', tenantCount: 0, messageCount: 0, recentMessages: [] },
   };
 
   try {
-    await ensureMessagesTable();
     const countResult = await pool.query('SELECT COUNT(*) FROM wa_incoming_messages');
+    const tenantResult = await pool.query('SELECT COUNT(*) FROM tenants');
     const recentResult = await pool.query(
       'SELECT message_id, "from", from_name, body, timestamp FROM wa_incoming_messages ORDER BY created_at DESC LIMIT 5'
     );
     info.db.status = '✅ Connected';
     info.db.messageCount = parseInt(countResult.rows[0].count, 10);
+    info.db.tenantCount = parseInt(tenantResult.rows[0].count, 10);
     info.db.recentMessages = recentResult.rows;
   } catch (err: any) {
     info.db.status = `❌ DB Error: ${err.message}`;
@@ -399,7 +362,7 @@ app.post('/api/whatsapp/webhook', async (req: Request, res: Response): Promise<v
 
         // Persist message to database so frontend polling works on Vercel
         try {
-          await ensureMessagesTable();
+          await initDb();
           await pool.query(
             `INSERT INTO wa_incoming_messages (message_id, "from", from_name, body, timestamp)
              VALUES ($1, $2, $3, $4, $5)
@@ -537,9 +500,15 @@ app.post('/api/auth/register', async (req: Request, res: Response): Promise<void
       return;
     }
 
-    // Check duplicate email
-    const existingUser = tenants.find((t) => t.email === email);
-    if (existingUser) {
+    const normalizedEmail = email.toLowerCase().trim();
+
+    // Check duplicate email in PostgreSQL
+    const existingCheck = await pool.query(
+      'SELECT id FROM tenants WHERE LOWER(email) = LOWER($1)',
+      [normalizedEmail]
+    );
+
+    if (existingCheck.rows.length > 0) {
       res.status(400).json({ error: 'User with this email already exists' });
       return;
     }
@@ -548,23 +517,30 @@ app.post('/api/auth/register', async (req: Request, res: Response): Promise<void
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create tenant record
-    const tenant: Tenant = {
-      id: Date.now().toString(),
-      organizationName: organizationName ?? 'QA Team',
-      crNumber: crNumber ?? '123456',
-      website: website ?? 'https://www.google.com',
-      businessIndustry: industry ?? '',
-      companySize: companySize ?? '100-500',
-      firstName: firstName ?? '',
-      lastName: lastName ?? '',
-      email,
-      phone: phone ?? null,
-      password: hashedPassword,
-    };
+    const tenantId = Date.now().toString();
 
-    tenants.push(tenant);
-    console.log('Successfully registered tenant:', email);
+    // Insert tenant record into PostgreSQL
+    await pool.query(
+      `INSERT INTO tenants (
+        id, email, password, first_name, last_name, organization_name,
+        cr_number, website, business_industry, company_size, phone
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+      [
+        tenantId,
+        normalizedEmail,
+        hashedPassword,
+        firstName?.trim() || '',
+        lastName?.trim() || '',
+        organizationName?.trim() || 'QA Team',
+        crNumber?.trim() || '',
+        website?.trim() || '',
+        industry?.trim() || '',
+        companySize?.trim() || '',
+        phone?.trim() || null,
+      ]
+    );
+
+    console.log('Successfully registered and persisted tenant to DB:', normalizedEmail);
 
     res.status(201).json({
       success: true,
@@ -597,11 +573,20 @@ app.post('/api/auth/login', async (req: Request, res: Response): Promise<void> =
       return;
     }
 
-    const tenant = tenants.find((t) => t.email === email);
-    if (!tenant) {
+    const normalizedEmail = email.toLowerCase().trim();
+
+    // Query tenant from PostgreSQL database
+    const result = await pool.query(
+      'SELECT * FROM tenants WHERE LOWER(email) = LOWER($1)',
+      [normalizedEmail]
+    );
+
+    if (result.rows.length === 0) {
       res.status(400).json({ error: 'Invalid credentials' });
       return;
     }
+
+    const tenant = result.rows[0];
 
     const isMatch = await bcrypt.compare(password, tenant.password);
     if (!isMatch) {
@@ -617,14 +602,14 @@ app.post('/api/auth/login', async (req: Request, res: Response): Promise<void> =
       user: {
         id: tenant.id,
         email: tenant.email,
-        firstName: tenant.firstName,
-        lastName: tenant.lastName,
-        organizationName: tenant.organizationName,
-        phone: tenant.phone,
-        crNumber: tenant.crNumber,
-        website: tenant.website,
-        industry: tenant.businessIndustry,
-        companySize: tenant.companySize,
+        firstName: tenant.first_name || '',
+        lastName: tenant.last_name || '',
+        organizationName: tenant.organization_name || '',
+        phone: tenant.phone || '',
+        crNumber: tenant.cr_number || '',
+        website: tenant.website || '',
+        industry: tenant.business_industry || '',
+        companySize: tenant.company_size || '',
       },
     });
   } catch (error: unknown) {

@@ -63,34 +63,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const isAuthenticated = !!currentUser && !!localStorage.getItem('authToken');
 
   const login = async (email: string, pass: string): Promise<void> => {
-    // If no backend API URL is configured, run in offline local mock mode
-    if (!API_URL) {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          const users = getLocalUsers();
-          const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
-          if (!user || user.password !== pass) {
-            reject(new Error('Invalid credentials'));
-            return;
-          }
-          localStorage.setItem('authToken', 'fake_local_token_' + Date.now());
-          localStorage.setItem('currentUser', JSON.stringify(user));
-          setCurrentUser(user);
-          resolve();
-        }, 600);
-      });
-    }
-
     try {
       const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password: pass }),
+        body: JSON.stringify({ email: email.trim(), password: pass }),
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Login failed');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Invalid credentials');
       }
 
       const data = await response.json();
@@ -99,41 +81,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setCurrentUser(data.user);
       return Promise.resolve();
     } catch (error: any) {
+      // Fallback only if fetch failed completely due to lack of network (e.g. offline APK)
+      if (error?.message?.includes('fetch') || error?.message?.includes('Failed to fetch')) {
+        const users = getLocalUsers();
+        const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+        if (user && user.password === pass) {
+          localStorage.setItem('authToken', 'fake_local_token_' + Date.now());
+          localStorage.setItem('currentUser', JSON.stringify(user));
+          setCurrentUser(user);
+          return Promise.resolve();
+        }
+      }
       return Promise.reject(new Error(error.message || 'Invalid credentials'));
     }
   };
 
   const register = async (userData: any): Promise<void> => {
-    // If no backend API URL is configured, run in offline local mock mode
-    if (!API_URL) {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          const users = getLocalUsers();
-          const emailExists = users.some(u => u.email.toLowerCase() === userData.email.toLowerCase());
-          if (emailExists) {
-            reject(new Error('User with this email already exists'));
-            return;
-          }
-          const newUser = {
-            id: Date.now().toString(),
-            email: userData.email,
-            password: userData.password,
-            firstName: userData.firstName || '',
-            lastName: userData.lastName || '',
-            organizationName: userData.organizationName || 'QA Team',
-            phone: userData.phone || '',
-            crNumber: userData.crNumber || '',
-            website: userData.website || '',
-            industry: userData.industry || '',
-            companySize: userData.companySize || '',
-          };
-          users.push(newUser);
-          localStorage.setItem('localUsers', JSON.stringify(users));
-          resolve();
-        }, 600);
-      });
-    }
-
     try {
       const response = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
@@ -142,12 +105,27 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.error || 'Registration failed');
       }
 
       return Promise.resolve();
     } catch (error: any) {
+      // Fallback only if fetch failed completely due to lack of network (e.g. offline APK)
+      if (error?.message?.includes('fetch') || error?.message?.includes('Failed to fetch')) {
+        const users = getLocalUsers();
+        const emailExists = users.some(u => u.email.toLowerCase() === userData.email.toLowerCase());
+        if (emailExists) {
+          return Promise.reject(new Error('User with this email already exists'));
+        }
+        const newUser = {
+          id: Date.now().toString(),
+          ...userData,
+        };
+        users.push(newUser);
+        localStorage.setItem('localUsers', JSON.stringify(users));
+        return Promise.resolve();
+      }
       return Promise.reject(new Error(error.message || 'Error occurred during registration'));
     }
   };

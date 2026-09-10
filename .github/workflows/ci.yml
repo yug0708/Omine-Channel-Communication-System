@@ -1,0 +1,66 @@
+name: CI & Database Deployment Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate_and_deploy:
+    name: Build, Verify & Migrate Database
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📦 Install root dependencies
+        run: npm install
+
+      - name: 📦 Install server dependencies
+        run: cd server && npm install
+
+      - name: 🔨 Build & Verify Frontend
+        run: npm run build
+
+      - name: 🔨 Build & Verify Backend
+        run: npm run build:backend
+
+      - name: 🗄️ Resolve Target Database URL
+        id: resolve_db
+        run: |
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            echo "Environment: PRODUCTION / MAIN"
+            DB_URL="${{ secrets.MAIN_DATABASE_URL || secrets.DATABASE_URL }}"
+          else
+            echo "Environment: DEVELOPMENT / DEV"
+            DB_URL="${{ secrets.DEV_DATABASE_URL || secrets.DATABASE_URL }}"
+          fi
+          
+          if [ -n "$DB_URL" ]; then
+            echo "has_db=true" >> "$GITHUB_OUTPUT"
+            echo "DATABASE_URL=$DB_URL" >> "$GITHUB_ENV"
+          else
+            echo "has_db=false" >> "$GITHUB_OUTPUT"
+            echo "⚠️ No DATABASE_URL secret found for this branch. Please add MAIN_DATABASE_URL and DEV_DATABASE_URL to GitHub Repository Secrets."
+          fi
+
+      - name: 🚀 Run Database Migration (Sync Schema)
+        if: steps.resolve_db.outputs.has_db == 'true'
+        run: npm run db:migrate
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
