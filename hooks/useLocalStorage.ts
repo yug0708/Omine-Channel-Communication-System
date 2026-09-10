@@ -24,6 +24,17 @@ export function useLocalStorage<T,>(key: string, initialValue: T): [T, Dispatch<
     }
   }, [key]);
 
+  // Re-read storage when key changes (essential for multi-tenant switching)
+  useEffect(() => {
+    try {
+      const item = window.localStorage.getItem(key);
+      setStoredValue(item ? JSON.parse(item) : initialValue);
+    } catch (error) {
+      console.log(error);
+      setStoredValue(initialValue);
+    }
+  }, [key]);
+
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === key) {
@@ -40,8 +51,7 @@ export function useLocalStorage<T,>(key: string, initialValue: T): [T, Dispatch<
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key]);
+  }, [key, initialValue]);
 
   return [storedValue, setValue];
 }

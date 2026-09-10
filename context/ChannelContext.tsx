@@ -1,4 +1,5 @@
 import React, { createContext, useContext, ReactNode, useCallback, useEffect, useRef } from 'react';
+import { useAuth } from '../hooks/useAuth';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 
 function normalizePhone(num: string | undefined): string {
@@ -64,12 +65,16 @@ interface ChannelContextType {
 const ChannelContext = createContext<ChannelContextType | undefined>(undefined);
 
 export const ChannelProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { currentUser } = useAuth();
+  const tenantId = currentUser?.id || currentUser?.email || 'guest';
+  const tenantKey = `tenant_${tenantId.toLowerCase().replace(/[^a-z0-9_-]/g, '_')}`;
+
   const [connectedChannels, setConnectedChannels] = useLocalStorage<ConnectedChannel[]>(
-    'connectedChannels',
+    `${tenantKey}_connectedChannels`,
     []
   );
   const [conversations, setConversations] = useLocalStorage<ChatConversation[]>(
-    'inboxConversations',
+    `${tenantKey}_inboxConversations`,
     []
   );
 

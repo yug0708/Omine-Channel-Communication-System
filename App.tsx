@@ -61,17 +61,17 @@ function AppRoutes() {
 function App() {
   return (
     <ThemeProvider>
-      <DataProvider>
-        <ChannelProvider>
-          <AuthProvider>
+      <AuthProvider>
+        <DataProvider>
+          <ChannelProvider>
             <ToastProvider>
               <HashRouter>
                 <AppRoutes />
               </HashRouter>
             </ToastProvider>
-          </AuthProvider>
-        </ChannelProvider>
-      </DataProvider>
+          </ChannelProvider>
+        </DataProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }
