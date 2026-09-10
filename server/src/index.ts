@@ -500,6 +500,9 @@ app.post('/api/auth/register', async (req: Request, res: Response): Promise<void
       return;
     }
 
+    // Ensure database tables and schema are initialized
+    await initDb();
+
     const normalizedEmail = email.toLowerCase().trim();
 
     // Check duplicate email in PostgreSQL
@@ -556,8 +559,7 @@ app.post('/api/auth/register', async (req: Request, res: Response): Promise<void
 
     res.status(500).json({
       success: false,
-      error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? err.message : undefined,
+      error: err.message || 'Database error occurred during registration',
     });
   }
 });
@@ -572,6 +574,9 @@ app.post('/api/auth/login', async (req: Request, res: Response): Promise<void> =
       res.status(400).json({ error: 'Email and password are required' });
       return;
     }
+
+    // Ensure database tables and schema are initialized
+    await initDb();
 
     const normalizedEmail = email.toLowerCase().trim();
 
@@ -613,8 +618,9 @@ app.post('/api/auth/login', async (req: Request, res: Response): Promise<void> =
       },
     });
   } catch (error: unknown) {
-    console.error('Login error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    const err = error as Error;
+    console.error('Login error:', err);
+    res.status(500).json({ error: err.message || 'Database error occurred during login' });
   }
 });
 

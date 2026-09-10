@@ -41,11 +41,14 @@ export const DEFAULT_ADMIN = {
   phone: null,
 };
 
+let _isDbInitialized = false;
+
 /**
  * Initializes the database tables and seeds the default admin user if not present.
  * This is safe to run multiple times (idempotent).
  */
 export async function initDb(): Promise<void> {
+  if (_isDbInitialized) return;
   if (!process.env.DATABASE_URL) {
     console.warn('⚠️  DATABASE_URL is not set; skipping database initialization.');
     return;
@@ -125,6 +128,7 @@ export async function initDb(): Promise<void> {
     }
 
     console.log('✅ Database initialized successfully: all tables and indices verified.');
+    _isDbInitialized = true;
   } catch (err: any) {
     console.error('❌ Database initialization error:', err.message);
     throw err;
