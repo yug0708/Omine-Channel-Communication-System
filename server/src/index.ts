@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import fs from 'fs';
-import { pool, initDb } from './db/index.js';
+import { pool, initDb, getDbConnectionInfo } from './db/index.js';
 
 dotenv.config();
 
@@ -93,7 +93,10 @@ app.get('/api/debug', async (_req: Request, res: Response): Promise<void> => {
     const recentResult = await pool.query(
       'SELECT message_id, "from", from_name, body, timestamp FROM wa_incoming_messages ORDER BY created_at DESC LIMIT 5'
     );
+    const connInfo = getDbConnectionInfo();
     info.db.status = '✅ Connected';
+    info.db.activeHost = connInfo.activeHost;
+    info.db.isUsingFallback = connInfo.isUsingFallback;
     info.db.messageCount = parseInt(countResult.rows[0].count, 10);
     info.db.tenantCount = parseInt(tenantResult.rows[0].count, 10);
     info.db.accountCount = parseInt(accountResult.rows[0].count, 10);
@@ -884,7 +887,7 @@ app.post('/api/accounts/delete-batch', authenticateTenant, async (req: Request, 
     res.json({
       success: true,
       message: `Deleted ${result.rows.length} accounts`,
-      deletedIds: result.rows.map((r) => r.id),
+      deletedIds: result.rows.map((r: any) => r.id),
     });
   } catch (error: any) {
     console.error('Error batch deleting accounts:', error);
@@ -1094,7 +1097,7 @@ app.post('/api/contacts/delete-batch', authenticateTenant, async (req: Request, 
     res.json({
       success: true,
       message: `Deleted ${result.rows.length} contacts`,
-      deletedIds: result.rows.map((r) => r.id),
+      deletedIds: result.rows.map((r: any) => r.id),
     });
   } catch (error: any) {
     console.error('Error batch deleting contacts:', error);
