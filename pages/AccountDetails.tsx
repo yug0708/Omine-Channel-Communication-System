@@ -1,9 +1,12 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useData } from '../hooks/useData';
 import { useAuth } from '../hooks/useAuth';
 import { Account, Contact, Ticket, TicketStatus, TicketPriority } from '../types';
 import Modal from '../components/ui/Modal';
+import CountryCodePicker from '../components/ui/CountryCodePicker';
+import FullScreenLoader from '../components/ui/FullScreenLoader';
 import { COUNTRIES } from '../data/countries';
 import {
   EditIcon,
@@ -140,11 +143,14 @@ interface ContactFormData {
 
 const ContactForm: React.FC<{
   contact?: Contact | null;
-  onSave: (data: ContactFormData & { id?: string }) => void;
+  onSave: (data: ContactFormData & { id?: string }) => void | Promise<void>;
   onClose: () => void;
   accountName: string;
   currentUserName?: string;
-}> = ({ contact, onSave, onClose, accountName, currentUserName = 'Unassigned' }) => {
+  isSaving?: boolean;
+}> = ({ contact, onSave, onClose, accountName, currentUserName = 'Unassigned', isSaving: externalIsSaving = false }) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const isLoading = isSubmitting || externalIsSaving;
   const [formData, setFormData] = useState<ContactFormData>({
     firstName: contact?.firstName || '',
     lastName: contact?.lastName || '',
@@ -160,9 +166,15 @@ const ContactForm: React.FC<{
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({ ...formData, id: contact?.id });
+    if (isLoading) return;
+    try {
+      setIsSubmitting(true);
+      await onSave({ ...formData, id: contact?.id });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const inputClass =
@@ -172,6 +184,7 @@ const ContactForm: React.FC<{
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <fieldset disabled={isLoading} className="space-y-4 border-0 p-0 m-0 min-w-0 disabled:opacity-80">
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className={labelClass}>First Name</label>
@@ -265,21 +278,41 @@ const ContactForm: React.FC<{
         />
       </div>
 
+      </fieldset>
+
       <div className="flex justify-end gap-3 pt-6 border-t border-slate-100 dark:border-slate-800 mt-6">
         <button
           type="button"
           onClick={onClose}
-          className="px-5 py-2 rounded-xl text-sm font-bold border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+          disabled={isLoading}
+          className="px-5 py-2 rounded-xl text-sm font-bold border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="px-5 py-2 rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition"
+          disabled={isLoading}
+          className="px-5 py-2 rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 min-w-[88px]"
         >
-          Save Contact
+          {isLoading ? (
+            <>
+              <svg className="h-4 w-4 animate-spin text-white" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              <span>{contact ? 'Updating…' : 'Saving…'}</span>
+            </>
+          ) : (
+            'Save Contact'
+          )}
         </button>
       </div>
+
+      <FullScreenLoader
+        isLoading={isLoading}
+        title={contact ? 'Updating Contact…' : 'Creating Contact…'}
+        message="Please wait while the record is being saved"
+      />
     </form>
   );
 };
@@ -301,14 +334,35 @@ interface AccountFormData {
 
 const AccountEditForm: React.FC<{
   account: Account;
-  onSave: (data: AccountFormData) => void;
+  onSave: (data: AccountFormData) => void | Promise<void>;
   onClose: () => void;
-}> = ({ account, onSave, onClose }) => {
+  isSaving?: boolean;
+}> = ({ account, onSave, onClose, isSaving: externalIsSaving = false }) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const isLoading = isSubmitting || externalIsSaving;
+  // Extract initial country code and clean local number
+  const parsedPhoneData = React.useMemo(() => {
+    const raw = (account?.phone || '').trim();
+    if (!raw) return { code: 'IN', localNumber: '' };
+    const sorted = [...COUNTRIES].sort((a, b) => b.dial_code.length - a.dial_code.length);
+    for (const c of sorted) {
+      if (raw.startsWith(c.dial_code)) {
+        return { code: c.code, localNumber: raw.slice(c.dial_code.length).trim() };
+      }
+      const rawDial = c.dial_code.replace('+', '');
+      if (raw.startsWith(rawDial) && !raw.startsWith('+')) {
+        return { code: c.code, localNumber: raw.slice(rawDial.length).trim() };
+      }
+    }
+    return { code: 'IN', localNumber: raw };
+  }, [account?.phone]);
+
+  const [phoneCountryCode, setPhoneCountryCode] = useState(parsedPhoneData.code);
   const [form, setForm] = useState<AccountFormData>({
     name: account.name,
     website: account.website || '',
     email: account.email || '',
-    phone: account.phone || '',
+    phone: parsedPhoneData.localNumber,
     address: account.address || '',
     crNumber: account.crNumber || '',
     assignedTo: account.assignedTo || '',
@@ -319,12 +373,36 @@ const AccountEditForm: React.FC<{
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    if (name === 'phone') {
+      setForm((prev) => ({ ...prev, phone: value.replace(/[^\d\s-]/g, '') }));
+      return;
+    }
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(form);
+    if (isLoading) return;
+    const selectedCountry = COUNTRIES.find((c) => c.code === phoneCountryCode);
+    const dialCode = selectedCountry?.dial_code || '+91';
+    const trimmedPhone = form.phone.trim();
+    const cleanDial = dialCode.replace('+', '');
+
+    let finalPhone = trimmedPhone;
+    if (trimmedPhone) {
+      if (!trimmedPhone.startsWith(dialCode) && !trimmedPhone.startsWith(`+${cleanDial}`)) {
+        finalPhone = `${dialCode} ${trimmedPhone}`;
+      } else if (trimmedPhone.startsWith(cleanDial) && !trimmedPhone.startsWith('+')) {
+        finalPhone = `+${trimmedPhone}`;
+      }
+    }
+
+    try {
+      setIsSubmitting(true);
+      await onSave({ ...form, phone: finalPhone });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const inputClass =
@@ -334,6 +412,7 @@ const AccountEditForm: React.FC<{
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <fieldset disabled={isLoading} className="border-0 p-0 m-0 min-w-0 space-y-4 disabled:opacity-80">
       <div>
         <label className={labelClass}>Account Name *</label>
         <input
@@ -359,13 +438,19 @@ const AccountEditForm: React.FC<{
         </div>
         <div>
           <label className={labelClass}>Phone Number</label>
-          <input
-            type="text"
-            name="phone"
-            value={form.phone}
-            onChange={handleChange}
-            className={inputClass}
-          />
+          <div className="mt-1 flex items-center w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 overflow-hidden focus-within:ring-1 focus-within:ring-emerald-500 focus-within:border-emerald-500 transition">
+            <div className="flex-shrink-0 self-stretch flex items-center border-r border-slate-200 dark:border-slate-700">
+              <CountryCodePicker value={phoneCountryCode} onChange={setPhoneCountryCode} />
+            </div>
+            <input
+              type="tel"
+              name="phone"
+              value={form.phone}
+              onChange={handleChange}
+              placeholder="Enter phone number"
+              className="w-full px-3.5 py-2 bg-transparent focus:outline-none placeholder-slate-400 text-sm text-slate-900 dark:text-white"
+            />
+          </div>
         </div>
       </div>
 
@@ -449,21 +534,42 @@ const AccountEditForm: React.FC<{
         />
       </div>
 
+      </fieldset>
+
       <div className="flex justify-end gap-3 pt-6 border-t border-slate-100 dark:border-slate-800 mt-6">
         <button
           type="button"
           onClick={onClose}
-          className="px-5 py-2 rounded-xl text-sm font-bold border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+          disabled={isLoading}
+          className="px-5 py-2 rounded-xl text-sm font-bold border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="px-5 py-2 rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition"
+          disabled={isLoading}
+          className="px-5 py-2 rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 min-w-[88px]"
         >
-          Save Changes
+          {isLoading ? (
+            <>
+              <svg className="h-4 w-4 animate-spin text-white" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              <span>Saving…</span>
+            </>
+          ) : (
+            'Save Changes'
+          )}
         </button>
       </div>
+
+      {/* Full-Screen Loading Overlay */}
+      <FullScreenLoader
+        isLoading={isLoading}
+        title="Updating Account…"
+        message="Please wait while the record is being saved"
+      />
     </form>
   );
 };
@@ -504,6 +610,9 @@ const AccountDetails: React.FC = () => {
 
   // Account Edit Modal
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isSavingAccount, setIsSavingAccount] = useState(false);
+  const [isSavingContact, setIsSavingContact] = useState(false);
+  const [isDeletingContact, setIsDeletingContact] = useState(false);
 
   // Filter lists based on account
   const accountContacts = useMemo(() => {
@@ -562,36 +671,47 @@ const AccountDetails: React.FC = () => {
   };
 
   const handleCloseContactModal = () => {
+    if (isSavingContact) return;
     setEditingContact(null);
     setIsContactModalOpen(false);
   };
 
   const handleSaveContact = async (contactData: ContactFormData & { id?: string }) => {
+    setIsSavingContact(true);
     try {
       await saveContact({ ...contactData, accountName: account.name });
+      setEditingContact(null);
+      setIsContactModalOpen(false);
     } catch (err) {
       console.error('Failed to save contact:', err);
+    } finally {
+      setIsSavingContact(false);
     }
-    handleCloseContactModal();
   };
 
   const handleDeleteContact = async (contactId: string) => {
     if (window.confirm('Are you sure you want to delete this contact?')) {
+      setIsDeletingContact(true);
       try {
         await deleteContact(contactId);
       } catch (err) {
         console.error('Failed to delete contact:', err);
+      } finally {
+        setIsDeletingContact(false);
       }
     }
   };
 
   const handleSaveAccount = async (updatedData: AccountFormData) => {
+    setIsSavingAccount(true);
     try {
       await saveAccount({ ...account, ...updatedData });
+      setIsEditModalOpen(false);
     } catch (err) {
       console.error('Failed to save account:', err);
+    } finally {
+      setIsSavingAccount(false);
     }
-    setIsEditModalOpen(false);
   };
 
   const handleDeleteTicket = (ticketId: string) => {
@@ -1146,14 +1266,15 @@ const AccountDetails: React.FC = () => {
       {/* Edit Account Modal */}
       <Modal
         isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
+        onClose={() => { if (!isSavingAccount) setIsEditModalOpen(false); }}
         title="Edit Account Details"
         variant="drawer"
       >
         <AccountEditForm
           account={account}
           onSave={handleSaveAccount}
-          onClose={() => setIsEditModalOpen(false)}
+          onClose={() => { if (!isSavingAccount) setIsEditModalOpen(false); }}
+          isSaving={isSavingAccount}
         />
       </Modal>
 
@@ -1170,8 +1291,15 @@ const AccountDetails: React.FC = () => {
           onClose={handleCloseContactModal}
           accountName={account.name}
           currentUserName={currentUserName}
+          isSaving={isSavingContact}
         />
       </Modal>
+      {/* Full-Screen Deleting Contact Overlay */}
+      <FullScreenLoader
+        isLoading={isDeletingContact}
+        title="Deleting Contact…"
+        message="Please wait while the contact is being deleted"
+      />
     </div>
   );
 };

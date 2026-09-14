@@ -8,6 +8,7 @@ import Button from '../components/ui/Button';
 import Modal from '../components/ui/Modal';
 import CountryCodePicker from '../components/ui/CountryCodePicker';
 import { COUNTRIES as countries } from '../data/countries';
+import FullScreenLoader from '../components/ui/FullScreenLoader';
 import {
   PlusIcon,
   EditIcon,
@@ -99,17 +100,36 @@ export const ContactForm: React.FC<{
   contact?: Contact | null;
   onSave: (
     contact: Omit<Contact, 'id' | 'createdAt' | 'updatedAt'> | Contact
-  ) => void;
+  ) => void | Promise<void>;
   onClose: () => void;
   currentUserName?: string;
-}> = ({ contact, onSave, onClose, currentUserName = '' }) => {
-  const { accounts, setAccounts } = useData();
-  const [countryCode, setCountryCode] = useState('IN');
+  isSaving?: boolean;
+}> = ({ contact, onSave, onClose, currentUserName = '', isSaving: externalIsSaving = false }) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const isLoading = isSubmitting || externalIsSaving;
+  const { accounts, setAccounts, saveAccount } = useData();
+  const parsedContactNumber = React.useMemo(() => {
+    const raw = (contact?.contactNumber || '').trim();
+    if (!raw) return { code: 'IN', localNumber: '' };
+    const sorted = [...countries].sort((a, b) => b.dial_code.length - a.dial_code.length);
+    for (const c of sorted) {
+      if (raw.startsWith(c.dial_code)) {
+        return { code: c.code, localNumber: raw.slice(c.dial_code.length).trim() };
+      }
+      const rawDial = c.dial_code.replace('+', '');
+      if (raw.startsWith(rawDial) && !raw.startsWith('+')) {
+        return { code: c.code, localNumber: raw.slice(rawDial.length).trim() };
+      }
+    }
+    return { code: 'IN', localNumber: raw };
+  }, [contact?.contactNumber]);
+
+  const [countryCode, setCountryCode] = useState(parsedContactNumber.code);
   const [formData, setFormData] = useState({
     firstName: contact?.firstName || '',
     lastName: contact?.lastName || '',
     email: contact?.email || '',
-    contactNumber: contact?.contactNumber || '',
+    contactNumber: parsedContactNumber.localNumber,
     address: contact?.address || '',
     city: contact?.city || '',
     nationalId: contact?.nationalId || '',
@@ -235,19 +255,41 @@ export const ContactForm: React.FC<{
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoading) return;
     setIsSubmitted(true);
     const validationErrors = validate(formData, countryCode);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
-    onSave({ ...contact, ...formData } as any);
+
+    const selectedCountry = countries.find((c) => c.code === countryCode);
+    const dialCode = selectedCountry?.dial_code || '+91';
+    const trimmedContact = formData.contactNumber.trim();
+    const cleanDial = dialCode.replace('+', '');
+
+    let finalContactNumber = trimmedContact;
+    if (trimmedContact) {
+      if (!trimmedContact.startsWith(dialCode) && !trimmedContact.startsWith(`+${cleanDial}`)) {
+        finalContactNumber = `${dialCode} ${trimmedContact}`;
+      } else if (trimmedContact.startsWith(cleanDial) && !trimmedContact.startsWith('+')) {
+        finalContactNumber = `+${trimmedContact}`;
+      }
+    }
+
+    try {
+      setIsSubmitting(true);
+      await onSave({ ...contact, ...formData, contactNumber: finalContactNumber } as any);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <form onSubmit={handleSubmit} noValidate className="pt-2 pb-4">
+      <fieldset disabled={isLoading} className="border-0 p-0 m-0 min-w-0 disabled:opacity-80">
 
       {/* Contact Details Section */}
       <div className="mb-6">
@@ -478,14 +520,42 @@ export const ContactForm: React.FC<{
         </div>
       </div>
 
+      </fieldset>
+
       <div className="flex justify-center md:justify-end space-x-4 pt-6 border-t border-slate-100 dark:border-slate-800 mt-6">
-        <button type="button" onClick={onClose} className="px-8 py-2.5 bg-[#10B981] hover:bg-[#059669] text-white rounded-full text-sm font-bold transition-colors shadow-sm">
+        <button
+          type="button"
+          onClick={onClose}
+          disabled={isLoading}
+          className="px-8 py-2.5 bg-[#10B981] hover:bg-[#059669] text-white rounded-full text-sm font-bold transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+        >
           Cancel
         </button>
-        <button type="submit" className="px-8 py-2.5 bg-[#10B981] hover:bg-[#059669] text-white rounded-full text-sm font-bold transition-colors shadow-sm">
-          Save
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="px-8 py-2.5 bg-[#10B981] hover:bg-[#059669] text-white rounded-full text-sm font-bold transition-colors shadow-sm disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 min-w-[90px]"
+        >
+          {isLoading ? (
+            <>
+              <svg className="h-4 w-4 animate-spin text-white" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              <span>{contact ? 'Updating…' : 'Saving…'}</span>
+            </>
+          ) : (
+            contact ? 'Update Contact' : 'Save'
+          )}
         </button>
       </div>
+
+      {/* Full-Screen Loading Overlay */}
+      <FullScreenLoader
+        isLoading={isLoading}
+        title={contact ? 'Updating Contact…' : 'Creating Contact…'}
+        message="Please wait while the record is being saved"
+      />
 
       {/* Account Selection Modal */}
       <Modal
@@ -636,16 +706,9 @@ export const ContactForm: React.FC<{
         variant="drawer"
       >
         <AccountForm
-          onSave={(accountData) => {
-            const now = new Date().toISOString();
-            const newAccount = {
-              ...accountData,
-              id: `acc${Date.now()}`,
-              createdAt: now,
-              updatedAt: now,
-            } as Account;
-            setAccounts([newAccount, ...accounts]);
-            setFormData((prev) => ({ ...prev, accountName: newAccount.name }));
+          onSave={async (accountData) => {
+            const saved = await saveAccount(accountData);
+            setFormData((prev) => ({ ...prev, accountName: saved.name }));
             setIsCreateAccountModalOpen(false);
           }}
           onClose={() => setIsCreateAccountModalOpen(false)}
@@ -719,6 +782,9 @@ const Contacts: React.FC = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [search, setSearch] = useState('');
   const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
+  const [isSavingContact, setIsSavingContact] = useState(false);
+  const [isDeletingContact, setIsDeletingContact] = useState(false);
+  const [deletingContactTitle, setDeletingContactTitle] = useState('Deleting Contact…');
 
   // Import/Export dropdown state
   const [importExportOpen, setImportExportOpen] = useState(false);
@@ -782,28 +848,37 @@ const Contacts: React.FC = () => {
   };
 
   const handleCloseModal = () => {
+    if (isSavingContact) return;
     setEditingContact(null);
     setIsModalOpen(false);
   };
 
   const handleSaveContact = async (contactData: any) => {
+    setIsSavingContact(true);
     try {
       await saveContact(contactData);
       setSuccessMessage(contactData.id ? 'Contact Updated Successfully' : 'Contact Created Successfully');
+      setEditingContact(null);
+      setIsModalOpen(false);
     } catch (err) {
       setErrorMessage('Failed to save contact');
+    } finally {
+      setIsSavingContact(false);
     }
-    handleCloseModal();
   };
 
   const handleDeleteContact = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this contact?')) {
+      setDeletingContactTitle('Deleting Contact…');
+      setIsDeletingContact(true);
       try {
         await deleteContact(id);
         setSelectedContacts((prev) => prev.filter((i) => i !== id));
         setSuccessMessage('Contact Deleted Successfully');
       } catch (err) {
         setErrorMessage('Failed to delete contact');
+      } finally {
+        setIsDeletingContact(false);
       }
     }
   };
@@ -840,12 +915,16 @@ const Contacts: React.FC = () => {
   const handleDeleteSelected = async () => {
     if (!selectedContacts.length) return;
     if (window.confirm(`Are you sure you want to delete ${selectedContacts.length} contacts?`)) {
+      setDeletingContactTitle(`Deleting ${selectedContacts.length > 1 ? 'Contacts' : 'Contact'}…`);
+      setIsDeletingContact(true);
       try {
         await deleteContactsBatch(selectedContacts);
         setSelectedContacts([]);
         setSuccessMessage('Contacts Deleted Successfully');
       } catch (err) {
         setErrorMessage('Failed to delete contacts');
+      } finally {
+        setIsDeletingContact(false);
       }
     }
   };
@@ -1548,6 +1627,7 @@ const Contacts: React.FC = () => {
           onSave={handleSaveContact}
           onClose={handleCloseModal}
           currentUserName={currentUserName}
+          isSaving={isSavingContact}
         />
       </Modal>
 
@@ -1878,6 +1958,12 @@ const Contacts: React.FC = () => {
           </div>
         </div>
       )}
+      {/* Full-Screen Deleting Contact Overlay */}
+      <FullScreenLoader
+        isLoading={isDeletingContact}
+        title={deletingContactTitle}
+        message="Please wait while the record is being deleted"
+      />
     </div>
   );
 };

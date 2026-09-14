@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useData } from '../hooks/useData';
 import { useAuth } from '../hooks/useAuth';
@@ -13,6 +14,7 @@ import {
   SearchIcon,
 } from '../components/icons/Icons';
 import CountryCodePicker from '../components/ui/CountryCodePicker';
+import FullScreenLoader from '../components/ui/FullScreenLoader';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -146,15 +148,45 @@ const FloatField: React.FC<{
 
 export const AccountForm: React.FC<{
   account?: Account | null;
-  onSave: (data: AccountFormData & Partial<Pick<Account, 'id' | 'createdAt' | 'updatedAt'>>) => void;
+  onSave: (data: AccountFormData & Partial<Pick<Account, 'id' | 'createdAt' | 'updatedAt'>>) => void | Promise<void>;
   onClose: () => void;
   currentUserName?: string;
-}> = ({ account, onSave, onClose, currentUserName = '' }) => {
+  isSaving?: boolean;
+}> = ({ account, onSave, onClose, currentUserName = '', isSaving: externalIsSaving = false }) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const isLoading = isSubmitting || externalIsSaving;
+  // Helper to extract initial country code and clean local number from account.phone
+  const parsedPhoneData = React.useMemo(() => {
+    const raw = (account?.phone || '').trim();
+    if (!raw) {
+      return { code: 'IN', localNumber: '' };
+    }
+    // Sort COUNTRIES by dial_code length descending (e.g. +966 before +91 before +1)
+    const sorted = [...COUNTRIES].sort((a, b) => b.dial_code.length - a.dial_code.length);
+    for (const c of sorted) {
+      if (raw.startsWith(c.dial_code)) {
+        return {
+          code: c.code,
+          localNumber: raw.slice(c.dial_code.length).trim(),
+        };
+      }
+      const rawDial = c.dial_code.replace('+', '');
+      if (raw.startsWith(rawDial) && !raw.startsWith('+')) {
+        return {
+          code: c.code,
+          localNumber: raw.slice(rawDial.length).trim(),
+        };
+      }
+    }
+    return { code: 'IN', localNumber: raw };
+  }, [account?.phone]);
+
+  const [phoneCountryCode, setPhoneCountryCode] = useState(parsedPhoneData.code);
   const [form, setForm] = useState<AccountFormData>({
     name: account?.name ?? '',
     website: account?.website ?? '',
     email: account?.email ?? '',
-    phone: account?.phone ?? '',
+    phone: parsedPhoneData.localNumber,
     address: account?.address ?? '',
     crNumber: account?.crNumber ?? '',
     // Pre-fill with current user when creating; keep existing value when editing
@@ -166,7 +198,6 @@ export const AccountForm: React.FC<{
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [phoneCountryCode, setPhoneCountryCode] = useState('IN');
 
   // Custom Country Dropdown States & Ref
   const countryDropdownRef = React.useRef<HTMLDivElement>(null);
@@ -205,18 +236,6 @@ export const AccountForm: React.FC<{
     setForm(updatedForm);
     if (isSubmitted) setErrors(validate(updatedForm));
   };
-
-  // Find current selected country prefix based on form.phone, or default to SA
-  const initialCountry = React.useMemo(() => {
-    const trimmedPhone = form.phone.trim();
-    if (trimmedPhone) {
-      const match = COUNTRIES_DIAL_CODES.find(c => trimmedPhone.startsWith(c.dialCode));
-      if (match) return match;
-    }
-    return COUNTRIES_DIAL_CODES.find(c => c.code === 'SA') || COUNTRIES_DIAL_CODES[0];
-  }, [form.phone]);
-
-  const [selectedCountry, setSelectedCountry] = useState<CountryDialCode>(initialCountry);
 
   React.useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
@@ -265,16 +284,22 @@ export const AccountForm: React.FC<{
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    const updatedForm = { ...form, [name]: value };
-    setForm(updatedForm);
     if (name === 'phone') {
+      const sanitized = value.replace(/[^\d\s-]/g, '');
+      const updatedForm = { ...form, phone: sanitized };
+      setForm(updatedForm);
       const allErrors = validate(updatedForm, phoneCountryCode);
       setErrors(prev => ({ ...prev, phone: allErrors.phone || '' }));
-    } else if (name === 'email') {
+      if (isSubmitted) setErrors(validate(updatedForm, phoneCountryCode));
+      return;
+    }
+    const updatedForm = { ...form, [name]: value };
+    setForm(updatedForm);
+    if (name === 'email') {
       const allErrors = validate(updatedForm, phoneCountryCode);
       setErrors(prev => ({ ...prev, email: allErrors.email || '' }));
     } else if (isSubmitted) {
-      setErrors(validate(updatedForm));
+      setErrors(validate(updatedForm, phoneCountryCode));
     }
   };
 
@@ -285,15 +310,41 @@ export const AccountForm: React.FC<{
     if (isSubmitted) setErrors(validate(form, code));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoading) return;
     setIsSubmitted(true);
     const validationErrors = validate(form, phoneCountryCode);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
-    onSave({ ...form, ...(account ? { id: account.id, createdAt: account.createdAt } : {}) });
+
+    // Combine selected country dial code with the entered phone number
+    const selectedCountry = COUNTRIES.find((c) => c.code === phoneCountryCode);
+    const dialCode = selectedCountry?.dial_code || '+91';
+    const trimmedPhone = form.phone.trim();
+    const cleanDial = dialCode.replace('+', '');
+
+    let finalPhone = trimmedPhone;
+    if (trimmedPhone) {
+      if (!trimmedPhone.startsWith(dialCode) && !trimmedPhone.startsWith(`+${cleanDial}`)) {
+        finalPhone = `${dialCode} ${trimmedPhone}`;
+      } else if (trimmedPhone.startsWith(cleanDial) && !trimmedPhone.startsWith('+')) {
+        finalPhone = `+${trimmedPhone}`;
+      }
+    }
+
+    try {
+      setIsSubmitting(true);
+      await onSave({
+        ...form,
+        phone: finalPhone,
+        ...(account ? { id: account.id, createdAt: account.createdAt } : {}),
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const getInputClass = (fieldName: string, extraClasses = '') => {
@@ -307,6 +358,7 @@ export const AccountForm: React.FC<{
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-4">
+      <fieldset disabled={isLoading} className="border-0 p-0 m-0 min-w-0 space-y-4 disabled:opacity-80">
 
       {/* ── Basic Information Section ── */}
       <div className="flex items-center gap-3 pt-1 pb-2">
@@ -503,22 +555,43 @@ export const AccountForm: React.FC<{
         )}
       </div>
 
+      </fieldset>
+
       {/* Actions */}
       <div className="flex justify-end gap-3 pt-6 border-t border-slate-100 dark:border-slate-800/80 mt-6">
         <button
           type="button"
           onClick={onClose}
-          className="px-5 py-2 rounded-xl text-sm font-bold border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+          disabled={isLoading}
+          className="px-5 py-2 rounded-xl text-sm font-bold border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="px-5 py-2 rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition duration-200"
+          disabled={isLoading}
+          className="px-5 py-2 rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition duration-200 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 min-w-[90px]"
         >
-          {account ? 'Update Account' : 'Save'}
+          {isLoading ? (
+            <>
+              <svg className="h-4 w-4 animate-spin text-white" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              <span>{account ? 'Updating…' : 'Saving…'}</span>
+            </>
+          ) : (
+            account ? 'Update Account' : 'Save'
+          )}
         </button>
       </div>
+
+      {/* Full-Screen Loading Overlay */}
+      <FullScreenLoader
+        isLoading={isLoading}
+        title={account ? 'Updating Account…' : 'Creating Account…'}
+        message="Please wait while the record is being saved"
+      />
     </form>
   );
 };
@@ -576,12 +649,15 @@ const Accounts: React.FC = () => {
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
+  const [isSavingAccount, setIsSavingAccount] = useState(false);
 
   // Selection state
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
 
   // Delete confirm modal state
   const [deleteConfirm, setDeleteConfirm] = useState<{ ids: string[]; count: number } | null>(null);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+  const [deletingAccountCount, setDeletingAccountCount] = useState(1);
 
   // Import/Export dropdown state
   const [importExportOpen, setImportExportOpen] = useState(false);
@@ -669,6 +745,7 @@ const Accounts: React.FC = () => {
   };
 
   const handleCloseModal = () => {
+    if (isSavingAccount) return;
     setEditingAccount(null);
     setIsModalOpen(false);
   };
@@ -676,13 +753,17 @@ const Accounts: React.FC = () => {
   const handleSaveAccount = async (
     data: AccountFormData & Partial<Pick<Account, 'id' | 'createdAt' | 'updatedAt'>>
   ) => {
+    setIsSavingAccount(true);
     try {
       await saveAccount(data);
       setSuccessMessage(data.id ? 'Account Updated Successfully' : 'Account Created Successfully');
+      setEditingAccount(null);
+      setIsModalOpen(false);
     } catch (err) {
       setErrorMessage('Failed to save account');
+    } finally {
+      setIsSavingAccount(false);
     }
-    handleCloseModal();
   };
 
   const handleDeleteAccount = (id: string) => {
@@ -712,6 +793,8 @@ const Accounts: React.FC = () => {
     if (!deleteConfirm) return;
     const count = deleteConfirm.count;
     const ids = deleteConfirm.ids;
+    setDeletingAccountCount(count);
+    setIsDeletingAccount(true);
     try {
       if (ids.length === 1) {
         await deleteAccount(ids[0]);
@@ -723,6 +806,7 @@ const Accounts: React.FC = () => {
     } catch (err) {
       setErrorMessage('Failed to delete records');
     } finally {
+      setIsDeletingAccount(false);
       setDeleteConfirm(null);
     }
   };
@@ -1391,6 +1475,7 @@ const Accounts: React.FC = () => {
           onSave={handleSaveAccount}
           onClose={handleCloseModal}
           currentUserName={currentUserName}
+          isSaving={isSavingAccount}
         />
       </Modal>
 
@@ -1689,6 +1774,13 @@ const Accounts: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Full-Screen Deleting Overlay */}
+      <FullScreenLoader
+        isLoading={isDeletingAccount}
+        title={deletingAccountCount > 1 ? 'Deleting Accounts…' : 'Deleting Account…'}
+        message="Please wait while the record is being deleted"
+      />
     </div>
   );
 };
