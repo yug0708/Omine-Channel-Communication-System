@@ -159,12 +159,15 @@ const Inbox: React.FC = () => {
   // Seed demo conversations when a channel first connects
   useEffect(() => {
     connectedChannels.forEach(({ id: ch }) => {
-      const hasAny = conversations.some((c) => c.channel === ch);
-      if (!hasAny && DEMO_CONVERSATIONS[ch]) {
-        setConversations((prev) => [...DEMO_CONVERSATIONS[ch], ...prev]);
-      }
+      const demos = DEMO_CONVERSATIONS[ch];
+      if (!demos) return;
+      setConversations((prev) => {
+        const toAdd = demos.filter((demo) => !prev.some((p) => p.id === demo.id));
+        if (toAdd.length === 0) return prev;
+        return [...toAdd, ...prev];
+      });
     });
-  }, [connectedChannels]);
+  }, [connectedChannels, setConversations]);
 
 
 
@@ -185,6 +188,24 @@ const Inbox: React.FC = () => {
       )
     );
   }, [selectedChatId, setConversations]);
+
+  // Close open chat or new chat row on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (selectedChatId) {
+          setSelectedChatId(null);
+          setNewMessageText('');
+        }
+        if (showNewChatRow) {
+          setShowNewChatRow(false);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedChatId, showNewChatRow]);
 
   // Send message via Meta Cloud API
   const handleSendMessage = async (e?: React.FormEvent) => {
@@ -443,7 +464,7 @@ const Inbox: React.FC = () => {
         )}
 
         {/* Conversation List */}
-        <div className="flex-1 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-700/50">
+        <div className="flex-1 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-700/50 hide-scrollbar">
           {noChannelsConnected ? (
             <div className="p-8 text-center flex flex-col items-center gap-4">
               <div className="h-14 w-14 rounded-2xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
@@ -472,8 +493,10 @@ const Inbox: React.FC = () => {
                 <div
                   key={chat.id}
                   onClick={() => setSelectedChatId(chat.id)}
-                  className={`p-4 flex items-start gap-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-750 transition ${
-                    isSelected ? 'bg-emerald-50/50 dark:bg-emerald-500/5 border-l-4 border-[#10B981]' : ''
+                  className={`p-4 flex items-start gap-3 cursor-pointer border-l-4 transition-all duration-150 ${
+                    isSelected
+                      ? 'bg-emerald-50/70 dark:bg-emerald-500/10 hover:bg-emerald-50 dark:hover:bg-emerald-500/15 border-[#10B981]'
+                      : 'border-transparent hover:bg-slate-100/80 dark:hover:bg-slate-700/60'
                   }`}
                 >
                   <div className="relative flex-shrink-0">
@@ -541,7 +564,7 @@ const Inbox: React.FC = () => {
                       Online • {selectedChat.channel}
                     </span>
                     {selectedChat.contactNumber && (
-                      <span className="text-[10px] text-slate-300 dark:text-slate-650 font-semibold">
+                      <span className="text-[10px] text-slate-400 dark:text-slate-400 font-semibold">
                         • {selectedChat.contactNumber}
                       </span>
                     )}
@@ -549,15 +572,10 @@ const Inbox: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full text-white ${CHANNEL_META[selectedChat.channel].bg}`}>
-                  {selectedChat.channel}
-                </span>
-              </div>
             </div>
 
             {/* Message feed */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+            <div className="flex-1 overflow-y-auto p-6 space-y-4 hide-scrollbar">
               {selectedChat.messages.length > 0 ? (
                 selectedChat.messages.map((msg) => {
                   const isMe = msg.sender === 'me';
@@ -610,7 +628,7 @@ const Inbox: React.FC = () => {
                 className={`p-2.5 rounded-xl transition ${
                   newMessageText.trim() && !isSending
                     ? 'bg-[#10B981] text-white shadow-md hover:bg-emerald-600'
-                    : 'bg-slate-100 text-slate-300 dark:bg-slate-700 dark:text-slate-650 cursor-not-allowed'
+                    : 'bg-slate-100 text-slate-300 dark:bg-slate-700 dark:text-slate-500 cursor-not-allowed'
                 }`}
               >
                 {isSending ? (

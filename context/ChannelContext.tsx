@@ -58,7 +58,8 @@ interface ChannelContextType {
     from: string,
     fromName: string,
     body: string,
-    timestamp: number
+    timestamp: number,
+    messageId?: string
   ) => void;
 }
 
@@ -77,6 +78,49 @@ export const ChannelProvider: React.FC<{ children: ReactNode }> = ({ children })
     `${tenantKey}_inboxConversations`,
     []
   );
+
+  // One-time cleanup for any previously duplicated conversations or messages in localStorage
+  useEffect(() => {
+    setConversations((prev) => {
+      if (!prev || prev.length === 0) return prev;
+      let modified = false;
+      const seenConv = new Set<string>();
+      const cleanConvs: ChatConversation[] = [];
+
+      for (const conv of prev) {
+        const convKey = conv.id.startsWith('wa-demo') || conv.id.startsWith('ig-demo') || conv.id.startsWith('g-demo') || conv.id.startsWith('lc-demo')
+          ? conv.id
+          : `${conv.channel}_${normalizePhone(conv.contactNumber) || conv.contactId}`;
+
+        if (seenConv.has(convKey)) {
+          modified = true;
+          continue;
+        }
+        seenConv.add(convKey);
+
+        const seenMsg = new Set<string>();
+        const cleanMsgs: Message[] = [];
+        for (const msg of conv.messages) {
+          const msgKey = `${msg.text}_${msg.timestamp}_${msg.sender}`;
+          if (seenMsg.has(msgKey)) {
+            modified = true;
+            continue;
+          }
+          seenMsg.add(msgKey);
+          cleanMsgs.push(msg);
+        }
+
+        if (cleanMsgs.length !== conv.messages.length) {
+          modified = true;
+          cleanConvs.push({ ...conv, messages: cleanMsgs });
+        } else {
+          cleanConvs.push(conv);
+        }
+      }
+
+      return modified ? cleanConvs : prev;
+    });
+  }, [setConversations]);
 
   const isChannelConnected = useCallback(
     (ch: ChannelName) => connectedChannels.some((c) => c.id === ch),
@@ -98,11 +142,12 @@ export const ChannelProvider: React.FC<{ children: ReactNode }> = ({ children })
   );
 
   const addOrUpdateConversationFromIncoming = useCallback(
-    (from: string, fromName: string, body: string, timestamp: number) => {
+    (from: string, fromName: string, body: string, timestamp: number, messageId?: string) => {
       const timeString = new Date(timestamp * 1000).toLocaleTimeString(undefined, {
         hour: '2-digit',
         minute: '2-digit',
       });
+      const msgId = messageId || `wa-msg-${timestamp}-${normalizePhone(from)}`;
 
       setConversations((prev) => {
         const existing = prev.find(
@@ -110,10 +155,18 @@ export const ChannelProvider: React.FC<{ children: ReactNode }> = ({ children })
         );
 
         if (existing) {
+          // Prevent duplicates: check if this message is already present in this conversation
+          const alreadyExists = existing.messages.some(
+            (m) => m.id === msgId || (m.text === body && m.timestamp === timeString && m.sender === 'them')
+          );
+          if (alreadyExists) {
+            return prev;
+          }
+
           return prev.map((c) => {
             if (c.id !== existing.id) return c;
             const newMsg: Message = {
-              id: `${c.id}-${Date.now()}`,
+              id: msgId,
               text: body,
               sender: 'them',
               timestamp: timeString,
@@ -129,9 +182,9 @@ export const ChannelProvider: React.FC<{ children: ReactNode }> = ({ children })
           });
         } else {
           const newConv: ChatConversation = {
-            id: `wa-${Date.now()}`,
+            id: `wa-${normalizePhone(from)}`,
             contactId: from,
-            contactName: fromName,
+            contactName: fromName || from,
             contactNumber: from,
             channel: 'WhatsApp',
             status: 'Open',
@@ -140,7 +193,7 @@ export const ChannelProvider: React.FC<{ children: ReactNode }> = ({ children })
             unreadCount: 1,
             messages: [
               {
-                id: `wa-${Date.now()}-1`,
+                id: msgId,
                 text: body,
                 sender: 'them',
                 timestamp: timeString,
@@ -162,7 +215,7 @@ export const ChannelProvider: React.FC<{ children: ReactNode }> = ({ children })
   }, [addOrUpdateConversationFromIncoming]);
 
   const isWhatsAppConnected = isChannelConnected('WhatsApp');
-  const lastTimestampRef = useRef<number>(Math.floor(Date.now() / 1000) - 60); // start from 60s ago
+  const lastTimestampRef = useRef<number>(Math.floor(Date.now() / 1000) - 86400); // lookback 24h
 
   useEffect(() => {
     if (!isWhatsAppConnected) return;
@@ -177,7 +230,7 @@ export const ChannelProvider: React.FC<{ children: ReactNode }> = ({ children })
           const data = await res.json();
           if (data.messages && data.messages.length > 0) {
             for (const msg of data.messages) {
-              incomingHandlerRef.current(msg.from, msg.fromName, msg.body, msg.timestamp);
+              incomingHandlerRef.current(msg.from, msg.fromName, msg.body, msg.timestamp, msg.id);
               if (msg.timestamp > lastTimestampRef.current) {
                 lastTimestampRef.current = msg.timestamp;
               }

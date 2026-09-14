@@ -188,12 +188,16 @@ const Channels: React.FC = () => {
     const handleMessage = async (event: MessageEvent) => {
       if (event.data && event.data.type === 'META_ONBOARDING_SUCCESS') {
         try {
+          const redirectUri = event.data.redirectUri || `${window.location.origin}/api/whatsapp/callback`;
           const res = await fetch('/api/whatsapp/exchange-code', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ code: event.data.code })
+            body: JSON.stringify({ 
+              code: event.data.code,
+              redirectUri
+            })
           });
           const data = await res.json();
           if (data.success) {

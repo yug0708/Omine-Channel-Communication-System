@@ -204,7 +204,11 @@ app.get('/api/whatsapp/callback', (req: Request, res: Response): void => {
         <p>Please wait while we link your WhatsApp Business Account.</p>
         <script>
           if (window.opener) {
-            window.opener.postMessage({ type: 'META_ONBOARDING_SUCCESS', code: "${code}" }, '*');
+            window.opener.postMessage({ 
+              type: 'META_ONBOARDING_SUCCESS', 
+              code: "${code}",
+              redirectUri: window.location.origin + window.location.pathname
+            }, '*');
           }
           setTimeout(function() {
             window.close();
@@ -216,10 +220,11 @@ app.get('/api/whatsapp/callback', (req: Request, res: Response): void => {
 });
 
 app.post('/api/whatsapp/exchange-code', async (req: Request, res: Response): Promise<void> => {
-  const { code } = req.body;
+  const { code, redirectUri: reqRedirectUri, redirect_uri } = req.body;
   const appId = process.env.WHATSAPP_APP_ID || '1501306521375669';
   const appSecret = process.env.WHATSAPP_APP_SECRET || 'b5aeb3f15a7babc5ee9bff096488bf8d';
-  const redirectUri = process.env.WHATSAPP_REDIRECT_URI || `https://omine-channel-communication-system-opal.vercel.app/api/whatsapp/callback`;
+  // Meta OAuth 2.0 requires redirect_uri in token exchange to exactly match the one used in the dialog request
+  const redirectUri = reqRedirectUri || redirect_uri || process.env.WHATSAPP_REDIRECT_URI || `https://omine-channel-communication-system-opal.vercel.app/api/whatsapp/callback`;
 
   try {
     // 1. Exchange OAuth code for short-lived token
