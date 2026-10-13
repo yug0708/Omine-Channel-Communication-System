@@ -101,7 +101,7 @@ const NavItem: React.FC<NavItemProps> = ({ to, icon: Icon, label, isExpanded, on
           }
         `}
       >
-        <Icon className={`h-5 w-5 flex-shrink-0 transition-transform duration-200 ${isActive ? '' : 'group-hover/item:scale-110'}`} />
+        <Icon className={`h-5 w-5 flex-shrink-0 transition-transform duration-200 ${isActive ? 'text-white' : ''} ${isActive ? '' : 'group-hover/item:scale-110'}`} />
 
         {/* Label – only show when expanded */}
         <span

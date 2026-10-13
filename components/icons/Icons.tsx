@@ -89,7 +89,53 @@ export const UCLogo: React.FC<IconProps> = ({ className }) => (
         <path d="M28.8 12C30.8 14.4 32 17.6 32 21C32 27.6 26.6 33 20 33C17.6 33 15.4 32.2 13.6 30.8L15.6 28.8C16.8 29.6 18.4 30 20 30C25 30 29 26 29 21C29 18.8 28.2 16.8 26.8 15.2L28.8 12Z" fill="white" />
     </svg>
 );
-export const DashboardIcon: React.FC<IconProps> = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="0 0 24 24" fill="currentColor"><path d="M3,11H11V3H3M3,21H11V13H3M13,21H21V13H13M13,3V11H21V3" /></svg>;
+export const DashboardIcon: React.FC<IconProps> = ({ className, style }) => {
+    const isWhite = className?.includes('text-white') || className?.includes('nav-active');
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className={className ?? defaultClassName}
+            viewBox="0 0 512 512"
+            fill="none"
+            style={style}
+        >
+            <rect
+                x="0"
+                y="0"
+                width="235"
+                height="171"
+                rx="36"
+                fill={isWhite ? 'currentColor' : '#34D399'}
+                fillOpacity={isWhite ? 0.75 : 1}
+            />
+            <rect
+                x="0"
+                y="213"
+                width="235"
+                height="299"
+                rx="36"
+                fill={isWhite ? 'currentColor' : '#10B981'}
+            />
+            <rect
+                x="277"
+                y="0"
+                width="235"
+                height="299"
+                rx="36"
+                fill={isWhite ? 'currentColor' : '#10B981'}
+            />
+            <rect
+                x="277"
+                y="341"
+                width="235"
+                height="171"
+                rx="36"
+                fill={isWhite ? 'currentColor' : '#34D399'}
+                fillOpacity={isWhite ? 0.75 : 1}
+            />
+        </svg>
+    );
+};
 export const AccountsIcon: React.FC<IconProps> = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="0 0 24 24" fill="currentColor"><path d="M4,10V21H2V10A1,1 0 0,1 3,9H5A1,1 0 0,1 6,10V21H4M9,21H7V10A1,1 0 0,1 8,9H10A1,1 0 0,1 11,10V21H9M12,21V10A1,1 0 0,1 13,9H15A1,1 0 0,1 16,10V21H12M17,21V10A1,1 0 0,1 18,9H20A1,1 0 0,1 21,10V21H17M3,7V8H21V7L12,3L3,7Z" /></svg>;
 export const ContactsIcon: React.FC<IconProps> = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="0 0 24 24" fill="currentColor"><path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" /></svg>;
 export const InboxIcon: React.FC<IconProps> = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="0 0 24 24" fill="currentColor"><path d="M19,15H15A3,3 0 0,1 12,18V21H5A2,2 0 0,1 3,19V5A2,2 0 0,1 5,3H19A2,2 0 0,1 21,5V13A2,2 0 0,1 19,15M5,5V7H19V5M19,9H5V11H19V9Z" /></svg>;
