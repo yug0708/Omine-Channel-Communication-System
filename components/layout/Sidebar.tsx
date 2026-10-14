@@ -9,41 +9,20 @@ import {
   InboxIcon,
   CampaignIcon,
   ChannelIcon,
+  TicketsIcon,
   ReportIcon,
+  CalendarIcon,
+  AutomationIcon,
+  TenantsIcon,
   SettingIcon,
   UCLogo,
 } from '../icons/Icons';
 
 // ── Extra Icons ───────────────────────────────────────────────────────────────
 
-const CalendarIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={className ?? 'h-5 w-5'} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M19 3h-1V1h-2v2H8V1H6v2H5C3.9 3 3 3.9 3 5v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H5V8h14v13z" />
-    <path d="M7 10h5v5H7z" />
-  </svg>
-);
-
-const AutomationIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={className ?? 'h-5 w-5'} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-  </svg>
-);
-
-const TenantsIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={className ?? 'h-5 w-5'} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
-  </svg>
-);
-
 const ChevronLeftIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className ?? 'h-4 w-4'} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-  </svg>
-);
-
-const TicketsIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={className ?? 'h-5 w-5'} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M22 10V6a2 2 0 00-2-2H4a2 2 0 00-2 2v4c1.1 0 2 .9 2 2s-.9 2-2 2v4a2 2 0 002 2h16a2 2 0 002-2v-4c-1.1 0-2-.9-2-2s.9-2 2-2zm-9 7.5h-2v-2h2v2zm0-4.5h-2v-2h2v2zm0-4.5h-2v-2h2v2z" />
   </svg>
 );
 
@@ -93,7 +72,7 @@ const NavItem: React.FC<NavItemProps> = ({ to, icon: Icon, label, isExpanded, on
           flex items-center rounded-xl transition-all duration-200
           ${isExpanded
             ? 'w-full px-3 py-2.5 gap-3'
-            : 'h-10 w-10 justify-center p-0 gap-0'
+            : 'h-11 w-11 justify-center p-0 gap-0'
           }
           ${isActive
             ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25 nav-active-pill'
@@ -101,7 +80,7 @@ const NavItem: React.FC<NavItemProps> = ({ to, icon: Icon, label, isExpanded, on
           }
         `}
       >
-        <Icon className={`h-5 w-5 flex-shrink-0 transition-transform duration-200 ${isActive ? 'text-white' : ''} ${isActive ? '' : 'group-hover/item:scale-110'}`} />
+        <Icon className={`h-7 w-7 flex-shrink-0 transition-transform duration-200 ${isActive ? 'text-white' : ''} ${isActive ? '' : 'group-hover/item:scale-110'}`} />
 
         {/* Label – only show when expanded */}
         <span
