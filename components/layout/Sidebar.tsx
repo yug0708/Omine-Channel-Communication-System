@@ -30,22 +30,22 @@ const ChevronLeftIcon: React.FC<{ className?: string }> = ({ className }) => (
 
 const mainNavLinks = [
   { to: '/dashboard', icon: DashboardIcon, label: 'Dashboard' },
-  { to: '/accounts',  icon: AccountsIcon,  label: 'Accounts'  },
-  { to: '/contacts',  icon: ContactsIcon,  label: 'Contacts'  },
-  { to: '/inbox',     icon: InboxIcon,     label: 'Inbox'     },
-  { to: '/campaign',  icon: CampaignIcon,  label: 'Campaign'  },
-  { to: '/channels',  icon: ChannelIcon,   label: 'Channel'   },
-  { to: '/tickets',   icon: TicketsIcon,   label: 'Tickets'   },
+  { to: '/accounts', icon: AccountsIcon, label: 'Accounts' },
+  { to: '/contacts', icon: ContactsIcon, label: 'Contacts' },
+  { to: '/inbox', icon: InboxIcon, label: 'Inbox' },
+  { to: '/campaign', icon: CampaignIcon, label: 'Campaign' },
+  { to: '/channels', icon: ChannelIcon, label: 'Channel' },
+  { to: '/tickets', icon: TicketsIcon, label: 'Tickets' },
 ];
 
 const toolsNavLinks = [
-  { to: '/report',     icon: ReportIcon,     label: 'Report'     },
-  { to: '/calendar',   icon: CalendarIcon,   label: 'Calendar'   },
+  { to: '/report', icon: ReportIcon, label: 'Report' },
+  { to: '/calendar', icon: CalendarIcon, label: 'Calendar' },
   { to: '/automation', icon: AutomationIcon, label: 'Automation' },
 ];
 
 const adminNavLinks = [
-  { to: '/tenants',  icon: TenantsIcon, label: 'Tenants' },
+  { to: '/tenants', icon: TenantsIcon, label: 'Tenants' },
   { to: '/settings', icon: SettingIcon, label: 'Settings' },
 ];
 
@@ -64,29 +64,45 @@ const NavItem: React.FC<NavItemProps> = ({ to, icon: Icon, label, isExpanded, on
   const isActive = location.pathname === to || (to !== '/' && location.pathname.startsWith(to));
 
   return (
-    <li className={`relative group/item ${isExpanded ? 'w-full' : 'flex justify-center w-full'}`}>
+    <li className={`relative group/item ${isExpanded ? 'w-full' : 'w-full flex justify-center'}`}>
       <NavLink
         to={to}
         onClick={onClose}
         className={`
-          flex items-center rounded-xl transition-all duration-200
+          transition-all duration-200 group
           ${isExpanded
-            ? 'w-full px-3 py-2.5 gap-3'
-            : 'h-11 w-11 justify-center p-0 gap-0'
+            ? 'flex items-center rounded-xl w-full px-3 py-2.5 gap-3'
+            : 'flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl w-full gap-1'
           }
           ${isActive
-            ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25 nav-active-pill'
-            : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-800 dark:hover:text-slate-100'
+            ? 'bg-emerald-500/10 dark:bg-[#0c241c] text-emerald-500 dark:text-emerald-400 border border-emerald-500/30 dark:border-emerald-500/30 shadow-sm nav-active-pill'
+            : 'text-slate-400 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/[0.05] hover:text-slate-700 dark:hover:text-slate-200'
           }
         `}
       >
-        <Icon className={`h-7 w-7 flex-shrink-0 transition-transform duration-200 ${isActive ? 'text-white' : ''} ${isActive ? '' : 'group-hover/item:scale-110'}`} />
+        <Icon
+          className={`
+            h-6 w-6 flex-shrink-0 transition-transform duration-200
+            ${isActive
+              ? 'text-emerald-500 dark:text-emerald-400'
+              : 'text-slate-400 dark:text-slate-400 group-hover/item:text-slate-600 dark:group-hover/item:text-slate-200 group-hover/item:scale-105'
+            }
+          `}
+        />
 
-        {/* Label – only show when expanded */}
+        {/* Label */}
         <span
-          className={`text-sm font-semibold tracking-wide leading-none whitespace-nowrap overflow-hidden transition-all duration-300 ${
-            isExpanded ? 'opacity-100 max-w-[160px]' : 'opacity-0 max-w-0'
-          }`}
+          className={`
+            font-semibold tracking-normal transition-all duration-200
+            ${isExpanded
+              ? 'text-sm text-left truncate max-w-[160px]'
+              : 'text-[10px] leading-tight text-center truncate w-full px-0.5'
+            }
+            ${isActive
+              ? 'text-emerald-500 dark:text-emerald-400'
+              : 'text-slate-400 dark:text-slate-400 group-hover/item:text-slate-700 dark:group-hover/item:text-slate-200'
+            }
+          `}
         >
           {label}
         </span>
@@ -145,7 +161,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose, isExpanded =
           bg-white dark:bg-slate-900/95
           border-r border-slate-200 dark:border-white/[0.07]
           transition-all duration-300 ease-in-out overflow-hidden relative
-          ${isExpanded ? 'w-64' : 'w-16'}
+          ${isExpanded ? 'w-64' : 'w-[74px]'}
         `}
       >
         {/* Top: Logo + Toggle */}
@@ -163,10 +179,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose, isExpanded =
 
 
         {/* Nav */}
-        <nav className={`flex-1 overflow-y-auto overflow-x-hidden hide-scrollbar ${isExpanded ? 'px-2' : 'px-0'}`}>
+        <nav className={`flex-1 overflow-y-auto overflow-x-hidden hide-scrollbar ${isExpanded ? 'px-2' : 'px-1.5'}`}>
           {/* Main */}
           <SectionLabel label="Main" isExpanded={isExpanded} />
-          <ul className={`flex flex-col ${isExpanded ? 'gap-0.5' : 'gap-1 items-center py-1'}`}>
+          <ul className={`flex flex-col ${isExpanded ? 'gap-0.5' : 'gap-1.5 items-center py-1'}`}>
             {mainNavLinks.map(link => (
               <NavItem key={link.to} {...link} isExpanded={isExpanded} />
             ))}
@@ -175,7 +191,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose, isExpanded =
           {/* Tools */}
           {isExpanded && <div className="mt-2 mb-1 h-px bg-slate-100 dark:bg-white/[0.05]" />}
           <SectionLabel label="Tools" isExpanded={isExpanded} />
-          <ul className={`flex flex-col ${isExpanded ? 'gap-0.5' : 'gap-1 items-center py-1'}`}>
+          <ul className={`flex flex-col ${isExpanded ? 'gap-0.5' : 'gap-1.5 items-center py-1'}`}>
             {toolsNavLinks.map(link => (
               <NavItem key={link.to} {...link} isExpanded={isExpanded} />
             ))}
@@ -184,7 +200,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose, isExpanded =
           {/* Admin */}
           {isExpanded && <div className="mt-2 mb-1 h-px bg-slate-100 dark:bg-white/[0.05]" />}
           <SectionLabel label="Admin" isExpanded={isExpanded} />
-          <ul className={`flex flex-col ${isExpanded ? 'gap-0.5' : 'gap-1 items-center py-1'}`}>
+          <ul className={`flex flex-col ${isExpanded ? 'gap-0.5' : 'gap-1.5 items-center py-1'}`}>
             {adminNavLinks.map(link => (
               <NavItem key={link.to} {...link} isExpanded={isExpanded} />
             ))}
@@ -207,9 +223,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose, isExpanded =
 
       {/* ── Mobile Drawer ────────────────────────────────────────── */}
       <div
-        className={`fixed inset-y-0 left-0 z-40 w-[260px] bg-white dark:bg-slate-900/98 flex flex-col border-r border-slate-200 dark:border-white/[0.08] overflow-y-auto overflow-x-hidden backdrop-blur-sm transition-transform duration-300 ease-in-out md:hidden ${
-          isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
-        }`}
+        className={`fixed inset-y-0 left-0 z-40 w-[260px] bg-white dark:bg-slate-900/98 flex flex-col border-r border-slate-200 dark:border-white/[0.08] overflow-y-auto overflow-x-hidden backdrop-blur-sm transition-transform duration-300 ease-in-out md:hidden ${isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
+          }`}
       >
         {/* Mobile header */}
         <div className="flex items-center justify-between px-4 py-4 border-b border-slate-100 dark:border-white/[0.06]">

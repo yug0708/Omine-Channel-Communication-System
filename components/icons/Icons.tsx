@@ -89,215 +89,107 @@ export const UCLogo: React.FC<IconProps> = ({ className }) => (
         <path d="M28.8 12C30.8 14.4 32 17.6 32 21C32 27.6 26.6 33 20 33C17.6 33 15.4 32.2 13.6 30.8L15.6 28.8C16.8 29.6 18.4 30 20 30C25 30 29 26 29 21C29 18.8 28.2 16.8 26.8 15.2L28.8 12Z" fill="white" />
     </svg>
 );
-export const DashboardIcon: React.FC<IconProps> = ({ className, style }) => {
-    const isWhite = className?.includes('text-white') || className?.includes('nav-active');
-    return (
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className={className ?? defaultClassName}
-            viewBox="-24 -24 560 560"
-            fill="none"
-            style={style}
-        >
-            <rect
-                x="0"
-                y="0"
-                width="235"
-                height="171"
-                rx="36"
-                fill={isWhite ? 'currentColor' : '#34D399'}
-                fillOpacity={isWhite ? 0.75 : 1}
-            />
-            <rect
-                x="0"
-                y="213"
-                width="235"
-                height="299"
-                rx="36"
-                fill={isWhite ? 'currentColor' : '#10B981'}
-            />
-            <rect
-                x="277"
-                y="0"
-                width="235"
-                height="299"
-                rx="36"
-                fill={isWhite ? 'currentColor' : '#10B981'}
-            />
-            <rect
-                x="277"
-                y="341"
-                width="235"
-                height="171"
-                rx="36"
-                fill={isWhite ? 'currentColor' : '#34D399'}
-                fillOpacity={isWhite ? 0.75 : 1}
-            />
-        </svg>
-    );
-};
+export const DashboardIcon: React.FC<IconProps> = ({ className, style }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" style={style}>
+        <rect x="3" y="3" width="7.5" height="5.5" rx="2" />
+        <rect x="3" y="11.5" width="7.5" height="9.5" rx="2" />
+        <rect x="13.5" y="3" width="7.5" height="9.5" rx="2" />
+        <rect x="13.5" y="15.5" width="7.5" height="5.5" rx="2" />
+    </svg>
+);
 
-export const AccountsIcon: React.FC<IconProps> = ({ className, style }) => {
-    const isWhite = className?.includes('text-white') || className?.includes('nav-active');
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="3 2 20.5 20.5" fill="none" style={style}>
-            <path d="M4 21V5a2 2 0 012-2h7a2 2 0 012 2v16H4z" fill={isWhite ? 'currentColor' : '#10B981'} fillOpacity={isWhite ? 1 : 1} />
-            <rect x="6.5" y="6" width="2" height="2" rx="0.5" fill={isWhite ? '#10B981' : '#34D399'} fillOpacity={isWhite ? 0.35 : 1} />
-            <rect x="10.5" y="6" width="2" height="2" rx="0.5" fill={isWhite ? '#10B981' : '#34D399'} fillOpacity={isWhite ? 0.35 : 1} />
-            <rect x="6.5" y="10" width="2" height="2" rx="0.5" fill={isWhite ? '#10B981' : '#34D399'} fillOpacity={isWhite ? 0.35 : 1} />
-            <rect x="10.5" y="10" width="2" height="2" rx="0.5" fill={isWhite ? '#10B981' : '#34D399'} fillOpacity={isWhite ? 0.35 : 1} />
-            <rect x="6.5" y="14" width="2" height="2" rx="0.5" fill={isWhite ? '#10B981' : '#34D399'} fillOpacity={isWhite ? 0.35 : 1} />
-            <rect x="10.5" y="14" width="2" height="2" rx="0.5" fill={isWhite ? '#10B981' : '#34D399'} fillOpacity={isWhite ? 0.35 : 1} />
-            <path d="M15 12.5l4-1.5 4 1.5v4c0 3-2.5 5.5-4 6-1.5-.5-4-3-4-6v-4z" fill={isWhite ? 'currentColor' : '#34D399'} fillOpacity={isWhite ? 0.85 : 1} />
-            <circle cx="19" cy="15.5" r="1.3" fill={isWhite ? '#059669' : '#047857'} />
-            <path d="M17.2 19c.4-.8 1.1-1.1 1.8-1.1s1.4.3 1.8 1.1" stroke={isWhite ? '#059669' : '#047857'} strokeWidth="1.2" strokeLinecap="round" />
-        </svg>
-    );
-};
+export const AccountsIcon: React.FC<IconProps> = ({ className, style }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" style={style}>
+        <path d="M3 10.5L12 3l9 7.5v8.5a2 2 0 01-2 2H5a2 2 0 01-2-2v-8.5z" />
+        <path d="M9 21v-6a3 3 0 016 0v6" />
+    </svg>
+);
 
-export const ContactsIcon: React.FC<IconProps> = ({ className, style }) => {
-    const isWhite = className?.includes('text-white') || className?.includes('nav-active');
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="1.5 2.5 20.5 18.5" fill="none" style={style}>
-            <rect x="2" y="3.5" width="3" height="17" rx="1.5" fill={isWhite ? 'currentColor' : '#059669'} fillOpacity={isWhite ? 0.6 : 1} />
-            <rect x="6" y="3.5" width="13" height="17" rx="3" fill={isWhite ? 'currentColor' : '#10B981'} fillOpacity={isWhite ? 1 : 1} />
-            <circle cx="12.5" cy="9.5" r="2.5" fill={isWhite ? '#10B981' : '#E6FFFA'} fillOpacity={isWhite ? 0.35 : 1} />
-            <path d="M8.5 16.5c0-2.2 1.8-3.5 4-3.5s4 1.3 4 3.5" stroke={isWhite ? '#10B981' : '#E6FFFA'} strokeWidth="2" strokeLinecap="round" strokeOpacity={isWhite ? 0.35 : 1} />
-            <circle cx="18.5" cy="6" r="3.5" fill={isWhite ? 'currentColor' : '#34D399'} stroke={isWhite ? '#059669' : '#0F172A'} strokeWidth="1.2" />
-            <circle cx="18.5" cy="5.2" r="1.1" fill={isWhite ? '#059669' : '#064E3B'} />
-            <path d="M17 7.6c.3-.5.9-.7 1.5-.7s1.2.2 1.5.7" stroke={isWhite ? '#059669' : '#064E3B'} strokeWidth="1" strokeLinecap="round" />
-        </svg>
-    );
-};
+export const ContactsIcon: React.FC<IconProps> = ({ className, style }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={style}>
+        <rect x="5" y="3" width="15" height="18" rx="3" />
+        <path d="M2 7h3M2 12h3M2 17h3" />
+        <circle cx="12.5" cy="9.5" r="2.5" />
+        <path d="M9 16.5c0-1.8 1.5-3 3.5-3s3.5 1.2 3.5 3" />
+    </svg>
+);
 
-export const InboxIcon: React.FC<IconProps> = ({ className, style }) => {
-    const isWhite = className?.includes('text-white') || className?.includes('nav-active');
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="1 1.5 21.5 21" fill="none" style={style}>
-            <path d="M5 4.5h11a3.5 3.5 0 013.5 3.5v6.5a3.5 3.5 0 01-3.5 3.5H9l-4.5 3.5v-3.5H4A3.5 3.5 0 01.5 14.5V8A3.5 3.5 0 014 4.5h1z" transform="translate(1, 0.5)" fill={isWhite ? 'currentColor' : '#10B981'} fillOpacity={isWhite ? 1 : 1} />
-            <rect x="6.5" y="8.5" width="8" height="1.8" rx="0.9" fill={isWhite ? '#10B981' : '#34D399'} fillOpacity={isWhite ? 0.35 : 1} />
-            <rect x="6.5" y="12" width="5.5" height="1.8" rx="0.9" fill={isWhite ? '#10B981' : '#34D399'} fillOpacity={isWhite ? 0.35 : 1} />
-            <circle cx="19.5" cy="5" r="3" fill={isWhite ? 'currentColor' : '#34D399'} fillOpacity={isWhite ? 0.85 : 1} />
-        </svg>
-    );
-};
+export const InboxIcon: React.FC<IconProps> = ({ className, style }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={style}>
+        <path d="M3 6.5A3.5 3.5 0 016.5 3h11A3.5 3.5 0 0121 6.5v5a3.5 3.5 0 01-3.5 3.5H12l-4.5 4v-4H6.5A3.5 3.5 0 013 11.5v-5z" />
+        <circle cx="8.5" cy="10" r="1" fill="currentColor" stroke="none" />
+        <circle cx="12" cy="10" r="1" fill="currentColor" stroke="none" />
+        <circle cx="15.5" cy="10" r="1" fill="currentColor" stroke="none" />
+    </svg>
+);
 
-export const CampaignIcon: React.FC<IconProps> = ({ className, style }) => {
-    const isWhite = className?.includes('text-white') || className?.includes('nav-active');
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="1.2 3.2 21 17.5" fill="none" style={style}>
-            <path d="M4 11v3a2 2 0 002 2h1l1 5h2.5l-.8-5H11l6 4V5L11 9H6a2 2 0 00-2 2z" fill={isWhite ? 'currentColor' : '#10B981'} fillOpacity={isWhite ? 1 : 1} />
-            <rect x="2" y="10.5" width="2" height="4" rx="1" fill={isWhite ? 'currentColor' : '#34D399'} fillOpacity={isWhite ? 0.75 : 1} />
-            <path d="M19 8a5.5 5.5 0 010 8" stroke={isWhite ? 'currentColor' : '#34D399'} strokeWidth="2" strokeLinecap="round" />
-            <path d="M21.5 5.5a9 9 0 010 13" stroke={isWhite ? 'currentColor' : '#34D399'} strokeWidth="1.8" strokeLinecap="round" strokeOpacity={isWhite ? 0.6 : 0.8} />
-        </svg>
-    );
-};
+export const CampaignIcon: React.FC<IconProps> = ({ className, style }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={style}>
+        <path d="M4 11v2a2 2 0 002 2h1l1 5h2.5l-.8-5H11l6 4V5L11 9H6a2 2 0 00-2 2z" />
+        <path d="M19 8a5 5 0 010 8" />
+        <path d="M21.5 5.5a8.5 8.5 0 010 13" />
+    </svg>
+);
 
-export const ChannelIcon: React.FC<IconProps> = ({ className, style }) => {
-    const isWhite = className?.includes('text-white') || className?.includes('nav-active');
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="1 1 22 22" fill="none" style={style}>
-            <line x1="12" y1="12" x2="12" y2="3.5" stroke={isWhite ? 'currentColor' : '#34D399'} strokeWidth="1.5" strokeLinecap="round" strokeOpacity={isWhite ? 0.6 : 0.85} />
-            <line x1="12" y1="12" x2="12" y2="20.5" stroke={isWhite ? 'currentColor' : '#34D399'} strokeWidth="1.5" strokeLinecap="round" strokeOpacity={isWhite ? 0.6 : 0.85} />
-            <line x1="12" y1="12" x2="4" y2="8" stroke={isWhite ? 'currentColor' : '#34D399'} strokeWidth="1.5" strokeLinecap="round" strokeOpacity={isWhite ? 0.6 : 0.85} />
-            <line x1="12" y1="12" x2="20" y2="8" stroke={isWhite ? 'currentColor' : '#34D399'} strokeWidth="1.5" strokeLinecap="round" strokeOpacity={isWhite ? 0.6 : 0.85} />
-            <line x1="12" y1="12" x2="4" y2="16" stroke={isWhite ? 'currentColor' : '#34D399'} strokeWidth="1.5" strokeLinecap="round" strokeOpacity={isWhite ? 0.6 : 0.85} />
-            <line x1="12" y1="12" x2="20" y2="16" stroke={isWhite ? 'currentColor' : '#34D399'} strokeWidth="1.5" strokeLinecap="round" strokeOpacity={isWhite ? 0.6 : 0.85} />
-            <circle cx="12" cy="12" r="4" fill={isWhite ? 'currentColor' : '#10B981'} />
-            <circle cx="12" cy="12" r="1.8" fill={isWhite ? '#10B981' : '#34D399'} />
-            <circle cx="12" cy="3.5" r="2.2" fill={isWhite ? 'currentColor' : '#34D399'} fillOpacity={isWhite ? 0.8 : 1} />
-            <circle cx="12" cy="20.5" r="2.2" fill={isWhite ? 'currentColor' : '#34D399'} fillOpacity={isWhite ? 0.8 : 1} />
-            <circle cx="4" cy="8" r="2.2" fill={isWhite ? 'currentColor' : '#34D399'} fillOpacity={isWhite ? 0.8 : 1} />
-            <circle cx="20" cy="8" r="2.2" fill={isWhite ? 'currentColor' : '#34D399'} fillOpacity={isWhite ? 0.8 : 1} />
-            <circle cx="4" cy="16" r="2.2" fill={isWhite ? 'currentColor' : '#34D399'} fillOpacity={isWhite ? 0.8 : 1} />
-            <circle cx="20" cy="16" r="2.2" fill={isWhite ? 'currentColor' : '#34D399'} fillOpacity={isWhite ? 0.8 : 1} />
-        </svg>
-    );
-};
+export const ChannelIcon: React.FC<IconProps> = ({ className, style }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={style}>
+        <circle cx="12" cy="12" r="3.5" />
+        <circle cx="12" cy="3.5" r="1.8" />
+        <circle cx="12" cy="20.5" r="1.8" />
+        <circle cx="4" cy="8" r="1.8" />
+        <circle cx="20" cy="8" r="1.8" />
+        <circle cx="4" cy="16" r="1.8" />
+        <circle cx="20" cy="16" r="1.8" />
+        <path d="M12 5.5v3M12 15.5v3M5.5 9l3 1.8M15.5 13.2l3 1.8M5.5 15l3-1.8M15.5 10.8l3-1.8" strokeWidth={1.8} />
+    </svg>
+);
 
-export const TicketsIcon: React.FC<IconProps> = ({ className, style }) => {
-    const isWhite = className?.includes('text-white') || className?.includes('nav-active');
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="2.8 2 19.5 19.5" fill="none" style={style}>
-            <path d="M12.5 3H6a2 2 0 00-2 2v6.5a2 2 0 00.58 1.42l8.5 8.5a2 2 0 002.83 0l5.09-5.09a2 2 0 000-2.83l-8.5-8.5A2 2 0 0012.5 3z" fill={isWhite ? 'currentColor' : '#10B981'} fillOpacity={isWhite ? 1 : 1} />
-            <circle cx="8" cy="7" r="1.5" fill={isWhite ? '#10B981' : '#059669'} />
-            <circle cx="17.5" cy="16.5" r="4.5" fill={isWhite ? 'currentColor' : '#34D399'} fillOpacity={isWhite ? 0.9 : 1} />
-            <path d="M15.5 16.5l1.3 1.3 2.7-2.7" stroke={isWhite ? '#10B981' : '#064E3B'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-    );
-};
+export const TicketsIcon: React.FC<IconProps> = ({ className, style }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={style}>
+        <path d="M12.5 3H6a2 2 0 00-2 2v6.5a2 2 0 00.58 1.42l8.5 8.5a2 2 0 002.83 0l5.09-5.09a2 2 0 000-2.83l-8.5-8.5A2 2 0 0012.5 3z" />
+        <circle cx="8" cy="7" r="1.5" fill="currentColor" stroke="none" />
+        <path d="M14 8l2 2" />
+    </svg>
+);
 
-export const ReportIcon: React.FC<IconProps> = ({ className, style }) => {
-    const isWhite = className?.includes('text-white') || className?.includes('nav-active');
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="2.2 2 21 19.5" fill="none" style={style}>
-            <rect x="3" y="14" width="3.5" height="7" rx="1.75" fill={isWhite ? 'currentColor' : '#34D399'} fillOpacity={isWhite ? 0.65 : 1} />
-            <rect x="8.5" y="10" width="3.5" height="11" rx="1.75" fill={isWhite ? 'currentColor' : '#10B981'} fillOpacity={isWhite ? 0.85 : 1} />
-            <rect x="14" y="6" width="3.5" height="15" rx="1.75" fill={isWhite ? 'currentColor' : '#10B981'} fillOpacity={isWhite ? 1 : 1} />
-            <rect x="19.5" y="3" width="3.5" height="18" rx="1.75" fill={isWhite ? 'currentColor' : '#059669'} fillOpacity={isWhite ? 0.75 : 1} />
-            <path d="M3 10l5-4 5 3 6-5" stroke={isWhite ? 'currentColor' : '#34D399'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M16 4h3v3" stroke={isWhite ? 'currentColor' : '#34D399'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-    );
-};
+export const ReportIcon: React.FC<IconProps> = ({ className, style }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={style}>
+        <rect x="3" y="13" width="4" height="8" rx="1.5" />
+        <rect x="10" y="9" width="4" height="12" rx="1.5" />
+        <rect x="17" y="5" width="4" height="16" rx="1.5" />
+        <path d="M3 8l6-4 5 3 6-5M17 2h4v4" />
+    </svg>
+);
 
-export const CalendarIcon: React.FC<IconProps> = ({ className, style }) => {
-    const isWhite = className?.includes('text-white') || className?.includes('nav-active');
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="2.8 1 18.5 21.5" fill="none" style={style}>
-            <path d="M4 8h16V6a2 2 0 00-2-2H6a2 2 0 00-2 2v2z" fill={isWhite ? 'currentColor' : '#059669'} fillOpacity={isWhite ? 0.7 : 1} />
-            <path d="M4 8h16v11a3 3 0 01-3 3H7a3 3 0 01-3-3V8z" fill={isWhite ? 'currentColor' : '#10B981'} fillOpacity={isWhite ? 1 : 1} />
-            <rect x="7" y="2" width="2" height="4" rx="1" fill={isWhite ? 'currentColor' : '#34D399'} />
-            <rect x="15" y="2" width="2" height="4" rx="1" fill={isWhite ? 'currentColor' : '#34D399'} />
-            <rect x="7" y="12" width="10" height="4.5" rx="2.25" fill={isWhite ? '#10B981' : '#34D399'} fillOpacity={isWhite ? 0.35 : 1} />
-            <circle cx="9.5" cy="14.25" r="1.2" fill={isWhite ? 'currentColor' : '#047857'} />
-        </svg>
-    );
-};
+export const CalendarIcon: React.FC<IconProps> = ({ className, style }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={style}>
+        <rect x="3" y="4" width="18" height="17" rx="3" />
+        <path d="M7 2v4M17 2v4M3 9h18" />
+        <path d="M9 14l2 2 4-4" />
+    </svg>
+);
 
-export const AutomationIcon: React.FC<IconProps> = ({ className, style }) => {
-    const isWhite = className?.includes('text-white') || className?.includes('nav-active');
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="1.5 1.5 21 21" fill="none" style={style}>
-            <circle cx="12" cy="12" r="9.5" stroke={isWhite ? 'currentColor' : '#34D399'} strokeWidth="1.8" strokeDasharray="14 3" />
-            <path d="M13 2.5l-6 10h5l-2 9 8-11h-5l2-8z" fill={isWhite ? 'currentColor' : '#10B981'} fillOpacity={isWhite ? 1 : 1} />
-        </svg>
-    );
-};
+export const AutomationIcon: React.FC<IconProps> = ({ className, style }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={style}>
+        <circle cx="12" cy="12" r="9" strokeDasharray="14 3" />
+        <path d="M13 3l-5 9h4l-2 9 7-11h-4l2-7z" />
+    </svg>
+);
 
-export const TenantsIcon: React.FC<IconProps> = ({ className, style }) => {
-    const isWhite = className?.includes('text-white') || className?.includes('nav-active');
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="1.8 1.8 20.4 20.4" fill="none" style={style}>
-            <path d="M12 9v4m-7 0h14m-14 0v2m7-2v2m7-2v2" stroke={isWhite ? 'currentColor' : '#34D399'} strokeWidth="1.5" strokeLinecap="round" strokeOpacity={isWhite ? 0.7 : 1} />
-            <circle cx="12" cy="4.5" r="2" fill={isWhite ? 'currentColor' : '#34D399'} />
-            <path d="M9.5 9c0-1.2 1.1-2 2.5-2s2.5.8 2.5 2" fill={isWhite ? 'currentColor' : '#34D399'} fillOpacity={isWhite ? 0.8 : 1} />
-            <circle cx="5" cy="16.5" r="1.6" fill={isWhite ? 'currentColor' : '#10B981'} />
-            <path d="M3 20.5c0-1.2 1-1.8 2-1.8s2 .6 2 1.8" stroke={isWhite ? 'currentColor' : '#10B981'} strokeWidth="1.3" strokeLinecap="round" />
-            <circle cx="12" cy="16.5" r="1.6" fill={isWhite ? 'currentColor' : '#10B981'} />
-            <path d="M10 20.5c0-1.2 1-1.8 2-1.8s2 .6 2 1.8" stroke={isWhite ? 'currentColor' : '#10B981'} strokeWidth="1.3" strokeLinecap="round" />
-            <circle cx="19" cy="16.5" r="1.6" fill={isWhite ? 'currentColor' : '#10B981'} />
-            <path d="M17 20.5c0-1.2 1-1.8 2-1.8s2 .6 2 1.8" stroke={isWhite ? 'currentColor' : '#10B981'} strokeWidth="1.3" strokeLinecap="round" />
-        </svg>
-    );
-};
+export const TenantsIcon: React.FC<IconProps> = ({ className, style }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={style}>
+        <rect x="7" y="3" width="10" height="18" rx="2" />
+        <path d="M3 21v-7a2 2 0 012-2h2M17 12h2a2 2 0 012 2v7" />
+        <path d="M10 7h1M13 7h1M10 11h1M13 11h1M10 15h1M13 15h1M11 21v-3h2v3" />
+    </svg>
+);
 
-export const SettingIcon: React.FC<IconProps> = ({ className, style }) => {
-    const isWhite = className?.includes('text-white') || className?.includes('nav-active');
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="1.8 1.8 20.4 20.4" fill="none" style={style}>
-            <path
-                fillRule="evenodd"
-                clipRule="evenodd"
-                d="M10.8 2.2a1.2 1.2 0 012.4 0l.3 1.3a7.8 7.8 0 011.8.7l1.1-.7a1.2 1.2 0 011.7.4l1.2 2.1a1.2 1.2 0 01-.4 1.7l-1.1.7c.2.6.3 1.2.3 1.8l1.3.3a1.2 1.2 0 011 1.2v2.4a1.2 1.2 0 01-1 1.2l-1.3.3a7.8 7.8 0 01-.3 1.8l1.1.7a1.2 1.2 0 01.4 1.7l-1.2 2.1a1.2 1.2 0 01-1.7.4l-1.1-.7a7.8 7.8 0 01-1.8.7l-.3 1.3a1.2 1.2 0 01-1.2 1h-2.4a1.2 1.2 0 01-1.2-1l-.3-1.3a7.8 7.8 0 01-1.8-.7l-1.1.7a1.2 1.2 0 01-1.7-.4l-1.2-2.1a1.2 1.2 0 01.4-1.7l1.1-.7a7.8 7.8 0 01-.3-1.8l-1.3-.3a1.2 1.2 0 01-1-1.2v-2.4a1.2 1.2 0 011-1.2l1.3-.3a7.8 7.8 0 01.3-1.8l-1.1-.7a1.2 1.2 0 01-.4-1.7l1.2-2.1a1.2 1.2 0 011.7-.4l1.1.7a7.8 7.8 0 011.8-.7l.3-1.3zM12 8a4 4 0 100 8 4 4 0 000-8z"
-                fill={isWhite ? 'currentColor' : '#10B981'}
-                fillOpacity={isWhite ? 1 : 1}
-            />
-            <circle cx="12" cy="12" r="2.2" fill={isWhite ? '#10B981' : '#34D399'} fillOpacity={isWhite ? 0.35 : 1} />
-        </svg>
-    );
-};
+export const SettingIcon: React.FC<IconProps> = ({ className, style }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={style}>
+        <circle cx="12" cy="12" r="3" />
+        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" />
+    </svg>
+);
 
 // Header Icons
 export const RefreshIcon: React.FC<IconProps> = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} viewBox="0 0 24 24" fill="currentColor"><path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" /></svg>;
@@ -345,15 +237,15 @@ export const ActiveUsersStatIcon: React.FC<IconProps> = ({ className }) => <svg 
 
 export const WhatsAppBusinessIcon: React.FC<IconProps> = ({ className, style }) => (
     <svg xmlns="http://www.w3.org/2000/svg" className={className ?? defaultClassName} style={style} viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="11" fill="url(#wa-grad)"/>
+        <circle cx="12" cy="12" r="11" fill="url(#wa-grad)" />
         <defs>
             <linearGradient id="wa-grad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#4ade80"/>
-                <stop offset="100%" stopColor="#22c55e"/>
+                <stop offset="0%" stopColor="#4ade80" />
+                <stop offset="100%" stopColor="#22c55e" />
             </linearGradient>
         </defs>
-        <path d="M12 6.5c-3.1 0-5.6 2.4-5.6 5.4 0 1.2.4 2.3 1 3.2L6.5 17.5l2.5-.8c.9.5 1.9.8 3 .8 3.1 0 5.6-2.4 5.6-5.4C17.6 8.9 15.1 6.5 12 6.5z" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M10.8 9.5h1.8c1.1 0 1.6.4 1.6 1.1 0 .6-.4.9-1 .9v.05c.7.1 1.2.6 1.2 1.3 0 .9-.8 1.4-1.9 1.4h-1.7V9.5zm1.1 2.1h.6c.4 0 .8-.2.8-.6s-.4-.6-.8-.6h-.6v1.2zm0 2h.7c.5 0 .9-.2.9-.6s-.4-.7-.9-.7h-.7v1.3z" fill="white"/>
+        <path d="M12 6.5c-3.1 0-5.6 2.4-5.6 5.4 0 1.2.4 2.3 1 3.2L6.5 17.5l2.5-.8c.9.5 1.9.8 3 .8 3.1 0 5.6-2.4 5.6-5.4C17.6 8.9 15.1 6.5 12 6.5z" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M10.8 9.5h1.8c1.1 0 1.6.4 1.6 1.1 0 .6-.4.9-1 .9v.05c.7.1 1.2.6 1.2 1.3 0 .9-.8 1.4-1.9 1.4h-1.7V9.5zm1.1 2.1h.6c.4 0 .8-.2.8-.6s-.4-.6-.8-.6h-.6v1.2zm0 2h.7c.5 0 .9-.2.9-.6s-.4-.7-.9-.7h-.7v1.3z" fill="white" />
     </svg>
 );
 export const EmailIcon: React.FC<IconProps> = ({ className, style }) => (
