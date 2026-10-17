@@ -8,7 +8,15 @@ export enum Channel {
 export enum TicketStatus {
   Open = 'Open',
   InProgress = 'In Progress',
+  OnHold = 'On Hold',
   Closed = 'Closed',
+}
+
+export interface TicketComment {
+  id: string;
+  userName: string;
+  content: string;
+  createdAt: string;
 }
 
 export enum TicketPriority {
@@ -67,6 +75,8 @@ export interface Ticket {
   assignedTo?: string;
   createdAt: string;
   updatedAt?: string;
+  lastActivity?: string;
+  comments?: TicketComment[];
 }
 
 export interface Notification {

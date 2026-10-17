@@ -14,9 +14,15 @@ import Dashboard from './pages/Dashboard';
 import Accounts from './pages/Accounts';
 import Contacts from './pages/Contacts';
 import Tickets from './pages/Tickets';
+import TicketDetails from './pages/TicketDetails';
 import Inbox from './pages/Inbox';
 import Channels from './pages/Channels';
 import Settings from './pages/Settings';
+import Campaign from './pages/Campaign';
+import Reports from './pages/Reports';
+import CalendarPage from './pages/Calendar';
+import Automation from './pages/Automation';
+import Tenants from './pages/Tenants';
 import UserProfile from './pages/UserProfile';
 import ContactDetails from './pages/ContactDetails';
 import AccountDetails from './pages/AccountDetails'; // Account details view page
@@ -47,7 +53,13 @@ function AppRoutes() {
         <Route path="/contacts/:id" element={<ContactDetails />} />
         <Route path="/inbox" element={<Inbox />} />
         <Route path="/tickets" element={<Tickets />} />
+        <Route path="/tickets/:id" element={<TicketDetails />} />
         <Route path="/channels" element={<Channels />} />
+        <Route path="/campaign" element={<Campaign />} />
+        <Route path="/report" element={<Reports />} />
+        <Route path="/calendar" element={<CalendarPage />} />
+        <Route path="/automation" element={<Automation />} />
+        <Route path="/tenants" element={<Tenants />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/profile" element={<UserProfile />} />
       </Route>

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useData } from '../hooks/useData';
+import { useAuth } from '../hooks/useAuth';
 import { useChannel, ChannelName, ChatConversation, Message } from '../context/ChannelContext';
 import { useToast } from '../context/ToastContext';
 
@@ -134,6 +135,7 @@ function initials(name: string) {
 
 const Inbox: React.FC = () => {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
   const { showToast } = useToast();
   const { contacts } = useData();
   const {
@@ -146,7 +148,7 @@ const Inbox: React.FC = () => {
 
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState<'all' | 'unread' | 'read'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'mine' | 'unassigned'>('all');
   const [channelFilter, setChannelFilter] = useState<ChannelName | 'All'>('All');
   const [newMessageText, setNewMessageText] = useState('');
   const [toContactId, setToContactId] = useState('');
@@ -302,14 +304,16 @@ const Inbox: React.FC = () => {
     const q = searchQuery.toLowerCase();
     if (q && !chat.contactName.toLowerCase().includes(q) && !chat.lastMessage.toLowerCase().includes(q)) return false;
     
-    if (activeTab === 'unread') return chat.unreadCount > 0;
-    if (activeTab === 'read') return chat.unreadCount === 0;
+    if (activeTab === 'mine') return chat.assignedTo === currentUser?.email;
+    if (activeTab === 'unassigned') return !chat.assignedTo;
     return true;
   });
 
-  const allCount = conversations.filter((c) => isChannelConnected(c.channel)).length;
-  const unreadCount = conversations.filter((c) => isChannelConnected(c.channel) && c.unreadCount > 0).length;
-  const readCount = conversations.filter((c) => isChannelConnected(c.channel) && c.unreadCount === 0).length;
+  const connected = conversations.filter((c) => isChannelConnected(c.channel));
+  const allCount = connected.length;
+  const mineCount = connected.filter((c) => c.assignedTo === currentUser?.email).length;
+  const unassignedCount = connected.filter((c) => !c.assignedTo).length;
+  const unreadCount = connected.filter((c) => c.unreadCount > 0).length;
 
   const noChannelsConnected = connectedChannels.length === 0;
 
@@ -425,8 +429,8 @@ const Inbox: React.FC = () => {
 
         {/* Tab Pills */}
         <div className="px-4 py-2 flex items-center justify-between gap-1.5 border-b border-slate-100 dark:border-slate-700/50">
-          {(['all', 'unread', 'read'] as const).map((tab) => {
-            const count = tab === 'all' ? allCount : tab === 'unread' ? unreadCount : readCount;
+          {(['all', 'mine', 'unassigned'] as const).map((tab) => {
+            const count = tab === 'all' ? allCount : tab === 'mine' ? mineCount : unassignedCount;
             const isActive = activeTab === tab;
             return (
               <button
@@ -561,7 +565,7 @@ const Inbox: React.FC = () => {
                   <div className="flex items-center gap-1.5">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
                     <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">
-                      Online • {selectedChat.channel}
+                      {selectedChat.assignedTo ? `Assigned · ${selectedChat.assignedTo}` : 'Unassigned'} • {selectedChat.channel}
                     </span>
                     {selectedChat.contactNumber && (
                       <span className="text-[10px] text-slate-400 dark:text-slate-400 font-semibold">
@@ -571,7 +575,23 @@ const Inbox: React.FC = () => {
                   </div>
                 </div>
               </div>
-
+              <button
+                type="button"
+                onClick={() => {
+                  const email = currentUser?.email;
+                  if (!email || !selectedChat) return;
+                  setConversations((prev) =>
+                    prev.map((c) =>
+                      c.id === selectedChat.id
+                        ? { ...c, assignedTo: c.assignedTo === email ? undefined : email }
+                        : c
+                    )
+                  );
+                }}
+                className="px-3 py-1.5 text-xs font-semibold rounded-md bg-[#00A76F] text-white hover:bg-[#007867] transition"
+              >
+                {selectedChat.assignedTo === currentUser?.email ? 'Unassign' : 'Assign to me'}
+              </button>
             </div>
 
             {/* Message feed */}

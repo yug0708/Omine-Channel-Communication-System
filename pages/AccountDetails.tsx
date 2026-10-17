@@ -738,6 +738,8 @@ const AccountDetails: React.FC = () => {
         return 'text-red-500 border-red-500 bg-red-50 dark:bg-red-950/20';
       case TicketStatus.InProgress:
         return 'text-yellow-500 border-yellow-500 bg-yellow-50 dark:bg-yellow-950/20';
+      case TicketStatus.OnHold:
+        return 'text-slate-500 border-slate-500 bg-slate-50 dark:bg-slate-950/20';
       case TicketStatus.Closed:
         return 'text-green-500 border-green-500 bg-green-50 dark:bg-green-950/20';
       default:

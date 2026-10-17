@@ -45,6 +45,7 @@ export interface ChatConversation {
   lastMessage: string;
   timeLabel: string;
   unreadCount: number;
+  assignedTo?: string;
   messages: Message[];
 }
 

@@ -701,6 +701,8 @@ const TicketForm: React.FC<{
 
             <option value={TicketStatus.InProgress}>In Progress</option>
 
+            <option value={TicketStatus.OnHold}>On Hold</option>
+
             <option value={TicketStatus.Closed}>Closed</option>
 
           </select>
@@ -1223,6 +1225,10 @@ const ContactDetails: React.FC = () => {
       case TicketStatus.InProgress:
 
         return 'text-yellow-500 border-yellow-500 bg-yellow-50 dark:bg-yellow-950/20';
+
+      case TicketStatus.OnHold:
+
+        return 'text-slate-500 border-slate-500 bg-slate-50 dark:bg-slate-950/20';
 
       case TicketStatus.Closed:
 
@@ -2293,6 +2299,8 @@ const ContactDetails: React.FC = () => {
                                   <option value={TicketStatus.Open} className="bg-white dark:bg-[#1a2235]">Open</option>
 
                                   <option value={TicketStatus.InProgress} className="bg-white dark:bg-[#1a2235]">In Progress</option>
+
+                                  <option value={TicketStatus.OnHold} className="bg-white dark:bg-[#1a2235]">On Hold</option>
 
                                   <option value={TicketStatus.Closed} className="bg-white dark:bg-[#1a2235]">Closed</option>
 
