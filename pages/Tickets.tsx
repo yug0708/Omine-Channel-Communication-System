@@ -33,7 +33,7 @@ function contactLabel(ticket: Ticket, contacts: { id: string; firstName: string;
 const Tickets: React.FC = () => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
-  const { tickets, setTickets, contacts, accounts } = useData();
+  const { tickets, contacts, accounts, saveTicket, deleteTicketsBatch } = useData();
   const { showToast } = useToast();
 
   const [search, setSearch] = useState('');
@@ -82,14 +82,14 @@ const Tickets: React.FC = () => {
   const pageRows = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
   const allPageSelected = pageRows.length > 0 && pageRows.every((t) => selected.includes(t.id));
 
-  const saveTicket = (data: Partial<Ticket>) => {
+  const persistTicket = async (data: Partial<Ticket>) => {
     const now = new Date().toISOString();
     if (editing) {
-      setTickets((prev) => prev.map((t) => (t.id === editing.id ? { ...t, ...data, updatedAt: now, lastActivity: now } : t)));
+      await saveTicket({ ...editing, ...data, updatedAt: now, lastActivity: now });
     } else {
       const contact = contacts.find((c) => c.id === data.contactId);
       const account = accounts.find((a) => a.name === contact?.accountName);
-      const ticket: Ticket = {
+      await saveTicket({
         id: `tkt${Date.now()}`,
         ticketNo: `TKT-${Math.floor(1000 + Math.random() * 9000)}`,
         subject: data.subject || '',
@@ -105,24 +105,27 @@ const Tickets: React.FC = () => {
         updatedAt: now,
         lastActivity: now,
         comments: [],
-      };
-      setTickets((prev) => [ticket, ...prev]);
+      });
     }
     setModalOpen(false);
     setEditing(null);
   };
 
-  const deleteIds = (ids: string[]) => {
+  const deleteIds = async (ids: string[]) => {
     if (!ids.length) return;
     if (!window.confirm(`Delete ${ids.length} ticket${ids.length > 1 ? 's' : ''}?`)) return;
-    setTickets((prev) => prev.filter((t) => !ids.includes(t.id)));
+    await deleteTicketsBatch(ids);
     setSelected((prev) => prev.filter((id) => !ids.includes(id)));
   };
 
-  const applyBulkStatus = () => {
+  const applyBulkStatus = async () => {
     if (!selected.length) return;
     const now = new Date().toISOString();
-    setTickets((prev) => prev.map((t) => (selected.includes(t.id) ? { ...t, status: bulkStatus, updatedAt: now, lastActivity: now } : t)));
+    await Promise.all(selected.map((id) => {
+      const ticket = tickets.find((item) => item.id === id);
+      if (!ticket) return Promise.resolve();
+      return saveTicket({ ...ticket, status: bulkStatus, updatedAt: now, lastActivity: now });
+    }));
     showToast(`Updated ${selected.length} ticket${selected.length > 1 ? 's' : ''}`, 'success');
   };
 
@@ -278,7 +281,7 @@ const Tickets: React.FC = () => {
           contacts={contacts}
           assignees={assignees}
           onClose={() => { setModalOpen(false); setEditing(null); }}
-          onSave={saveTicket}
+          onSave={persistTicket}
         />
       </Modal>
     </div>

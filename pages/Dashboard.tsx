@@ -55,22 +55,18 @@ const CallStatCard: React.FC<{
   const s = themeStyles[colorTheme];
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white/80 p-4 sm:p-6 shadow-sm backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl dark:border-white/[0.08] dark:bg-slate-900/60 dark:hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-col justify-between min-h-[190px] sm:min-h-[220px] group">
-      {/* top shine */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
-      {/* glow orb */}
-      <div className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full blur-2xl opacity-20 group-hover:opacity-40 transition-opacity" style={{ backgroundColor: s.accent }} />
+    <div className="relative overflow-hidden rounded-[10px] border border-slate-200 bg-white p-4 sm:p-5 shadow-sm dark:border-white/10 dark:bg-[#111111] flex flex-col justify-between min-h-[190px] sm:min-h-[200px]">
 
       <div>
         <div className="flex items-center justify-between mb-4">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl border transition-transform duration-300 group-hover:scale-110"
-            style={{ backgroundColor: `${s.accent}18`, borderColor: `${s.accent}30`, boxShadow: `0 0 20px ${s.glow}` }}>
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg border"
+            style={{ backgroundColor: `${s.accent}14`, borderColor: `${s.accent}30` }}>
             <Icon className="h-5 w-5" style={{ color: s.accent }} />
           </div>
         </div>
         <div className="flex flex-col gap-1">
           <p className="text-[11px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">{title}</p>
-          <p className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-none">{value}</p>
+          <p className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white leading-none">{value}</p>
           <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1 line-clamp-1">{description}</p>
         </div>
       </div>
@@ -90,17 +86,15 @@ const CallStatCard: React.FC<{
 
 // ─── Conversation Stat Card ──────────────────────────────────────────────────
 const ConversationStatCard: React.FC<{ title: string; value: number; color: string; icon: React.ElementType }> = ({ title, value, color, icon: Icon }) => (
-  <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white/80 p-5 sm:p-6 shadow-sm backdrop-blur-2xl transition-all duration-300 hover:scale-[1.02] hover:shadow-lg dark:border-white/[0.08] dark:bg-slate-900/60 flex items-center justify-between group">
-    <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent" />
+  <div className="relative overflow-hidden rounded-[10px] border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-[#111111] flex items-center justify-between">
     <div className="flex flex-col z-10 w-2/3">
       <p className="text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400 font-bold mb-1.5 truncate">{title}</p>
-      <p className="text-3xl font-black text-slate-900 dark:text-white">{value}</p>
+      <p className="text-3xl font-bold text-slate-900 dark:text-white">{value}</p>
     </div>
-    <div className="h-12 w-12 rounded-2xl flex items-center justify-center z-10 transform group-hover:scale-110 transition-transform duration-300 text-white shadow-lg flex-shrink-0"
-      style={{ backgroundColor: color, boxShadow: `0 8px 24px -8px ${color}` }}>
+    <div className="h-11 w-11 rounded-lg flex items-center justify-center z-10 text-white flex-shrink-0"
+      style={{ backgroundColor: color }}>
       <Icon className="h-6 w-6" />
     </div>
-    <div className="pointer-events-none absolute bottom-0 left-0 w-full h-[2px]" style={{ background: `linear-gradient(90deg, ${color}00 0%, ${color} 50%, ${color}00 100%)` }} />
   </div>
 );
 
@@ -108,16 +102,13 @@ const ConversationStatCard: React.FC<{ title: string; value: number; color: stri
 const RightStatCard: React.FC<{ title: string; value: number | string; icon: React.ElementType; onClick?: () => void }> = ({ title, value, icon: Icon, onClick }) => (
   <div
     onClick={onClick}
-    className={`relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white/80 p-4 sm:p-5 shadow-sm backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:border-white/[0.08] dark:bg-slate-900/60 flex items-center justify-between group ${onClick ? 'cursor-pointer' : ''}`}
+    className={`relative overflow-hidden rounded-[10px] border border-slate-200 bg-white p-4 sm:p-5 shadow-sm dark:border-white/10 dark:bg-[#111111] flex items-center justify-between ${onClick ? 'cursor-pointer hover:border-[#00A76F]' : ''}`}
   >
-    <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent" />
-    {/* Animated bottom line on hover */}
-    <div className="pointer-events-none absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-emerald-500/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
     <div className="flex flex-col min-w-0">
       <p className="text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400 font-bold mb-1.5 truncate">{title}</p>
-      <p className="text-3xl font-black text-emerald-600 dark:text-emerald-400 group-hover:drop-shadow-[0_0_12px_rgba(16,185,129,0.5)] transition-all">{value}</p>
+      <p className="text-3xl font-bold text-[#007867] dark:text-[#5BE49B]">{value}</p>
       {onClick && (
-        <span className="mt-1 flex items-center gap-1 text-[10px] font-semibold text-emerald-400 dark:text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity">
+        <span className="mt-1 flex items-center gap-1 text-[10px] font-semibold text-[#007867] dark:text-[#5BE49B]">
           View all
           <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
@@ -125,7 +116,7 @@ const RightStatCard: React.FC<{ title: string; value: number | string; icon: Rea
         </span>
       )}
     </div>
-    <div className="h-11 w-11 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center group-hover:scale-110 group-hover:bg-emerald-500/20 transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
+    <div className="h-10 w-10 rounded-lg bg-[#00A76F]/10 border border-[#00A76F]/20 flex items-center justify-center">
       <Icon className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
     </div>
   </div>
@@ -133,17 +124,15 @@ const RightStatCard: React.FC<{ title: string; value: number | string; icon: Rea
 
 // ─── Channel Card ────────────────────────────────────────────────────────────
 const ChannelCard: React.FC<{ title: string; value: number; icon: React.ElementType; color: string }> = ({ title, value, icon: Icon, color }) => (
-  <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white/80 p-4 sm:p-5 shadow-sm backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl dark:border-white/[0.08] dark:bg-slate-900/60 flex flex-col justify-between h-[130px] group">
-    <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent" />
+  <div className="relative overflow-hidden rounded-[10px] border border-slate-200 bg-white p-4 sm:p-5 shadow-sm dark:border-white/10 dark:bg-[#111111] flex flex-col justify-between h-[120px]">
     <div className="flex justify-between items-start z-10">
       <p className="text-[32px] sm:text-[38px] font-black text-slate-900 dark:text-white leading-none tracking-tight">{value}</p>
-      <div className="h-10 w-10 rounded-2xl flex items-center justify-center transform group-hover:rotate-[12deg] transition-transform duration-300 flex-shrink-0"
+      <div className="h-10 w-10 rounded-lg flex items-center justify-center flex-shrink-0"
         style={{ backgroundColor: `${color}18`, border: `1px solid ${color}35` }}>
         <Icon className="h-6 w-6 drop-shadow-sm" style={{ color }} />
       </div>
     </div>
     <p className="text-[11px] sm:text-[12px] text-slate-500 dark:text-slate-400 z-10 font-bold tracking-wide truncate pr-2">{title}</p>
-    <div className="pointer-events-none absolute -bottom-10 -right-10 w-28 h-28 rounded-full opacity-[0.08] blur-3xl group-hover:opacity-20 transition-opacity" style={{ backgroundColor: color }} />
   </div>
 );
 
@@ -242,9 +231,7 @@ const SectionHeader: React.FC<{ icon: React.ReactNode; title: string; subtitle: 
 
 // ─── Glassmorphism Chart Card ────────────────────────────────────────────────
 const ChartCard: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
-  <div className={`relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white/80 shadow-sm backdrop-blur-2xl transition-shadow duration-500 hover:shadow-lg dark:border-white/[0.08] dark:bg-slate-900/60 p-5 sm:p-8 flex flex-col ${className}`}>
-    <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
-    <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl" />
+  <div className={`relative overflow-hidden rounded-[10px] border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#111111] p-5 sm:p-6 flex flex-col ${className}`}>
     {children}
   </div>
 );
@@ -367,7 +354,7 @@ const Dashboard: React.FC = () => {
     return () => clearInterval(iv);
   }, []);
 
-  const chartGridColor = isDark ? '#1E293B' : '#F1F5F9';
+  const chartGridColor = isDark ? '#1A1A1A' : '#F1F5F9';
   const chartTickColor = isDark ? '#64748B' : '#94A3B8';
 
   // Calculate dynamic channel performance counters
@@ -380,20 +367,18 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="relative min-h-screen w-full page-enter">
-      {/* Background orbs */}
-      <div className="pointer-events-none fixed inset-0 z-0 bg-gradient-to-br from-slate-100 via-emerald-50/30 to-teal-100/20 dark:from-slate-950 dark:via-slate-950 dark:to-slate-950" aria-hidden />
-      <div className="pointer-events-none fixed inset-0 z-0 dashboard-mesh dashboard-grid-bg opacity-60 dark:opacity-70" aria-hidden />
-      <div className="pointer-events-none fixed left-1/3 top-[-5%] z-0 h-[400px] w-[700px] -translate-x-1/2 rounded-full bg-emerald-500/15 blur-3xl dark:bg-emerald-500/12" aria-hidden />
-      <div className="pointer-events-none fixed bottom-0 left-[5%] z-0 h-72 w-72 rounded-full bg-teal-500/12 blur-3xl" aria-hidden />
-      <div className="pointer-events-none fixed bottom-1/4 right-[5%] z-0 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl" aria-hidden />
+      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+        <div className="absolute inset-0 bg-[#F9F6F2] dark:bg-[#000000]" />
+        <div className="login-orb absolute -left-24 -top-28 h-[420px] w-[420px] rounded-full bg-[#00A76F]/20 blur-3xl dark:bg-[#00A76F]/16" />
+        <div className="login-orb-alt absolute -right-16 top-[42%] h-[340px] w-[340px] rounded-full bg-[#5BE49B]/25 blur-3xl dark:bg-[#007867]/30" />
+        <div className="absolute inset-0 dashboard-grid-bg opacity-60 dark:opacity-80" />
+      </div>
 
       <div className="relative z-10">
 
         {/* ─── Welcome Banner ─── */}
         {showWelcome && (
-          <div className="hidden sm:block relative mb-5 overflow-hidden rounded-2xl border border-emerald-500/25 bg-gradient-to-r from-emerald-500/10 via-teal-500/8 to-emerald-500/5 dark:from-emerald-500/15 dark:via-teal-500/10 dark:to-emerald-500/8 p-4 backdrop-blur-xl animate-fade-in-up">
-            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
-            <div className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-emerald-500/10 blur-2xl" />
+          <div className="hidden sm:block relative mb-5 overflow-hidden rounded-[10px] border border-slate-200 bg-white dark:border-white/10 dark:bg-[#111111] p-4">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/20 border border-emerald-500/30">
@@ -415,7 +400,7 @@ const Dashboard: React.FC = () => {
         )}
 
         {/* ─── Quick Tip Bar ─── */}
-        <div className="hidden sm:flex mb-6 items-center justify-between gap-3 rounded-2xl border border-slate-200/80 bg-white/70 px-3 sm:px-4 py-2.5 sm:py-3 shadow-sm backdrop-blur-xl dark:border-white/[0.08] dark:bg-slate-900/50">
+        <div className="hidden sm:flex mb-6 items-center justify-between gap-3 rounded-[10px] border border-slate-200 bg-white px-3 sm:px-4 py-2.5 sm:py-3 shadow-sm dark:border-white/10 dark:bg-[#111111]">
           <div className="flex items-center gap-3 overflow-hidden">
             <span className="shrink-0 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white shadow-sm shadow-emerald-500/30">
               Quick Tip
@@ -433,7 +418,7 @@ const Dashboard: React.FC = () => {
         <div className="mb-4 flex items-start justify-between gap-4">
           <div>
             <p className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400 mb-1">Analytics</p>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">Overview</h1>
+            <h1 className="text-[28px] font-bold tracking-tight text-slate-900 dark:text-white leading-tight">Overview</h1>
             <p className="mt-1 flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
               Tracking metrics
               <span className="h-1 w-1 rounded-full bg-slate-300 dark:bg-slate-600 hidden sm:inline" />
@@ -533,7 +518,7 @@ const Dashboard: React.FC = () => {
                     <CartesianGrid strokeDasharray="4 4" stroke={chartGridColor} horizontal vertical={false} />
                     <XAxis dataKey="name" tick={{ fill: chartTickColor, fontSize: 11, fontWeight: 700 }} axisLine={false} tickLine={false} tickMargin={12} />
                     <YAxis tick={{ fill: chartTickColor, fontSize: 11, fontWeight: 700 }} axisLine={false} tickLine={false} tickMargin={12} />
-                    <Tooltip content={<CustomTooltip />} cursor={{ stroke: isDark ? '#334155' : '#CBD5E1', strokeWidth: 1, strokeDasharray: '4 4' }} />
+                    <Tooltip content={<CustomTooltip />} cursor={{ stroke: isDark ? '#2A2A2A' : '#CBD5E1', strokeWidth: 1, strokeDasharray: '4 4' }} />
                     <Area type="monotone" dataKey="incoming" stroke="#10B981" strokeWidth={3} fillOpacity={1} fill="url(#colorIn)" activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2, fill: '#10B981' }} />
                     <Area type="monotone" dataKey="outgoing" stroke="#14B8A6" strokeWidth={3} fillOpacity={1} fill="url(#colorOut)" activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2, fill: '#14B8A6' }} />
                   </AreaChart>
@@ -588,7 +573,7 @@ const Dashboard: React.FC = () => {
                     <CartesianGrid strokeDasharray="4 4" stroke={chartGridColor} horizontal vertical={false} />
                     <XAxis dataKey="name" tick={{ fill: chartTickColor, fontSize: 11, fontWeight: 700 }} axisLine={false} tickLine={false} tickMargin={12} />
                     <YAxis tick={{ fill: chartTickColor, fontSize: 11, fontWeight: 700 }} axisLine={false} tickLine={false} tickMargin={12} />
-                    <Tooltip cursor={{ fill: isDark ? '#1E293B' : '#F8FAFC', opacity: 0.5 }} content={<CustomTooltip />} />
+                    <Tooltip cursor={{ fill: isDark ? '#1A1A1A' : '#F8FAFC', opacity: 0.5 }} content={<CustomTooltip />} />
                     <Bar dataKey="conversations" stackId="a" fill="#0351AB" radius={[0, 0, 4, 4]} />
                     <Bar dataKey="received"      stackId="a" fill="#F59E0B" radius={[0, 0, 0, 0]} />
                     <Bar dataKey="sent"          stackId="a" fill="#06B6D4" radius={[4, 4, 0, 0]} />

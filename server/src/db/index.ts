@@ -9,10 +9,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Load environment variables from server/.env or root .env
-dotenv.config();
+dotenv.config({ quiet: true });
 const rootEnvPath = path.resolve(__dirname, '../../../.env');
 if (fs.existsSync(rootEnvPath)) {
-  dotenv.config({ path: rootEnvPath });
+  dotenv.config({ path: rootEnvPath, quiet: true });
 }
 
 
@@ -25,6 +25,18 @@ export const DEFAULT_DATABASE_URL =
 function cleanUrl(url?: string): string {
   if (!url) return '';
   return url.trim().replace(/^['"]|['"]$/g, '');
+}
+
+// pg prints a startup warning when the URL uses sslmode=require.
+// SSL is set on the pool below, so the mode is removed from the string pg parses.
+function connectionStringForPool(url: string): string {
+  try {
+    const parsed = new URL(url);
+    parsed.searchParams.delete('sslmode');
+    return parsed.toString();
+  } catch {
+    return url.replace(/([?&])sslmode=[^&]*&?/i, '$1').replace(/[?&]$/, '');
+  }
 }
 
 function resolveInitialUrl(): string {
@@ -42,7 +54,7 @@ function resolveInitialUrl(): string {
 
 let activeUrl = resolveInitialUrl();
 let primaryPool = new Pool({
-  connectionString: activeUrl,
+  connectionString: connectionStringForPool(activeUrl),
   ssl: activeUrl.includes('sslmode=disable') ? false : { rejectUnauthorized: false },
 });
 
@@ -50,7 +62,7 @@ let fallbackPool: InstanceType<typeof Pool> | null = null;
 function getFallbackPool() {
   if (!fallbackPool) {
     fallbackPool = new Pool({
-      connectionString: DEFAULT_DATABASE_URL,
+      connectionString: connectionStringForPool(DEFAULT_DATABASE_URL),
       ssl: { rejectUnauthorized: false },
     });
   }
@@ -221,6 +233,35 @@ export async function initDb(): Promise<void> {
           updated_at TIMESTAMPTZ DEFAULT NOW()
         );
         CREATE INDEX IF NOT EXISTS idx_contacts_tenant_id ON contacts (tenant_id);
+
+        CREATE TABLE IF NOT EXISTS tickets (
+          id VARCHAR(64) PRIMARY KEY,
+          tenant_id VARCHAR(64) NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+          ticket_no VARCHAR(32) DEFAULT '',
+          subject VARCHAR(255) NOT NULL,
+          description TEXT DEFAULT '',
+          contact_id VARCHAR(64) DEFAULT '',
+          contact_name VARCHAR(255) DEFAULT '',
+          account_id VARCHAR(64) DEFAULT '',
+          account_name VARCHAR(255) DEFAULT '',
+          status VARCHAR(32) DEFAULT 'Open',
+          priority VARCHAR(32) DEFAULT 'Normal',
+          assigned_to VARCHAR(255) DEFAULT '',
+          last_activity TIMESTAMPTZ,
+          created_at TIMESTAMPTZ DEFAULT NOW(),
+          updated_at TIMESTAMPTZ DEFAULT NOW()
+        );
+        CREATE INDEX IF NOT EXISTS idx_tickets_tenant_id ON tickets (tenant_id);
+
+        CREATE TABLE IF NOT EXISTS ticket_comments (
+          id VARCHAR(64) PRIMARY KEY,
+          tenant_id VARCHAR(64) NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+          ticket_id VARCHAR(64) NOT NULL REFERENCES tickets(id) ON DELETE CASCADE,
+          user_name VARCHAR(255) DEFAULT '',
+          content TEXT NOT NULL,
+          created_at TIMESTAMPTZ DEFAULT NOW()
+        );
+        CREATE INDEX IF NOT EXISTS idx_ticket_comments_ticket_id ON ticket_comments (ticket_id);
       `;
     }
 

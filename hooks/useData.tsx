@@ -22,8 +22,12 @@ interface DataContextType {
   saveAccount: (accountData: Partial<Account>) => Promise<Account>;
   deleteAccount: (id: string) => Promise<void>;
   deleteAccountsBatch: (ids: string[]) => Promise<void>;
+  saveTicket: (ticketData: Partial<Ticket>) => Promise<Ticket>;
+  deleteTicket: (id: string) => Promise<void>;
+  deleteTicketsBatch: (ids: string[]) => Promise<void>;
   fetchContacts: () => Promise<void>;
   fetchAccounts: () => Promise<void>;
+  fetchTickets: () => Promise<void>;
   isLoadingData: boolean;
 }
 
@@ -97,15 +101,48 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, [currentUser, getAuthHeaders, setAccounts]);
 
+  const fetchTickets = useCallback(async () => {
+    if (!currentUser) return;
+    const storageKey = `${tenantKey}_tickets`;
+    try {
+      const res = await fetch(`${API_URL}/api/tickets`, { headers: getAuthHeaders() });
+      if (!res.ok) return;
+      const data: Ticket[] = await res.json();
+      if (data.length > 0) {
+        setTickets(data);
+        return;
+      }
+      let local: Ticket[] = [];
+      try {
+        const raw = localStorage.getItem(storageKey);
+        local = raw ? JSON.parse(raw) : [];
+      } catch {
+        local = [];
+      }
+      if (!Array.isArray(local) || local.length === 0) return;
+      for (const ticket of local) {
+        await fetch(`${API_URL}/api/tickets`, {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify(ticket),
+        });
+      }
+      const again = await fetch(`${API_URL}/api/tickets`, { headers: getAuthHeaders() });
+      if (again.ok) setTickets(await again.json());
+    } catch (err) {
+      console.warn('Failed to fetch tickets from backend database:', err);
+    }
+  }, [currentUser, getAuthHeaders, setTickets, tenantKey]);
+
   // Initial fetch whenever user/tenant changes
   useEffect(() => {
     if (currentUser) {
       setIsLoadingData(true);
-      Promise.all([fetchContacts(), fetchAccounts()]).finally(() => {
+      Promise.all([fetchContacts(), fetchAccounts(), fetchTickets()]).finally(() => {
         setIsLoadingData(false);
       });
     }
-  }, [currentUser?.id, currentUser?.email, fetchContacts, fetchAccounts]);
+  }, [currentUser?.id, currentUser?.email, fetchContacts, fetchAccounts, fetchTickets]);
 
   // Save (Create or Update) Contact via Backend API
   const saveContact = async (contactData: Partial<Contact>): Promise<Contact> => {
@@ -259,6 +296,65 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setAccounts((prev) => prev.filter((a) => !ids.includes(a.id)));
   };
 
+  const saveTicket = async (ticketData: Partial<Ticket>): Promise<Ticket> => {
+    const existing = tickets.find((t) => t.id === ticketData.id);
+    const isEdit = Boolean(existing);
+    try {
+      const res = await fetch(isEdit ? `${API_URL}/api/tickets/${ticketData.id}` : `${API_URL}/api/tickets`, {
+        method: isEdit ? 'PUT' : 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(ticketData),
+      });
+      if (res.ok) {
+        const saved: Ticket = await res.json();
+        setTickets((prev) => (
+          prev.some((t) => t.id === saved.id)
+            ? prev.map((t) => (t.id === saved.id ? saved : t))
+            : [saved, ...prev]
+        ));
+        return saved;
+      }
+    } catch (err) {
+      console.warn('Backend save ticket failed, applying optimistic update:', err);
+    }
+    const now = new Date().toISOString();
+    const fallback = {
+      ...(existing || {}),
+      ...ticketData,
+      id: ticketData.id || `tkt${Date.now()}`,
+      createdAt: existing?.createdAt || now,
+      updatedAt: now,
+    } as Ticket;
+    setTickets((prev) => (
+      prev.some((t) => t.id === fallback.id)
+        ? prev.map((t) => (t.id === fallback.id ? fallback : t))
+        : [fallback, ...prev]
+    ));
+    return fallback;
+  };
+
+  const deleteTicket = async (id: string): Promise<void> => {
+    try {
+      await fetch(`${API_URL}/api/tickets/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
+    } catch (err) {
+      console.warn('Backend delete ticket failed:', err);
+    }
+    setTickets((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  const deleteTicketsBatch = async (ids: string[]): Promise<void> => {
+    try {
+      await fetch(`${API_URL}/api/tickets/delete-batch`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ ids }),
+      });
+    } catch (err) {
+      console.warn('Backend batch delete tickets failed:', err);
+    }
+    setTickets((prev) => prev.filter((t) => !ids.includes(t.id)));
+  };
+
   const value = {
     accounts,
     setAccounts,
@@ -274,8 +370,12 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     saveAccount,
     deleteAccount,
     deleteAccountsBatch,
+    saveTicket,
+    deleteTicket,
+    deleteTicketsBatch,
     fetchContacts,
     fetchAccounts,
+    fetchTickets,
     isLoadingData,
   };
 

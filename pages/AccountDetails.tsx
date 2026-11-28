@@ -579,7 +579,7 @@ const AccountEditForm: React.FC<{
 const AccountDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { accounts, setAccounts, contacts, setContacts, tickets, setTickets, saveAccount, saveContact, deleteContact } = useData();
+  const { accounts, setAccounts, contacts, setContacts, tickets, saveAccount, saveContact, deleteContact, deleteTicket } = useData();
   const { currentUser } = useAuth();
 
   const currentUserName = currentUser
@@ -716,7 +716,7 @@ const AccountDetails: React.FC = () => {
 
   const handleDeleteTicket = (ticketId: string) => {
     if (window.confirm('Are you sure you want to delete this ticket?')) {
-      setTickets((prev) => prev.filter((t) => t.id !== ticketId));
+      void deleteTicket(ticketId);
     }
   };
 
@@ -768,7 +768,7 @@ const AccountDetails: React.FC = () => {
         <div className="w-full lg:w-[380px] flex flex-col gap-4">
           
           {/* Profile Card */}
-          <div className="bg-white dark:bg-[#151B25] rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-800/80 flex flex-col items-center">
+          <div className="bg-white dark:bg-[#111111] rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-800/80 flex flex-col items-center">
             
             {/* Avatar with pencil overlay */}
             <div className="relative mb-4">
@@ -777,7 +777,7 @@ const AccountDetails: React.FC = () => {
               </div>
               <button
                 onClick={() => setIsEditModalOpen(true)}
-                className="absolute bottom-0 right-0 h-8 w-8 bg-emerald-600 hover:bg-emerald-700 rounded-full flex items-center justify-center text-white border-2 border-white dark:border-[#151B25] shadow-md transition-colors"
+                className="absolute bottom-0 right-0 h-8 w-8 bg-emerald-600 hover:bg-emerald-700 rounded-full flex items-center justify-center text-white border-2 border-white dark:border-[#111111] shadow-md transition-colors"
               >
                 <PencilIcon className="h-4 w-4" />
               </button>
@@ -834,7 +834,7 @@ const AccountDetails: React.FC = () => {
           <div className="flex flex-col gap-3">
             
             {/* Accordion 1: Contact Information */}
-            <div className="bg-white dark:bg-[#151B25] rounded-2xl border border-slate-200 dark:border-slate-800/80 overflow-hidden shadow-sm">
+            <div className="bg-white dark:bg-[#111111] rounded-2xl border border-slate-200 dark:border-slate-800/80 overflow-hidden shadow-sm">
               <button
                 onClick={() => toggleAccordion('contact')}
                 className="w-full px-5 py-4 flex items-center justify-between text-left focus:outline-none"
@@ -870,7 +870,7 @@ const AccountDetails: React.FC = () => {
             </div>
 
             {/* Accordion 2: Address Information */}
-            <div className="bg-white dark:bg-[#151B25] rounded-2xl border border-slate-200 dark:border-slate-800/80 overflow-hidden shadow-sm">
+            <div className="bg-white dark:bg-[#111111] rounded-2xl border border-slate-200 dark:border-slate-800/80 overflow-hidden shadow-sm">
               <button
                 onClick={() => toggleAccordion('address')}
                 className="w-full px-5 py-4 flex items-center justify-between text-left focus:outline-none"
@@ -900,7 +900,7 @@ const AccountDetails: React.FC = () => {
             </div>
 
             {/* Accordion 3: Assignment Details */}
-            <div className="bg-white dark:bg-[#151B25] rounded-2xl border border-slate-200 dark:border-slate-800/80 overflow-hidden shadow-sm">
+            <div className="bg-white dark:bg-[#111111] rounded-2xl border border-slate-200 dark:border-slate-800/80 overflow-hidden shadow-sm">
               <button
                 onClick={() => toggleAccordion('assignment')}
                 className="w-full px-5 py-4 flex items-center justify-between text-left focus:outline-none"
@@ -924,7 +924,7 @@ const AccountDetails: React.FC = () => {
             </div>
 
             {/* Accordion 4: Custom Fields */}
-            <div className="bg-white dark:bg-[#151B25] rounded-2xl border border-slate-200 dark:border-slate-800/80 overflow-hidden shadow-sm">
+            <div className="bg-white dark:bg-[#111111] rounded-2xl border border-slate-200 dark:border-slate-800/80 overflow-hidden shadow-sm">
               <button
                 onClick={() => toggleAccordion('custom')}
                 className="w-full px-5 py-4 flex items-center justify-between text-left focus:outline-none"
@@ -962,7 +962,7 @@ const AccountDetails: React.FC = () => {
         </div>
 
         {/* RIGHT COLUMN (Tabs list) */}
-        <div className="flex-1 w-full bg-white dark:bg-[#151B25] rounded-3xl border border-slate-200 dark:border-slate-800/80 shadow-sm flex flex-col overflow-hidden">
+        <div className="flex-1 w-full bg-white dark:bg-[#111111] rounded-3xl border border-slate-200 dark:border-slate-800/80 shadow-sm flex flex-col overflow-hidden">
           
           {/* Tab Navigation Headers */}
           <div className="flex items-center px-6 border-b border-slate-200 dark:border-slate-800/80">

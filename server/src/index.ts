@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 import fs from 'fs';
 import { pool, initDb, getDbConnectionInfo } from './db/index.js';
 
-dotenv.config();
+dotenv.config({ quiet: true });
 
 // Ensure all database tables exist and admin user is seeded
 initDb().catch(err => console.error('Database initialization notice:', err.message));
@@ -1129,6 +1129,228 @@ app.delete('/api/contacts/:id', authenticateTenant, async (req: Request, res: Re
   } catch (error: any) {
     console.error('Error deleting contact:', error);
     res.status(500).json({ error: error.message || 'Failed to delete contact' });
+  }
+});
+
+// ─── Tickets (list, details, comments) ────────────────────────────────────────
+
+function mapTicketCommentRow(row: any) {
+  return {
+    id: row.id,
+    userName: row.user_name || '',
+    content: row.content || '',
+    createdAt: row.created_at ? new Date(row.created_at).toISOString() : new Date().toISOString(),
+  };
+}
+
+function mapTicketRow(row: any, comments: ReturnType<typeof mapTicketCommentRow>[] = []) {
+  return {
+    id: row.id,
+    ticketNo: row.ticket_no || '',
+    subject: row.subject || '',
+    description: row.description || '',
+    contactId: row.contact_id || '',
+    contactName: row.contact_name || '',
+    accountId: row.account_id || '',
+    accountName: row.account_name || '',
+    status: row.status || 'Open',
+    priority: row.priority || 'Normal',
+    assignedTo: row.assigned_to || '',
+    createdAt: row.created_at ? new Date(row.created_at).toISOString() : new Date().toISOString(),
+    updatedAt: row.updated_at ? new Date(row.updated_at).toISOString() : new Date().toISOString(),
+    lastActivity: row.last_activity ? new Date(row.last_activity).toISOString() : undefined,
+    comments,
+  };
+}
+
+async function loadTenantTickets(tenantId: string) {
+  const ticketResult = await pool.query(
+    'SELECT * FROM tickets WHERE tenant_id = $1 ORDER BY created_at DESC',
+    [tenantId]
+  );
+  const commentResult = await pool.query(
+    `SELECT c.* FROM ticket_comments c
+     INNER JOIN tickets t ON t.id = c.ticket_id
+     WHERE t.tenant_id = $1
+     ORDER BY c.created_at ASC`,
+    [tenantId]
+  );
+  const commentsByTicket = new Map<string, ReturnType<typeof mapTicketCommentRow>[]>();
+  for (const row of commentResult.rows) {
+    const list = commentsByTicket.get(row.ticket_id) || [];
+    list.push(mapTicketCommentRow(row));
+    commentsByTicket.set(row.ticket_id, list);
+  }
+  return ticketResult.rows.map((row: any) => mapTicketRow(row, commentsByTicket.get(row.id) || []));
+}
+
+async function replaceTicketComments(tenantId: string, ticketId: string, comments: any[] = []) {
+  await pool.query('DELETE FROM ticket_comments WHERE ticket_id = $1 AND tenant_id = $2', [ticketId, tenantId]);
+  for (const comment of comments) {
+    if (!comment?.content) continue;
+    await pool.query(
+      `INSERT INTO ticket_comments (id, tenant_id, ticket_id, user_name, content, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      [
+        comment.id || `cmt${Date.now()}`,
+        tenantId,
+        ticketId,
+        comment.userName || '',
+        comment.content,
+        comment.createdAt ? new Date(comment.createdAt) : new Date(),
+      ]
+    );
+  }
+}
+
+app.get('/api/tickets', authenticateTenant, async (req: Request, res: Response): Promise<void> => {
+  try {
+    await initDb();
+    res.json(await loadTenantTickets(req.tenantId!));
+  } catch (error: any) {
+    console.error('Error fetching tickets:', error);
+    res.status(500).json({ error: error.message || 'Failed to fetch tickets' });
+  }
+});
+
+app.post('/api/tickets', authenticateTenant, async (req: Request, res: Response): Promise<void> => {
+  try {
+    await initDb();
+    const body = req.body || {};
+    if (!body.subject || !String(body.subject).trim()) {
+      res.status(400).json({ error: 'Title is required' });
+      return;
+    }
+    const ticketId = body.id?.trim() || `tkt${Date.now()}`;
+    const ticketNo = body.ticketNo || `TKT-${Math.floor(1000 + Math.random() * 9000)}`;
+    const result = await pool.query(
+      `INSERT INTO tickets (
+        id, tenant_id, ticket_no, subject, description, contact_id, contact_name,
+        account_id, account_name, status, priority, assigned_to, last_activity, created_at, updated_at
+      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,COALESCE($14,NOW()),NOW())
+      ON CONFLICT (id) DO UPDATE SET
+        ticket_no = EXCLUDED.ticket_no,
+        subject = EXCLUDED.subject,
+        description = EXCLUDED.description,
+        contact_id = EXCLUDED.contact_id,
+        contact_name = EXCLUDED.contact_name,
+        account_id = EXCLUDED.account_id,
+        account_name = EXCLUDED.account_name,
+        status = EXCLUDED.status,
+        priority = EXCLUDED.priority,
+        assigned_to = EXCLUDED.assigned_to,
+        last_activity = EXCLUDED.last_activity,
+        updated_at = NOW()
+      WHERE tickets.tenant_id = $2
+      RETURNING *`,
+      [
+        ticketId,
+        req.tenantId,
+        ticketNo,
+        String(body.subject).trim(),
+        body.description || '',
+        body.contactId || '',
+        body.contactName || '',
+        body.accountId || '',
+        body.accountName || '',
+        body.status || 'Open',
+        body.priority || 'Normal',
+        body.assignedTo || '',
+        body.lastActivity ? new Date(body.lastActivity) : new Date(),
+        body.createdAt ? new Date(body.createdAt) : null,
+      ]
+    );
+    if (result.rows.length === 0) {
+      res.status(403).json({ error: 'Forbidden' });
+      return;
+    }
+    if (Array.isArray(body.comments)) {
+      await replaceTicketComments(req.tenantId!, ticketId, body.comments);
+    }
+    const tickets = await loadTenantTickets(req.tenantId!);
+    res.status(201).json(tickets.find((ticket) => ticket.id === ticketId));
+  } catch (error: any) {
+    console.error('Error saving ticket:', error);
+    res.status(500).json({ error: error.message || 'Failed to save ticket' });
+  }
+});
+
+app.put('/api/tickets/:id', authenticateTenant, async (req: Request, res: Response): Promise<void> => {
+  req.body = { ...req.body, id: req.params.id };
+  try {
+    await initDb();
+    const body = req.body || {};
+    const result = await pool.query(
+      `UPDATE tickets SET
+        ticket_no = COALESCE($3, ticket_no),
+        subject = COALESCE($4, subject),
+        description = COALESCE($5, description),
+        contact_id = COALESCE($6, contact_id),
+        contact_name = COALESCE($7, contact_name),
+        account_id = COALESCE($8, account_id),
+        account_name = COALESCE($9, account_name),
+        status = COALESCE($10, status),
+        priority = COALESCE($11, priority),
+        assigned_to = COALESCE($12, assigned_to),
+        last_activity = COALESCE($13, last_activity),
+        updated_at = NOW()
+      WHERE id = $1 AND tenant_id = $2
+      RETURNING *`,
+      [
+        req.params.id,
+        req.tenantId,
+        body.ticketNo ?? null,
+        body.subject ?? null,
+        body.description ?? null,
+        body.contactId ?? null,
+        body.contactName ?? null,
+        body.accountId ?? null,
+        body.accountName ?? null,
+        body.status ?? null,
+        body.priority ?? null,
+        body.assignedTo ?? null,
+        body.lastActivity ? new Date(body.lastActivity) : new Date(),
+      ]
+    );
+    if (result.rows.length === 0) {
+      res.status(404).json({ error: 'Ticket not found' });
+      return;
+    }
+    if (Array.isArray(body.comments)) {
+      await replaceTicketComments(req.tenantId!, req.params.id, body.comments);
+    }
+    const tickets = await loadTenantTickets(req.tenantId!);
+    res.json(tickets.find((ticket) => ticket.id === req.params.id));
+  } catch (error: any) {
+    console.error('Error updating ticket:', error);
+    res.status(500).json({ error: error.message || 'Failed to update ticket' });
+  }
+});
+
+app.post('/api/tickets/delete-batch', authenticateTenant, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const ids: string[] = Array.isArray(req.body?.ids) ? req.body.ids : [];
+    if (!ids.length) {
+      res.json({ deleted: 0 });
+      return;
+    }
+    await pool.query('DELETE FROM tickets WHERE tenant_id = $1 AND id = ANY($2::varchar[])', [req.tenantId, ids]);
+    res.json({ deleted: ids.length });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Failed to delete tickets' });
+  }
+});
+
+app.delete('/api/tickets/:id', authenticateTenant, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const result = await pool.query('DELETE FROM tickets WHERE id = $1 AND tenant_id = $2 RETURNING id', [req.params.id, req.tenantId]);
+    if (result.rows.length === 0) {
+      res.status(404).json({ error: 'Ticket not found' });
+      return;
+    }
+    res.json({ success: true });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Failed to delete ticket' });
   }
 });
 

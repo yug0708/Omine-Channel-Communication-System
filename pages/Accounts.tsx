@@ -134,7 +134,7 @@ const FloatField: React.FC<{
 }> = ({ label, fieldName, children, error, errors = {} }) => (
   <div className="relative mt-5">
     <label
-      className={`absolute -top-2.5 left-4 px-1.5 text-[11px] font-semibold z-10 bg-white dark:bg-[#151B25] ${errors[fieldName] ? 'text-rose-500' : 'text-slate-500 dark:text-slate-400'
+      className={`absolute -top-2.5 left-4 px-1.5 text-[11px] font-semibold z-10 bg-white dark:bg-[#111111] ${errors[fieldName] ? 'text-rose-500' : 'text-slate-500 dark:text-slate-400'
         }`}
     >
       {label}
@@ -349,7 +349,7 @@ export const AccountForm: React.FC<{
 
   const getInputClass = (fieldName: string, extraClasses = '') => {
     const hasError = errors[fieldName];
-    const base = 'block w-full rounded-full bg-white dark:bg-[#151B25] px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none transition';
+    const base = 'block w-full rounded-full bg-white dark:bg-[#111111] px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none transition';
     if (hasError) {
       return `${base} border-2 border-rose-500 dark:border-rose-500 focus:ring-0 ${extraClasses}`;
     }
@@ -392,7 +392,7 @@ export const AccountForm: React.FC<{
 
       {/* 3. Phone Number */}
       <FloatField label="Phone Number *" fieldName="phone" error={errors.phone} errors={errors}>
-        <div className={`flex items-center w-full rounded-full border bg-white dark:bg-[#151B25] text-sm text-slate-900 dark:text-white ${errors.phone ? 'border-2 border-rose-500' : 'border border-slate-300 dark:border-slate-700 focus-within:border-emerald-500'
+        <div className={`flex items-center w-full rounded-full border bg-white dark:bg-[#111111] text-sm text-slate-900 dark:text-white ${errors.phone ? 'border-2 border-rose-500' : 'border border-slate-300 dark:border-slate-700 focus-within:border-emerald-500'
           }`}>
           <div className="flex-shrink-0 self-stretch flex items-center border-r border-slate-200 dark:border-slate-700">
             <CountryCodePicker value={phoneCountryCode} onChange={handlePhoneCountryChange} />
@@ -507,7 +507,7 @@ export const AccountForm: React.FC<{
 
         {/* Dropdown */}
         {isAssigneeOpen && (
-          <div className="absolute left-0 right-0 top-[calc(100%+4px)] bg-white dark:bg-[#1a2235] border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden">
+          <div className="absolute left-0 right-0 top-[calc(100%+4px)] bg-white dark:bg-[#111111] border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden">
             {availableUsers.length === 0 ? (
               <p className="px-4 py-3 text-xs text-slate-400">No users available</p>
             ) : (
@@ -848,9 +848,12 @@ const Accounts: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full gap-3 sm:gap-4">
-      <h1 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-300 ml-1">Accounts</h1>
+      <div>
+        <h1 className="text-[28px] font-bold tracking-tight text-slate-900 dark:text-white">Accounts</h1>
+        <p className="text-sm text-slate-500">Companies you work with.</p>
+      </div>
 
-      <div className="bg-white dark:bg-[#151B25] shadow-sm rounded-2xl border border-slate-200 dark:border-slate-800/80 flex flex-col flex-1 overflow-hidden">
+      <div className="bg-white dark:bg-[#111111] shadow-sm rounded-[10px] border border-slate-200 dark:border-white/10 flex flex-col flex-1 overflow-hidden">
 
         {/* Toolbar */}
         <div className="p-3 sm:p-4 flex items-center justify-between gap-2.5 border-b border-slate-200 dark:border-slate-800/80">
@@ -1016,7 +1019,7 @@ const Accounts: React.FC = () => {
                 </button>
 
                 {importExportOpen && (
-                  <div className="absolute right-0 top-[calc(100%+6px)] z-50 w-40 bg-white dark:bg-[#1a2235] border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
+                  <div className="absolute right-0 top-[calc(100%+6px)] z-50 w-40 bg-white dark:bg-[#111111] border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
                     <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
                     {/* Import */}
                     <button
@@ -1052,7 +1055,7 @@ const Accounts: React.FC = () => {
             <thead className="sticky top-0 z-10">
               {/* Selection Banner Row — replaces headers when rows are selected */}
               {selectedAccounts.length > 0 ? (
-                <tr className="bg-white dark:bg-[#151B25]" style={{ borderBottom: '1px solid rgba(16,185,129,0.25)' }}>
+                <tr className="bg-white dark:bg-[#111111]" style={{ borderBottom: '1px solid rgba(16,185,129,0.25)' }}>
                   <th className="px-4 py-3" style={{ backgroundColor: 'rgba(16,185,129,0.12)' }}>
                     <input
                       type="checkbox"
@@ -1088,7 +1091,7 @@ const Accounts: React.FC = () => {
                   </th>
                 </tr>
               ) : (
-                <tr className="bg-white dark:bg-[#151B25] border-b border-slate-200 dark:border-slate-800/80">
+                <tr className="bg-white dark:bg-[#111111] border-b border-slate-200 dark:border-slate-800/80">
                   <th className="px-4 py-3">
                     <input
                       type="checkbox"
@@ -1421,7 +1424,7 @@ const Accounts: React.FC = () => {
                 <select
                   value={rowsPerPage}
                   onChange={e => { setRowsPerPage(Number(e.target.value)); setPage(1); }}
-                  className="appearance-none pl-2 pr-6 py-1 text-xs font-semibold rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1a2235] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-emerald-500 cursor-pointer"
+                  className="appearance-none pl-2 pr-6 py-1 text-xs font-semibold rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#111111] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-emerald-500 cursor-pointer"
                 >
                   {ROW_OPTIONS.map(n => <option key={n} value={n}>{n}</option>)}
                 </select>
@@ -1486,7 +1489,7 @@ const Accounts: React.FC = () => {
           onClick={() => { setIsImportOpen(false); setImportFile(null); }}
         >
           <div
-            className="bg-white dark:bg-[#1a2235] rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden border border-slate-200 dark:border-slate-700"
+            className="bg-white dark:bg-[#111111] rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden border border-slate-200 dark:border-slate-700"
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
@@ -1741,7 +1744,7 @@ const Accounts: React.FC = () => {
           onClick={() => setDeleteConfirm(null)}
         >
           <div
-            className="bg-white dark:bg-[#1a2235] rounded-2xl shadow-2xl w-full max-w-sm mx-4 border border-slate-200 dark:border-slate-700 overflow-hidden"
+            className="bg-white dark:bg-[#111111] rounded-2xl shadow-2xl w-full max-w-sm mx-4 border border-slate-200 dark:border-slate-700 overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}

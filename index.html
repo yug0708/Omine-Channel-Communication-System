@@ -18,10 +18,10 @@
             mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
           },
           colors: {
-            'dark-bg': '#0F0E0D',
-            'dark-card': '#1C1917',
-            'dark-login-bg': '#0F0E0D',
-            'dark-login-card': '#1C1917',
+            'dark-bg': '#000000',
+            'dark-card': '#111111',
+            'dark-login-bg': '#000000',
+            'dark-login-card': '#111111',
             'accent-green': '#00A76F',
             'accent-blue': '#00B8D9',
             'accent-orange': '#F59E0B',
@@ -33,11 +33,11 @@
               '300': '#DDD8D0',
               '400': '#A8A29E',
               '500': '#78716C',
-              '600': '#57534E',
-              '700': '#44403C',
-              '800': '#292524',
-              '900': '#1C1917',
-              '950': '#0F0E0D',
+              '600': '#525252',
+              '700': '#2A2A2A',
+              '800': '#1A1A1A',
+              '900': '#111111',
+              '950': '#000000',
             },
             primary: {
               '50': '#F0FDF6',
@@ -110,6 +110,25 @@
     .animate-fade-in-up {
       animation: fade-in-up 0.5s ease-out forwards;
     }
+
+    @keyframes login-drift {
+      0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+      50% { transform: translate3d(28px, 22px, 0) scale(1.06); }
+    }
+
+    @keyframes login-drift-alt {
+      0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+      50% { transform: translate3d(-24px, -18px, 0) scale(1.08); }
+    }
+
+    @keyframes login-dot {
+      0%, 100% { transform: translateY(0); opacity: 0.35; }
+      50% { transform: translateY(-14px); opacity: 0.8; }
+    }
+
+    .login-orb { animation: login-drift 16s ease-in-out infinite; }
+    .login-orb-alt { animation: login-drift-alt 18s ease-in-out infinite; }
+    .login-dot { animation: login-dot 7s ease-in-out infinite; }
 
     .dashboard-mesh {
       background-image: none;

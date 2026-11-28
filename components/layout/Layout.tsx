@@ -15,7 +15,7 @@ const Layout: React.FC = () => {
   }, [location.pathname]);
 
   return (
-    <div className="flex h-screen bg-[#F9F6F2] dark:bg-dark-bg text-[#1C1917] dark:text-[#E7E5E4] overflow-hidden relative">
+    <div className="flex h-screen bg-[#F9F6F2] dark:bg-dark-bg text-[#111111] dark:text-[#E7E5E4] overflow-hidden relative">
       {/* Sidebar */}
       <Sidebar
         isOpen={isMobileSidebarOpen}

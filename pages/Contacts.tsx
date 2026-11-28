@@ -63,7 +63,7 @@ const FloatingInput: React.FC<{
   children?: React.ReactNode;
 }> = ({ label, required, error, children, icon, suffix, ...props }) => (
   <div className="relative mt-4">
-    <label className={`absolute -top-2 left-4 bg-white dark:bg-[#1a2235] px-1 text-[11px] font-bold z-10 ${error ? 'text-rose-500' : 'text-slate-500 dark:text-slate-400'}`}>
+    <label className={`absolute -top-2 left-4 bg-white dark:bg-[#111111] px-1 text-[11px] font-bold z-10 ${error ? 'text-rose-500' : 'text-slate-500 dark:text-slate-400'}`}>
       {label} {required && '*'}
     </label>
     {children ? (
@@ -384,7 +384,7 @@ export const ContactForm: React.FC<{
 
             {/* Dropdown */}
             {isAssigneeOpen && (
-              <div className="absolute left-0 right-0 top-[calc(100%+4px)] bg-white dark:bg-[#1a2235] border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden">
+              <div className="absolute left-0 right-0 top-[calc(100%+4px)] bg-white dark:bg-[#111111] border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden">
                 {availableUsers.length === 0 ? (
                   <p className="px-4 py-3 text-xs text-slate-400">No users available</p>
                 ) : (
@@ -651,7 +651,7 @@ export const ContactForm: React.FC<{
                           setAccountRowsPerPage(Number(e.target.value));
                           setAccountPage(1);
                         }}
-                        className="appearance-none pl-2 pr-6 py-1 text-xs font-semibold rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1a2235] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-[#0056D2] cursor-pointer"
+                        className="appearance-none pl-2 pr-6 py-1 text-xs font-semibold rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#111111] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-[#0056D2] cursor-pointer"
                       >
                         <option value={10}>10</option>
                         <option value={25}>25</option>
@@ -972,11 +972,12 @@ const Contacts: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full gap-4">
-      <h1 className="text-xl font-bold text-slate-900 dark:text-slate-300 ml-1">
-        Contacts
-      </h1>
+      <div>
+        <h1 className="text-[28px] font-bold tracking-tight text-slate-900 dark:text-white">Contacts</h1>
+        <p className="text-sm text-slate-500">People linked to your accounts.</p>
+      </div>
 
-      <div className="bg-white dark:bg-[#151B25] shadow-sm rounded-2xl border border-slate-200 dark:border-slate-800/80 flex flex-col flex-1 overflow-hidden">
+      <div className="bg-white dark:bg-[#111111] shadow-sm rounded-[10px] border border-slate-200 dark:border-white/10 flex flex-col flex-1 overflow-hidden">
         {/* Toolbar */}
         <div className="p-3 sm:p-4 flex items-center justify-between gap-2.5 border-b border-slate-200 dark:border-slate-800/80">
           {/* New Contact Button */}
@@ -1020,7 +1021,7 @@ const Contacts: React.FC = () => {
                 </button>
 
                 {colToggleOpen && (
-                  <div className="absolute right-0 top-[calc(100%+6px)] z-50 w-64 bg-white dark:bg-[#1a2235] border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl overflow-hidden flex flex-col">
+                  <div className="absolute right-0 top-[calc(100%+6px)] z-50 w-64 bg-white dark:bg-[#111111] border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl overflow-hidden flex flex-col">
                     {/* Search inside popover */}
                     <div className="px-3 pt-3 pb-2">
                       <div className="relative">
@@ -1136,7 +1137,7 @@ const Contacts: React.FC = () => {
                 </button>
 
                 {importExportOpen && (
-                  <div className="absolute right-0 top-[calc(100%+6px)] z-50 w-40 bg-white dark:bg-[#1a2235] border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
+                  <div className="absolute right-0 top-[calc(100%+6px)] z-50 w-40 bg-white dark:bg-[#111111] border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
                     <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
                     <button
                       onClick={() => { setImportExportOpen(false); setIsImportOpen(true); }}
@@ -1215,7 +1216,7 @@ const Contacts: React.FC = () => {
           <table className="min-w-full w-full whitespace-nowrap text-left text-sm">
             <thead className="border-b border-slate-200 dark:border-slate-800/80 sticky top-0 z-10">
               {selectedContacts.length > 0 ? (
-                <tr className="bg-white dark:bg-[#151B25]" style={{ borderBottom: '1px solid rgba(16,185,129,0.25)' }}>
+                <tr className="bg-white dark:bg-[#111111]" style={{ borderBottom: '1px solid rgba(16,185,129,0.25)' }}>
                   <th className="px-4 py-3" style={{ backgroundColor: 'rgba(16,185,129,0.12)' }}>
                     <input
                       type="checkbox"
@@ -1267,7 +1268,7 @@ const Contacts: React.FC = () => {
 
                           {/* Error tooltip for > 2 selection */}
                           {selectedContacts.length > 2 && (
-                            <div className="absolute top-full mt-2 right-0 whitespace-nowrap text-[11px] text-slate-500 dark:text-slate-400 font-medium z-20 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 bg-white dark:bg-[#1a2235] shadow-md border border-slate-200 dark:border-slate-700 px-2.5 py-1.5 rounded-lg pointer-events-none">
+                            <div className="absolute top-full mt-2 right-0 whitespace-nowrap text-[11px] text-slate-500 dark:text-slate-400 font-medium z-20 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 bg-white dark:bg-[#111111] shadow-md border border-slate-200 dark:border-slate-700 px-2.5 py-1.5 rounded-lg pointer-events-none">
                               Only two records can be merged
                             </div>
                           )}
@@ -1284,7 +1285,7 @@ const Contacts: React.FC = () => {
                   </th>
                 </tr>
               ) : (
-                <tr className="bg-white dark:bg-[#151B25]">
+                <tr className="bg-white dark:bg-[#111111]">
                   <th className="px-4 py-3">
                     <input
                       type="checkbox"
@@ -1571,7 +1572,7 @@ const Contacts: React.FC = () => {
                     setRowsPerPage(Number(e.target.value));
                     setPage(1);
                   }}
-                  className="appearance-none pl-2 pr-6 py-1 text-xs font-semibold rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1a2235] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-[#0056D2] cursor-pointer"
+                  className="appearance-none pl-2 pr-6 py-1 text-xs font-semibold rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#111111] text-slate-700 dark:text-slate-200 focus:outline-none focus:border-[#0056D2] cursor-pointer"
                 >
                   <option value={10}>10</option>
                   <option value={25}>25</option>
@@ -1654,7 +1655,7 @@ const Contacts: React.FC = () => {
                   <div
                     key={id}
                     onClick={() => setPrimaryMergeContactId(id)}
-                    className={`p-5 rounded-2xl border-2 cursor-pointer flex items-center gap-4 transition-all ${isPrimary ? 'border-[#10B981] bg-[#10B981]/5' : 'border-slate-100 dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700 bg-slate-50 dark:bg-[#1a2235]'}`}
+                    className={`p-5 rounded-2xl border-2 cursor-pointer flex items-center gap-4 transition-all ${isPrimary ? 'border-[#10B981] bg-[#10B981]/5' : 'border-slate-100 dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700 bg-slate-50 dark:bg-[#111111]'}`}
                   >
                     {/* Radio button */}
                     <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${isPrimary ? 'border-[#10B981]' : 'border-slate-300 dark:border-slate-600'}`}>
@@ -1710,7 +1711,7 @@ const Contacts: React.FC = () => {
           onClick={() => { setIsImportOpen(false); setImportFile(null); }}
         >
           <div
-            className="bg-white dark:bg-[#1a2235] rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden border border-slate-200 dark:border-slate-700"
+            className="bg-white dark:bg-[#111111] rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden border border-slate-200 dark:border-slate-700"
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}

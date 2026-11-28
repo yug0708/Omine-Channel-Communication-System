@@ -158,7 +158,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose, isExpanded =
       <aside
         className={`
           hidden md:flex flex-col flex-shrink-0 h-screen
-          bg-[#1C1917] text-white
+          bg-black text-white
           border-r border-white/[0.06]
           transition-all duration-300 ease-in-out overflow-hidden relative
           ${isExpanded ? 'w-60' : 'w-16'}
@@ -223,7 +223,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose, isExpanded =
 
       {/* ── Mobile Drawer ────────────────────────────────────────── */}
       <div
-        className={`fixed inset-y-0 left-0 z-40 w-60 bg-[#1C1917] flex flex-col border-r border-white/[0.06] overflow-y-auto overflow-x-hidden transition-transform duration-300 ease-in-out md:hidden ${isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
+        className={`fixed inset-y-0 left-0 z-40 w-60 bg-black flex flex-col border-r border-white/[0.06] overflow-y-auto overflow-x-hidden transition-transform duration-300 ease-in-out md:hidden ${isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
           }`}
       >
         {/* Mobile header */}

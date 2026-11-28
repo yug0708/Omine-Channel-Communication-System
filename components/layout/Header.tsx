@@ -104,7 +104,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, isSidebarExpanded = true, 
 
   return (
     <>
-      <header className="relative z-20 flex items-center bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/80 dark:border-white/[0.07] h-14 px-3 sm:px-4 gap-2 shadow-[0_1px_0_0_rgba(0,0,0,0.05)]">
+      <header className="relative z-20 flex items-center bg-white border-b border-slate-200/80 dark:bg-black dark:border-white/[0.08] h-14 px-3 sm:px-4 gap-2">
 
         {/* ── Left: Hamburger (mobile) + Sidebar toggle (desktop) + Breadcrumb ── */}
         <div className="flex items-center gap-2 min-w-0 flex-1">

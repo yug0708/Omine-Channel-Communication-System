@@ -28,7 +28,7 @@ const RegisterStep1: React.FC<RegisterStep1Props> = ({ formData, setFormData, on
         }, 500);
     };
 
-    const inputClasses = "mt-2 appearance-none relative block w-full px-3 py-3 bg-slate-100 dark:bg-[#38414E] border border-slate-300 dark:border-slate-600 placeholder-slate-400 dark:placeholder-slate-500 text-slate-900 dark:text-white rounded-md focus:outline-none focus:ring-accent-green focus:border-accent-green sm:text-sm";
+    const inputClasses = "mt-2 appearance-none relative block w-full px-3 py-3 bg-slate-100 dark:bg-[#1A1A1A] border border-slate-300 dark:border-slate-600 placeholder-slate-400 dark:placeholder-slate-500 text-slate-900 dark:text-white rounded-md focus:outline-none focus:ring-accent-green focus:border-accent-green sm:text-sm";
     const labelClasses = "text-xs font-medium text-slate-500 dark:text-slate-400";
 
 

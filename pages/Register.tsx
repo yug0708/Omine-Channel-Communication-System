@@ -114,9 +114,9 @@ export default function Register() {
     };
 
     return (
-        <div className="flex min-h-screen w-full bg-white dark:bg-[#1C2434] transition-colors duration-300">
+        <div className="flex min-h-screen w-full bg-white dark:bg-[#111111] transition-colors duration-300">
             {/* Left Side - Feature Showcase */}
-            <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-[#E6FDF9] to-[#F0FDFB] dark:from-[#24303F] dark:to-[#1C2434] flex-col items-center justify-center p-12 relative overflow-hidden transition-colors duration-300">
+            <div className="hidden lg:flex w-1/2 bg-[#F9F6F2] dark:bg-[#000000] flex-col items-center justify-center p-12 relative overflow-hidden">
                 <div className="z-10 max-w-lg w-full">
                     <div className="flex justify-center mb-8">
                         <div className="flex items-center gap-2">
@@ -156,10 +156,10 @@ export default function Register() {
             </div>
 
             {/* Right Side - Registration Form */}
-            <div className="w-full lg:w-1/2 bg-white dark:bg-[#1C2434] flex flex-col relative transition-colors duration-300">
+            <div className="w-full lg:w-1/2 bg-white dark:bg-[#111111] flex flex-col relative transition-colors duration-300">
                 {/* Language Selector */}
                 <div className="absolute top-6 right-6">
-                    <button className="flex items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-[#24303F] transition-colors">
+                    <button className="flex items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-[#1A1A1A] transition-colors">
                         <UKFlagIcon className="h-6 w-6 rounded-sm shadow-sm" />
                     </button>
                 </div>
@@ -204,10 +204,10 @@ export default function Register() {
                                                 name="firstName"
                                                 value={formData.firstName}
                                                 onChange={handleChange}
-                                                className={`peer block w-full pl-10 pr-4 py-3 border ${errors.firstName ? 'border-red-500 dark:border-red-400' : 'border-gray-200 dark:border-[#38414E]'} rounded-full text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-gray-50 dark:bg-transparent transition-colors duration-300`}
+                                                className={`peer block w-full pl-10 pr-4 py-3 border ${errors.firstName ? 'border-red-500 dark:border-red-400' : 'border-gray-200 dark:border-[#2A2A2A]'} rounded-full text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-gray-50 dark:bg-transparent transition-colors duration-300`}
                                                 placeholder="First Name"
                                             />
-                                            <label htmlFor="firstName" className="absolute left-5 -top-2.5 bg-white dark:bg-[#1C2434] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 transition-all peer-focus:-top-2.5 peer-focus:left-5 peer-focus:text-xs peer-focus:text-emerald-600 dark:peer-focus:text-emerald-400 duration-300">
+                                            <label htmlFor="firstName" className="absolute left-5 -top-2.5 bg-white dark:bg-[#111111] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 transition-all peer-focus:-top-2.5 peer-focus:left-5 peer-focus:text-xs peer-focus:text-emerald-600 dark:peer-focus:text-emerald-400 duration-300">
                                                 First Name
                                             </label>
                                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -227,10 +227,10 @@ export default function Register() {
                                                 name="lastName"
                                                 value={formData.lastName}
                                                 onChange={handleChange}
-                                                className={`peer block w-full pl-10 pr-4 py-3 border ${errors.lastName ? 'border-red-500 dark:border-red-400' : 'border-gray-200 dark:border-[#38414E]'} rounded-full text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-gray-50 dark:bg-transparent transition-colors duration-300`}
+                                                className={`peer block w-full pl-10 pr-4 py-3 border ${errors.lastName ? 'border-red-500 dark:border-red-400' : 'border-gray-200 dark:border-[#2A2A2A]'} rounded-full text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-gray-50 dark:bg-transparent transition-colors duration-300`}
                                                 placeholder="Last Name"
                                             />
-                                            <label htmlFor="lastName" className="absolute left-5 -top-2.5 bg-white dark:bg-[#1C2434] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 transition-all peer-focus:-top-2.5 peer-focus:left-5 peer-focus:text-xs peer-focus:text-emerald-600 dark:peer-focus:text-emerald-400 duration-300">
+                                            <label htmlFor="lastName" className="absolute left-5 -top-2.5 bg-white dark:bg-[#111111] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 transition-all peer-focus:-top-2.5 peer-focus:left-5 peer-focus:text-xs peer-focus:text-emerald-600 dark:peer-focus:text-emerald-400 duration-300">
                                                 Last Name
                                             </label>
                                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -252,10 +252,10 @@ export default function Register() {
                                             required
                                             value={formData.email}
                                             onChange={handleChange}
-                                            className={`peer block w-full pl-10 pr-4 py-3 border ${errors.email ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-[#38414E]'} rounded-full text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-gray-50/50 dark:bg-transparent transition-colors duration-300`}
+                                            className={`peer block w-full pl-10 pr-4 py-3 border ${errors.email ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-[#2A2A2A]'} rounded-full text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-gray-50/50 dark:bg-transparent transition-colors duration-300`}
                                             placeholder="Email address"
                                         />
-                                        <label htmlFor="email" className="absolute left-6 -top-2.5 bg-white dark:bg-[#1C2434] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 transition-all peer-focus:-top-2.5 peer-focus:left-6 peer-focus:text-xs peer-focus:text-emerald-600 dark:peer-focus:text-emerald-400 duration-300">
+                                        <label htmlFor="email" className="absolute left-6 -top-2.5 bg-white dark:bg-[#111111] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 transition-all peer-focus:-top-2.5 peer-focus:left-6 peer-focus:text-xs peer-focus:text-emerald-600 dark:peer-focus:text-emerald-400 duration-300">
                                             Email
                                         </label>
                                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -268,11 +268,11 @@ export default function Register() {
 
                                     {/* Phone */}
                                     <div className="relative">
-                                        <div className={`flex rounded-full shadow-sm ring-1 ring-inset ${errors.phone ? 'ring-red-500 dark:ring-red-400' : 'ring-gray-300 dark:ring-[#38414E]'} focus-within:ring-2 focus-within:ring-inset focus-within:ring-emerald-500 bg-gray-50/50 dark:bg-transparent transition-colors duration-300`}>
+                                        <div className={`flex rounded-full shadow-sm ring-1 ring-inset ${errors.phone ? 'ring-red-500 dark:ring-red-400' : 'ring-gray-300 dark:ring-[#2A2A2A]'} focus-within:ring-2 focus-within:ring-inset focus-within:ring-emerald-500 bg-gray-50/50 dark:bg-transparent transition-colors duration-300`}>
                                             <div className="relative" ref={dropdownRef}>
                                                 <button
                                                     type="button"
-                                                    className="flex items-center gap-2 pl-3 pr-2 py-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none border-r border-gray-200 dark:border-[#38414E] transition-colors duration-300"
+                                                    className="flex items-center gap-2 pl-3 pr-2 py-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none border-r border-gray-200 dark:border-[#2A2A2A] transition-colors duration-300"
                                                     onClick={() => setShowCountryDropdown(!showCountryDropdown)}
                                                 >
                                                     <span className="w-6 overflow-hidden text-xl">{selectedCountry.flag}</span>
@@ -280,13 +280,13 @@ export default function Register() {
                                                 </button>
 
                                                 {showCountryDropdown && (
-                                                    <div className="absolute top-full left-0 mt-1 w-64 max-h-60 bg-white dark:bg-[#1C2434] rounded-xl shadow-lg border border-gray-100 dark:border-[#38414E] py-1 z-50 overflow-y-auto transition-colors duration-300">
-                                                        <div className="sticky top-0 bg-white dark:bg-[#1C2434] px-3 py-2 border-b border-gray-100 dark:border-[#38414E] rounded-t-xl z-10 transition-colors duration-300">
+                                                    <div className="absolute top-full left-0 mt-1 w-64 max-h-60 bg-white dark:bg-[#111111] rounded-xl shadow-lg border border-gray-100 dark:border-[#2A2A2A] py-1 z-50 overflow-y-auto transition-colors duration-300">
+                                                        <div className="sticky top-0 bg-white dark:bg-[#111111] px-3 py-2 border-b border-gray-100 dark:border-[#2A2A2A] rounded-t-xl z-10 transition-colors duration-300">
                                                             <div className="relative">
                                                                 <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-400 z-10" />
                                                                 <input
                                                                     type="text"
-                                                                    className="w-full pl-9 pr-3 py-2 text-sm bg-gray-100 dark:bg-[#24303F] border-none rounded-full focus:ring-0 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+                                                                    className="w-full pl-9 pr-3 py-2 text-sm bg-gray-100 dark:bg-[#1A1A1A] border-none rounded-full focus:ring-0 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
                                                                     placeholder="Search..."
                                                                     value={searchQuery}
                                                                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -302,7 +302,7 @@ export default function Register() {
                                                             <button
                                                                 key={country.code}
                                                                 type="button"
-                                                                className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-[#24303F] flex items-center gap-3 transition-colors ${selectedCountry.code === country.code ? 'bg-emerald-50/50 dark:bg-[#24303F]' : ''}`}
+                                                                className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-[#1A1A1A] flex items-center gap-3 transition-colors ${selectedCountry.code === country.code ? 'bg-emerald-50/50 dark:bg-[#1A1A1A]' : ''}`}
                                                                 onClick={() => {
                                                                     setSelectedCountry(country);
                                                                     setShowCountryDropdown(false);
@@ -330,7 +330,7 @@ export default function Register() {
                                                 placeholder="Enter phone number"
                                             />
                                         </div>
-                                        <label htmlFor="phone" className="absolute left-6 -top-2.5 bg-white dark:bg-[#1C2434] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 transition-colors duration-300">
+                                        <label htmlFor="phone" className="absolute left-6 -top-2.5 bg-white dark:bg-[#111111] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 transition-colors duration-300">
                                             Phone
                                         </label>
                                         {errors.phone && <p className="text-xs text-red-500 dark:text-red-400 mt-1 pl-4 transition-colors duration-300">{errors.phone}</p>}
@@ -345,10 +345,10 @@ export default function Register() {
                                             required
                                             value={formData.password}
                                             onChange={handleChange}
-                                            className={`peer block w-full pl-10 pr-10 py-3 border ${errors.password ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-[#38414E]'} rounded-full text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-gray-50/50 dark:bg-transparent transition-colors duration-300`}
+                                            className={`peer block w-full pl-10 pr-10 py-3 border ${errors.password ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-[#2A2A2A]'} rounded-full text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-gray-50/50 dark:bg-transparent transition-colors duration-300`}
                                             placeholder="6+ characters"
                                         />
-                                        <label htmlFor="password" className="absolute left-6 -top-2.5 bg-white dark:bg-[#1C2434] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 transition-all peer-focus:-top-2.5 peer-focus:left-6 peer-focus:text-xs peer-focus:text-emerald-600 dark:peer-focus:text-emerald-400 duration-300">
+                                        <label htmlFor="password" className="absolute left-6 -top-2.5 bg-white dark:bg-[#111111] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 transition-all peer-focus:-top-2.5 peer-focus:left-6 peer-focus:text-xs peer-focus:text-emerald-600 dark:peer-focus:text-emerald-400 duration-300">
                                             Password
                                         </label>
                                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -385,10 +385,10 @@ export default function Register() {
                                             required
                                             value={formData.organizationName}
                                             onChange={handleChange}
-                                            className={`peer block w-full pl-10 pr-4 py-3 border ${errors.organizationName ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-[#38414E]'} rounded-full text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-gray-50/50 dark:bg-transparent transition-colors duration-300`}
+                                            className={`peer block w-full pl-10 pr-4 py-3 border ${errors.organizationName ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-[#2A2A2A]'} rounded-full text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-gray-50/50 dark:bg-transparent transition-colors duration-300`}
                                             placeholder="Organization Name"
                                         />
-                                        <label htmlFor="organizationName" className="absolute left-6 -top-2.5 bg-white dark:bg-[#1C2434] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 transition-all peer-focus:-top-2.5 peer-focus:left-6 peer-focus:text-xs peer-focus:text-emerald-600 dark:peer-focus:text-emerald-400 duration-300">
+                                        <label htmlFor="organizationName" className="absolute left-6 -top-2.5 bg-white dark:bg-[#111111] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 transition-all peer-focus:-top-2.5 peer-focus:left-6 peer-focus:text-xs peer-focus:text-emerald-600 dark:peer-focus:text-emerald-400 duration-300">
                                             Organization Name
                                         </label>
                                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -410,10 +410,10 @@ export default function Register() {
                                             required
                                             value={formData.crNumber}
                                             onChange={handleChange}
-                                            className={`peer block w-full pl-10 pr-4 py-3 border ${errors.crNumber ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-[#38414E]'} rounded-full text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-gray-50/50 dark:bg-transparent transition-colors duration-300`}
+                                            className={`peer block w-full pl-10 pr-4 py-3 border ${errors.crNumber ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-[#2A2A2A]'} rounded-full text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-gray-50/50 dark:bg-transparent transition-colors duration-300`}
                                             placeholder="CR Number"
                                         />
-                                        <label htmlFor="crNumber" className="absolute left-6 -top-2.5 bg-white dark:bg-[#1C2434] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 transition-all peer-focus:-top-2.5 peer-focus:left-6 peer-focus:text-xs peer-focus:text-emerald-600 dark:peer-focus:text-emerald-400 duration-300">
+                                        <label htmlFor="crNumber" className="absolute left-6 -top-2.5 bg-white dark:bg-[#111111] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 transition-all peer-focus:-top-2.5 peer-focus:left-6 peer-focus:text-xs peer-focus:text-emerald-600 dark:peer-focus:text-emerald-400 duration-300">
                                             CR Number
                                         </label>
                                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -434,10 +434,10 @@ export default function Register() {
                                             name="website"
                                             value={formData.website}
                                             onChange={handleChange}
-                                            className={`peer block w-full pl-10 pr-4 py-3 border ${errors.website ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-[#38414E]'} rounded-full text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-gray-50/50 dark:bg-transparent transition-colors duration-300`}
+                                            className={`peer block w-full pl-10 pr-4 py-3 border ${errors.website ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-[#2A2A2A]'} rounded-full text-gray-900 dark:text-white placeholder-transparent focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-gray-50/50 dark:bg-transparent transition-colors duration-300`}
                                             placeholder="Website"
                                         />
-                                        <label htmlFor="website" className="absolute left-6 -top-2.5 bg-white dark:bg-[#1C2434] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 transition-all peer-focus:-top-2.5 peer-focus:left-6 peer-focus:text-xs peer-focus:text-emerald-600 dark:peer-focus:text-emerald-400 duration-300">
+                                        <label htmlFor="website" className="absolute left-6 -top-2.5 bg-white dark:bg-[#111111] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 transition-all peer-focus:-top-2.5 peer-focus:left-6 peer-focus:text-xs peer-focus:text-emerald-600 dark:peer-focus:text-emerald-400 duration-300">
                                             Website
                                         </label>
                                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -458,18 +458,18 @@ export default function Register() {
                                             required
                                             value={formData.industry}
                                             onChange={handleChange}
-                                            className={`peer block w-full pl-10 pr-10 py-3 border ${errors.industry ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-[#38414E]'} rounded-full text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-gray-50/50 dark:bg-transparent appearance-none transition-colors duration-300`}
+                                            className={`peer block w-full pl-10 pr-10 py-3 border ${errors.industry ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-[#2A2A2A]'} rounded-full text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-gray-50/50 dark:bg-transparent appearance-none transition-colors duration-300`}
                                         >
-                                            <option className="dark:bg-[#1C2434]" value="" disabled hidden></option>
-                                            <option className="dark:bg-[#1C2434]" value="Technology">Technology</option>
-                                            <option className="dark:bg-[#1C2434]" value="Healthcare">Healthcare</option>
-                                            <option className="dark:bg-[#1C2434]" value="Finance">Finance</option>
-                                            <option className="dark:bg-[#1C2434]" value="Retail">Retail</option>
-                                            <option className="dark:bg-[#1C2434]" value="Education">Education</option>
-                                            <option className="dark:bg-[#1C2434]" value="Real Estate">Real Estate</option>
-                                            <option className="dark:bg-[#1C2434]" value="Other">Other</option>
+                                            <option className="dark:bg-[#111111]" value="" disabled hidden></option>
+                                            <option className="dark:bg-[#111111]" value="Technology">Technology</option>
+                                            <option className="dark:bg-[#111111]" value="Healthcare">Healthcare</option>
+                                            <option className="dark:bg-[#111111]" value="Finance">Finance</option>
+                                            <option className="dark:bg-[#111111]" value="Retail">Retail</option>
+                                            <option className="dark:bg-[#111111]" value="Education">Education</option>
+                                            <option className="dark:bg-[#111111]" value="Real Estate">Real Estate</option>
+                                            <option className="dark:bg-[#111111]" value="Other">Other</option>
                                         </select>
-                                        <label htmlFor="industry" className={`absolute left-6 transition-all bg-white dark:bg-[#1C2434] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 ${formData.industry ? '-top-2.5 text-xs text-emerald-600 dark:text-emerald-400' : '-top-2.5'} duration-300`}>
+                                        <label htmlFor="industry" className={`absolute left-6 transition-all bg-white dark:bg-[#111111] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 ${formData.industry ? '-top-2.5 text-xs text-emerald-600 dark:text-emerald-400' : '-top-2.5'} duration-300`}>
                                             Business Industry
                                         </label>
                                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -493,16 +493,16 @@ export default function Register() {
                                             required
                                             value={formData.companySize}
                                             onChange={handleChange}
-                                            className={`peer block w-full pl-10 pr-10 py-3 border ${errors.companySize ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-[#38414E]'} rounded-full text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-gray-50/50 dark:bg-transparent appearance-none transition-colors duration-300`}
+                                            className={`peer block w-full pl-10 pr-10 py-3 border ${errors.companySize ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-[#2A2A2A]'} rounded-full text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm bg-gray-50/50 dark:bg-transparent appearance-none transition-colors duration-300`}
                                         >
-                                            <option className="dark:bg-[#1C2434]" value="" disabled hidden></option>
-                                            <option className="dark:bg-[#1C2434]" value="1-10">1-10 Employees</option>
-                                            <option className="dark:bg-[#1C2434]" value="11-50">11-50 Employees</option>
-                                            <option className="dark:bg-[#1C2434]" value="51-200">51-200 Employees</option>
-                                            <option className="dark:bg-[#1C2434]" value="201-500">201-500 Employees</option>
-                                            <option className="dark:bg-[#1C2434]" value="500+">500+ Employees</option>
+                                            <option className="dark:bg-[#111111]" value="" disabled hidden></option>
+                                            <option className="dark:bg-[#111111]" value="1-10">1-10 Employees</option>
+                                            <option className="dark:bg-[#111111]" value="11-50">11-50 Employees</option>
+                                            <option className="dark:bg-[#111111]" value="51-200">51-200 Employees</option>
+                                            <option className="dark:bg-[#111111]" value="201-500">201-500 Employees</option>
+                                            <option className="dark:bg-[#111111]" value="500+">500+ Employees</option>
                                         </select>
-                                        <label htmlFor="companySize" className={`absolute left-6 transition-all bg-white dark:bg-[#1C2434] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 ${formData.companySize ? '-top-2.5 text-xs text-emerald-600 dark:text-emerald-400' : '-top-2.5'} duration-300`}>
+                                        <label htmlFor="companySize" className={`absolute left-6 transition-all bg-white dark:bg-[#111111] px-1 text-xs font-medium text-gray-500 dark:text-gray-400 ${formData.companySize ? '-top-2.5 text-xs text-emerald-600 dark:text-emerald-400' : '-top-2.5'} duration-300`}>
                                             Company Size
                                         </label>
                                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -526,7 +526,7 @@ export default function Register() {
                                     <button
                                         type="button"
                                         onClick={handlePrevious}
-                                        className="flex-1 flex justify-center items-center gap-2 py-3 px-4 border border-emerald-500 dark:border-emerald-500 rounded-full shadow-sm text-sm font-medium text-emerald-500 dark:text-emerald-400 bg-white dark:bg-[#1C2434] hover:bg-emerald-50 dark:hover:bg-[#24303F] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors duration-300"
+                                        className="flex-1 flex justify-center items-center gap-2 py-3 px-4 border border-emerald-500 dark:border-emerald-500 rounded-full shadow-sm text-sm font-medium text-emerald-500 dark:text-emerald-400 bg-white dark:bg-[#111111] hover:bg-emerald-50 dark:hover:bg-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors duration-300"
                                     >
                                         <ChevronLeftIcon className="h-4 w-4" />
                                         Previous

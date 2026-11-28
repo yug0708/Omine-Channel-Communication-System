@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useData } from '../hooks/useData';
@@ -12,11 +12,16 @@ const TicketDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { currentUser } = useAuth();
-  const { tickets, setTickets, contacts, accounts } = useData();
+  const { tickets, contacts, accounts, saveTicket } = useData();
   const ticket = tickets.find((t) => t.id === id);
   const [comment, setComment] = useState('');
+  const [assignee, setAssignee] = useState(ticket?.assignedTo || '');
   const [summary, setSummary] = useState('');
   const [summarizing, setSummarizing] = useState(false);
+
+  useEffect(() => {
+    setAssignee(ticket?.assignedTo || '');
+  }, [ticket?.id, ticket?.assignedTo]);
 
   if (!ticket) {
     return (
@@ -32,8 +37,9 @@ const TicketDetails: React.FC = () => {
   const userName = currentUser ? `${currentUser.firstName} ${currentUser.lastName}`.trim() : 'Agent';
 
   const patch = (partial: Partial<Ticket>) => {
+    if (!ticket) return;
     const now = new Date().toISOString();
-    setTickets((prev) => prev.map((t) => (t.id === ticket.id ? { ...t, ...partial, updatedAt: now, lastActivity: now } : t)));
+    void saveTicket({ ...ticket, ...partial, updatedAt: now, lastActivity: now });
   };
 
   const changeContact = (contactId: string) => {
@@ -85,7 +91,15 @@ const TicketDetails: React.FC = () => {
               <input disabled className={`${fieldClass} mt-1 opacity-70`} value={new Date(ticket.createdAt).toLocaleString()} />
             </label>
             <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500">Assigned to
-              <input className={`${fieldClass} mt-1`} value={ticket.assignedTo || ''} onChange={(e) => patch({ assignedTo: e.target.value })} placeholder="Select assignee" />
+              <input
+                className={`${fieldClass} mt-1`}
+                value={assignee}
+                onChange={(e) => setAssignee(e.target.value)}
+                onBlur={() => {
+                  if (assignee !== (ticket.assignedTo || '')) patch({ assignedTo: assignee });
+                }}
+                placeholder="Select assignee"
+              />
             </label>
             <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500">Contact
               <select className={`${fieldClass} mt-1`} value={ticket.contactId} onChange={(e) => changeContact(e.target.value)}>

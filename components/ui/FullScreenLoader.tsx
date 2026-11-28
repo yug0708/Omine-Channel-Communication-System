@@ -20,7 +20,7 @@ export const FullScreenLoader: React.FC<FullScreenLoaderProps> = ({
       role="status"
       aria-live="polite"
     >
-      <div className="flex flex-col items-center justify-center gap-4 p-8 rounded-3xl bg-white dark:bg-[#151B25] border border-slate-200/80 dark:border-slate-800 shadow-2xl shadow-emerald-500/10 max-w-xs w-full mx-4 text-center">
+      <div className="flex flex-col items-center justify-center gap-4 p-8 rounded-3xl bg-white dark:bg-[#111111] border border-slate-200/80 dark:border-slate-800 shadow-2xl shadow-emerald-500/10 max-w-xs w-full mx-4 text-center">
         <div className="relative flex items-center justify-center">
           {/* Soft ambient glow */}
           <div className="absolute h-16 w-16 rounded-full bg-emerald-500/20 blur-xl animate-pulse" />

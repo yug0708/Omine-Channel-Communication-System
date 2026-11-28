@@ -31,7 +31,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, variant
       >
         {/* Drawer container with slide-in animation */}
         <div
-          className="bg-white dark:bg-[#151B25] w-full max-w-lg h-full shadow-2xl flex flex-col justify-between border-l border-slate-200 dark:border-slate-800/80 animate-slide-in-right"
+          className="bg-white dark:bg-[#111111] w-full max-w-lg h-full shadow-2xl flex flex-col justify-between border-l border-slate-200 dark:border-slate-800/80 animate-slide-in-right"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex justify-between items-center p-6 border-b border-slate-100 dark:border-slate-800/80">
@@ -58,7 +58,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, variant
       onClick={onClose}
     >
       <div
-        className={`bg-white dark:bg-[#151B25] rounded-3xl shadow-2xl w-full m-4 border border-slate-200 dark:border-slate-800/80 overflow-hidden flex flex-col max-h-[90vh] ${widthClass || 'max-w-lg'}`}
+        className={`bg-white dark:bg-[#111111] rounded-3xl shadow-2xl w-full m-4 border border-slate-200 dark:border-slate-800/80 overflow-hidden flex flex-col max-h-[90vh] ${widthClass || 'max-w-lg'}`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center p-6 border-b border-slate-100 dark:border-slate-800/80 flex-shrink-0">

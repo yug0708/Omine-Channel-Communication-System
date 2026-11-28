@@ -853,7 +853,7 @@ const ContactDetails: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const { contacts, setContacts, tickets, setTickets, saveContact, deleteContact } = useData();
+  const { contacts, setContacts, tickets, saveContact, deleteContact, saveTicket, deleteTicket } = useData();
 
   const { showToast } = useToast();
 
@@ -1095,66 +1095,30 @@ const ContactDetails: React.FC = () => {
 
 
 
-  const handleSaveTicket = (ticketData: Partial<Ticket>) => {
+  const handleSaveTicket = async (ticketData: Partial<Ticket>) => {
 
     const now = new Date().toISOString();
 
     if (editingTicket) {
-
-      // Edit
-
-      setTickets((prev) =>
-
-        prev.map((t) =>
-
-          t.id === editingTicket.id
-
-            ? { ...t, ...ticketData, updatedAt: now }
-
-            : t
-
-        )
-
-      );
-
+      await saveTicket({ ...editingTicket, ...ticketData, updatedAt: now, lastActivity: now });
     } else {
-
-      // Create
-
-      const newTicketNo = `TKT-${Math.floor(Math.random() * 9000 + 1000)}`;
-
-      const newTicket: Ticket = {
-
+      await saveTicket({
         id: `tkt${Date.now()}`,
-
-        ticketNo: newTicketNo,
-
+        ticketNo: `TKT-${Math.floor(Math.random() * 9000 + 1000)}`,
         subject: ticketData.subject || '',
-
         description: ticketData.description || '',
-
         contactId: contact.id,
-
         contactName: fullName,
-
         accountId: '',
-
         accountName: contact.accountName || '',
-
         status: ticketData.status || TicketStatus.Open,
-
         priority: ticketData.priority || TicketPriority.Normal,
-
         assignedTo: ticketData.assignedTo || 'Unassigned',
-
         createdAt: now,
-
         updatedAt: now,
-
-      };
-
-      setTickets((prev) => [...prev, newTicket]);
-
+        lastActivity: now,
+        comments: [],
+      });
     }
 
     setIsTicketModalOpen(false);
@@ -1169,7 +1133,7 @@ const ContactDetails: React.FC = () => {
 
     if (window.confirm('Are you sure you want to delete this ticket?')) {
 
-      setTickets((prev) => prev.filter((t) => t.id !== ticketId));
+      void deleteTicket(ticketId);
 
     }
 
@@ -1620,7 +1584,7 @@ const ContactDetails: React.FC = () => {
 
             {/* Profile Card */}
 
-            <div className="bg-white dark:bg-[#151B25] rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-800/80 flex flex-col items-center">
+            <div className="bg-white dark:bg-[#111111] rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-800/80 flex flex-col items-center">
 
 
 
@@ -1670,7 +1634,7 @@ const ContactDetails: React.FC = () => {
 
                   onClick={() => setIsContactEditModalOpen(true)}
 
-                  className="absolute bottom-0 right-0 h-8 w-8 bg-emerald-600 hover:bg-emerald-700 rounded-full flex items-center justify-center text-white border-2 border-white dark:border-[#151B25] shadow-md transition-colors"
+                  className="absolute bottom-0 right-0 h-8 w-8 bg-emerald-600 hover:bg-emerald-700 rounded-full flex items-center justify-center text-white border-2 border-white dark:border-[#111111] shadow-md transition-colors"
 
                 >
 
@@ -1810,7 +1774,7 @@ const ContactDetails: React.FC = () => {
 
               {/* CONTACT INFORMATION */}
 
-              <div className="bg-white dark:bg-[#151B25] rounded-2xl border border-slate-200 dark:border-slate-800/80 overflow-hidden shadow-sm">
+              <div className="bg-white dark:bg-[#111111] rounded-2xl border border-slate-200 dark:border-slate-800/80 overflow-hidden shadow-sm">
 
                 <button
 
@@ -1864,7 +1828,7 @@ const ContactDetails: React.FC = () => {
 
               {/* ADDRESS INFORMATION */}
 
-              <div className="bg-white dark:bg-[#151B25] rounded-2xl border border-slate-200 dark:border-slate-800/80 overflow-hidden shadow-sm">
+              <div className="bg-white dark:bg-[#111111] rounded-2xl border border-slate-200 dark:border-slate-800/80 overflow-hidden shadow-sm">
 
                 <button
 
@@ -1922,7 +1886,7 @@ const ContactDetails: React.FC = () => {
 
               {/* ASSIGNMENT DETAILS */}
 
-              <div className="bg-white dark:bg-[#151B25] rounded-2xl border border-slate-200 dark:border-slate-800/80 overflow-hidden shadow-sm">
+              <div className="bg-white dark:bg-[#111111] rounded-2xl border border-slate-200 dark:border-slate-800/80 overflow-hidden shadow-sm">
 
                 <button
 
@@ -1976,7 +1940,7 @@ const ContactDetails: React.FC = () => {
 
           {/* RIGHT COLUMN */}
 
-          <div className="flex-1 w-full bg-white dark:bg-[#151B25] rounded-3xl border border-slate-200 dark:border-slate-800/80 shadow-sm flex flex-col overflow-hidden">
+          <div className="flex-1 w-full bg-white dark:bg-[#111111] rounded-3xl border border-slate-200 dark:border-slate-800/80 shadow-sm flex flex-col overflow-hidden">
 
             {/* Tab Navigation Headers */}
 
@@ -2154,7 +2118,7 @@ const ContactDetails: React.FC = () => {
 
                       {importExportOpen && (
 
-                        <div className="absolute right-0 top-[calc(100%+6px)] z-50 w-40 bg-white dark:bg-[#1a2235] border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
+                        <div className="absolute right-0 top-[calc(100%+6px)] z-50 w-40 bg-white dark:bg-[#111111] border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
 
                           <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
 
@@ -2272,11 +2236,11 @@ const ContactDetails: React.FC = () => {
 
                           {isStatusFilterOpen && (
 
-                            <div ref={statusFilterRef} className="absolute left-0 top-[calc(100%+6px)] z-50 p-4 w-60 bg-white dark:bg-[#1a2235] border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl">
+                            <div ref={statusFilterRef} className="absolute left-0 top-[calc(100%+6px)] z-50 p-4 w-60 bg-white dark:bg-[#111111] border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl">
 
                               <div className="relative mt-2">
 
-                                <label className="absolute -top-2 left-3 px-1 bg-white dark:bg-[#1a2235] text-[10px] text-slate-400 font-semibold select-none">
+                                <label className="absolute -top-2 left-3 px-1 bg-white dark:bg-[#111111] text-[10px] text-slate-400 font-semibold select-none">
 
                                   Select Status
 
@@ -2294,15 +2258,15 @@ const ContactDetails: React.FC = () => {
 
                                 >
 
-                                  <option value="All" className="bg-white dark:bg-[#1a2235]">All</option>
+                                  <option value="All" className="bg-white dark:bg-[#111111]">All</option>
 
-                                  <option value={TicketStatus.Open} className="bg-white dark:bg-[#1a2235]">Open</option>
+                                  <option value={TicketStatus.Open} className="bg-white dark:bg-[#111111]">Open</option>
 
-                                  <option value={TicketStatus.InProgress} className="bg-white dark:bg-[#1a2235]">In Progress</option>
+                                  <option value={TicketStatus.InProgress} className="bg-white dark:bg-[#111111]">In Progress</option>
 
-                                  <option value={TicketStatus.OnHold} className="bg-white dark:bg-[#1a2235]">On Hold</option>
+                                  <option value={TicketStatus.OnHold} className="bg-white dark:bg-[#111111]">On Hold</option>
 
-                                  <option value={TicketStatus.Closed} className="bg-white dark:bg-[#1a2235]">Closed</option>
+                                  <option value={TicketStatus.Closed} className="bg-white dark:bg-[#111111]">Closed</option>
 
                                 </select>
 
@@ -2748,7 +2712,7 @@ const ContactDetails: React.FC = () => {
 
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-end lg:items-center justify-center">
 
-          <div className="bg-white dark:bg-[#151B25] w-full max-w-sm rounded-t-3xl lg:rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800/80 p-6 flex flex-col gap-5">
+          <div className="bg-white dark:bg-[#111111] w-full max-w-sm rounded-t-3xl lg:rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800/80 p-6 flex flex-col gap-5">
 
             {/* Icon */}
 

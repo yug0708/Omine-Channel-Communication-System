@@ -92,7 +92,7 @@ const CountryCodePicker: React.FC<CountryCodePickerProps> = ({ value, onChange }
         <div
             ref={dropdownRef}
             style={dropdownStyle}
-            className="bg-white dark:bg-[#1a2235] rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700"
+            className="bg-white dark:bg-[#111111] rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700"
         >
             {/* Search */}
             <div className="p-2 border-b border-slate-100 dark:border-slate-700">

@@ -34,7 +34,10 @@ const Settings: React.FC = () => {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-bold">Settings</h1>
+      <div>
+        <h1 className="text-[28px] font-bold tracking-tight">Settings</h1>
+        <p className="text-sm text-slate-500">Profile, password, theme, and notifications.</p>
+      </div>
 
       {/* Profile Settings */}
       <Card>
